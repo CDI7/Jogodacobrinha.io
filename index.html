@@ -745,7 +745,25 @@ function shadeColor(color, percent) {
 
         // Inicializar com dificuldade padrão selecionada
         selectDifficulty('normal');
-    </script>
+    
+// Impede o comportamento de pull-to-refresh em navegadores móveis
+let touchStartY = 0;
+
+window.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    touchStartY = e.touches[0].clientY;
+}, { passive: false });
+
+window.addEventListener('touchmove', function(e) {
+    const touchY = e.touches[0].clientY;
+    const touchDiff = touchY - touchStartY;
+
+    if (touchStartY < 10 && touchDiff > 10) {
+        e.preventDefault(); // Bloqueia o pull-to-refresh
+    }
+}, { passive: false });
+
+</script>
 <!-- Seletor de joystick -->
 <!-- Joystick flutuante -->
 <div id="floatingJoystick" style="position: fixed; bottom: 40px; left: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
