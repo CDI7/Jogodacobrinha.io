@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
@@ -89,22 +88,34 @@
             max-width: 320px;
             height: auto;
         }
-        .difficulty-selection {
+        .difficulty-selection, .map-selection { /* Adicionado .map-selection */
             margin-bottom: 15px;
+            display: flex; /* Make buttons in a row */
+            flex-wrap: wrap; /* Allow wrapping if needed */
+            justify-content: center; /* Center buttons */
+            align-items: center;
+            gap: 5px; /* Spacing between buttons */
+        }
+        .difficulty-selection h3, .map-selection h3 {
+            width: 100%; /* Make heading take full width */
+            text-align: center;
+            margin-bottom: 8px; /* Adjust margin */
         }
         .difficulty-btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 12px; /* Decreased font size */
             cursor: pointer;
-            padding: 10px 15px;
-            margin: 3px;
+            padding: 8px 12px; /* Decreased padding */
+            margin: 2px; /* Decreased margin */
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            max-width: 80px; /* Max width to keep them from getting too wide */
         }
         .difficulty-btn:hover {
             transform: translateY(-2px);
@@ -122,6 +133,9 @@
         .difficulty-btn.hard {
             background: linear-gradient(45deg, #e84393, #d63031);
         }
+        .difficulty-btn.insane {
+            background: linear_gradient(45deg, #8e44ad, #c0392b);
+        }
         .difficulty-btn.selected {
             transform: scale(1.05);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
@@ -131,6 +145,8 @@
             font-size: 12px;
             margin-top: 5px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            width: 100%; /* Ensure info text takes full width */
+            text-align: center;
         }
         .controls {
             margin-top: 10px;
@@ -250,11 +266,120 @@
             margin-top: 10px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
+        /* Novos estilos para as abas de configurações */
+        .settings-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            overflow-x: auto; /* Para telas menores */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+        .settings-tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.3s, border-bottom 0.3s;
+            white-space: nowrap; /* Evita quebras de linha */
+        }
+        .tab-button:hover {
+            color: white;
+        }
+        .tab-button.selected {
+            color: white;
+            border-bottom: 2px solid #667eea;
+            font-weight: bold;
+        }
+        .settings-tab-content {
+            padding-top: 10px;
+        }
+        .settings-tab-content h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: white;
+        }
+        /* Animated Title Styles */
+        .animated-title {
+            font-size: 3em; /* Ajuste conforme necessário */
+            color: #FF8C00; /* Laranja escuro */
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px; /* Espaço entre as letras */
+        }
+
+        .animated-title span {
+            display: inline-block;
+            animation: pulse 1.5s infinite alternate; /* Animação de pulso */
+        }
+
+        .animated-title span:nth-child(2) { animation-delay: 0.05s; }
+        .animated-title span:nth-child(3) { animation-delay: 0.1s; }
+        .animated-title span:nth-child(4) { animation-delay: 0.15s; }
+        .animated-title span:nth-child(5) { animation-delay: 0.2s; }
+        /* Adicione atrasos para o resto das letras */
+        .animated-title span:nth-child(6) { animation-delay: 0.25s; } /* D */
+        .animated-title span:nth-child(7) { animation-delay: 0.3s; } /* A */
+        .animated-title span:nth-child(8) { animation-delay: 0.35s; } /* C */
+        .animated-title span:nth-child(9) { animation-delay: 0.4s; } /* O */
+        .animated-title span:nth-child(10) { animation-delay: 0.45s; } /* B */
+        .animated-title span:nth-child(11) { animation-delay: 0.5s; } /* R */
+        .animated-title span:nth-child(12) { animation-delay: 0.55s; } /* I */
+        .animated-title span:nth-child(13) { animation-delay: 0.6s; } /* N */
+        .animated-title span:nth-child(14) { animation-delay: 0.65s; } /* H */
+        .animated-title span:nth-child(15) { animation-delay: 0.7s; } /* A */
+
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            }
+            100% {
+                transform: scale(1.05); /* Um leve aumento no tamanho */
+                text-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700; /* Brilho dourado */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .animated-title {
+                font-size: 2em; /* Fonte menor para celular */
+            }
+        }
     </style>
 </head>
 <body>
-<div class="game-container" style="position: relative;">
-<h1>🐍 Jogo da Cobrinha</h1>
+<div class="animated-title">
+    <span><span>🐍   <span><span>J</span><span>O</span><span>G</span><span>O</span>
+    <span>D</span><span>A</span>
+    <span>C</span><span>O</span><span>B</span><span>R</span><span>I</span><span>N</span><span>H</span><span>A</span>
+</div>
+<div class="game-container" id="loginScreen">
+<h1>Bem-vindo ao Jogo da Cobrinha</h1>
+<input class="name-input" id="loginUser" placeholder="Usuário" type="text"/>
+<input class="name-input" id="loginPass" placeholder="Senha" type="password"/>
+<button class="start-btn" onclick="handleLogin()">Entrar</button>
+<p style="color:white; margin-top: 10px;">Ainda não tem conta? <a href="#" onclick="showRegister()">Cadastre-se</a></p>
+<p style="color:white; font-size: 10px; margin-top: 15px;">Desenvolvido por: John Costa</p>
+</div>
+<div class="game-container" id="registerScreen" style="display:none;">
+<h1>📝 Cadastro</h1>
+<input class="name-input" id="registerUser" placeholder="Usuário" type="text"/>
+<input class="name-input" id="registerPass" placeholder="Senha" type="password"/>
+<button class="start-btn" onclick="handleRegister()">Cadastrar</button>
+<p style="color:white; margin-top: 10px;"><a href="#" onclick="showLogin()">Já tem conta? Entrar</a></p>
+</div>
+<div class="game-container" id="mainGame" style="display: none; position: relative;">
+<h1>🐍 Jogo da Cobrinha</h1><div id="loggedUser" style="color: white; font-size: 14px; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Jogador: ---</div>
 <div class="current-score">Pontos: <span id="score">0</span></div>
 <div class="current-difficulty" id="difficultyDisplay" style="display: none;">
             Dificuldade: <span id="currentDifficultyText">Normal</span>
@@ -275,19 +400,59 @@
 </div>
 </div>
 <canvas height="320" id="gameCanvas" width="320"></canvas>
-<button class="" id="settingsBtn" onclick="toggleSettings()" style="position: absolute; top: 15px; right: 15px; z-index: 1000; background: none; border: none; font-size: 24px; cursor: pointer; color: white;">⚙️</button><div id="settingsMenu" style="display: none; background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 15px; text-align: left; margin-top: 10px;">
-<h3 style="margin-top: 0;">⚙️ Configurações do Jogo</h3>
-<label for="sensitivityRange">Sensibilidade dos Botões:</label>
-<input id="sensitivityRange" max="10" min="1" style="width: 100%;" type="range" value="5"/><br/><br/>
-<label for="snakeColor">Cor da Cobrinha:</label>
-<input id="snakeColor" type="color" value="#00b894"/><br/><br/>
-<label for="joystickModel">Modelo de Joystick:</label>
-<select id="joystickModel" onchange="toggleJoystick()">
-<option value="classic">Clássico</option>
-<option value="floating">Flutuante</option>
-</select><br/><br/>
-<button class="restart-btn" onclick="closeSettings()">Fechar</button>
-</div><div id="startScreen">
+<button id="logoutBtn" onclick="handleLogout()" style="position: absolute; top: 15px; left: 15px; z-index: 1000; background: none; border: none; font-size: 20px; cursor: pointer; color: white;">🚪 Sair</button><button class="" id="settingsBtn" onclick="toggleSettings()" style="position: absolute; top: 15px; right: 15px; z-index: 1000; background: none; border: none; font-size: 24px; cursor: pointer; color: white;">⚙️</button>
+
+<div id="settingsMenu" style="display: none; background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 15px; text-align: left; margin-top: 10px;">
+    <h3 style="margin-top: 0;">⚙️ Configurações do Jogo</h3>
+
+    <div class="settings-tabs">
+        <button class="tab-button selected" onclick="showSettingsTab('general')">Geral</button>
+        <button class="tab-button" onclick="showSettingsTab('controls')">Controles</button>
+        <button class="tab-button" onclick="showSettingsTab('account')">Conta</button>
+    </div>
+
+    <div id="generalSettings" class="settings-tab-content">
+        <label for="snakeColor">Cor da Cobrinha:</label>
+        <input id="snakeColor" type="color" value="#00b894"/><br/><br/>
+        <label for="screenBackgroundColor">Cor da Tela:</label>
+        <input type="color" id="screenBackgroundColor" value="#1a1a1a" /><br /><br />
+    </div>
+
+    <div id="controlsSettings" class="settings-tab-content" style="display:none;">
+        <label for="sensitivityRange">Sensibilidade dos Botões:</label>
+        <input id="sensitivityRange" max="10" min="1" style="width: 100%;" type="range" value="5"/><br/><br/>
+        <label for="joystickModel">Modelo de Joystick:</label>
+        <select id="joystickModel" onchange="toggleJoystick()">
+            <option value="classic">Clássico</option>
+            <option value="floating">Flutuante</option>
+        </select><br/><br/>
+        <label for="joystickPosition">Posição do Joystick Flutuante:</label>
+        <select id="joystickPosition" onchange="updateJoystickPosition()">
+            <option value="right">Direita</option>
+            <option value="left">Esquerda</option>
+            <option value="center">Centro</option>
+        </select><br/><br/>
+    </div>
+
+    <div id="accountSettings" class="settings-tab-content" style="display:none;">
+        <h4>Mudar Nome de Usuário</h4>
+        <input class="name-input" id="newUsername" placeholder="Novo Usuário" type="text"/>
+        <input class="name-input" id="currentPassForUsername" placeholder="Sua Senha Atual" type="password"/>
+        <button class="restart-btn" onclick="handleChangeUsername()">Confirmar</button>
+        <p style="color:red; font-size:12px;" id="usernameChangeError"></p>
+
+        <h4 style="margin-top: 20px;">Mudar Senha</h4>
+        <input class="name-input" id="oldPassword" placeholder="Senha Antiga" type="password"/>
+        <input class="name-input" id="newPassword" placeholder="Nova Senha" type="password"/>
+        <input class="name-input" id="confirmNewPassword" placeholder="Confirme Nova Senha" type="password"/>
+        <button class="restart-btn" onclick="handleChangePassword()">Confirmar</button>
+        <p style="color:red; font-size:12px;" id="passwordChangeError"></p>
+    </div>
+
+    <button class="restart-btn" onclick="closeSettings()" style="margin-top: 20px;">Fechar</button>
+</div>
+<div id="startScreen">
+<button class="start-btn" onclick="startGame()">Iniciar Jogo</button>
 <div class="difficulty-selection">
 <h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;">Escolha a Dificuldade:</h3>
 <button class="difficulty-btn easy" onclick="selectDifficulty('easy')">
@@ -299,11 +464,27 @@
 <button class="difficulty-btn hard" onclick="selectDifficulty('hard')">
                     🚀 Difícil
                 </button>
+<button class="difficulty-btn insane" onclick="selectDifficulty('insane')">
+                    💀 Insano
+                </button>
 <div class="difficulty-info" id="difficultyInfo">
                     Velocidade média - Perfeito para iniciantes!
                 </div>
 </div>
-<button class="start-btn" onclick="startGame()">Iniciar Jogo</button>
+
+<div class="map-selection" style="margin-top: 20px;">
+    <h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;">Escolha o Mapa:</h3>
+    <button class="difficulty-btn selected" onclick="selectMap('normal')">
+        🧱 Padrão
+    </button>
+    <button class="difficulty-btn" onclick="selectMap('no-walls')">
+        🌌 Sem Paredes
+    </button>
+    <div class="difficulty-info" id="mapInfo">
+        Paredes normais.
+    </div>
+</div>
+
 </div>
 <div class="controls" id="gameControls" style="display: none;">
 <button class="control-btn up" id="upBtn">↑</button>
@@ -312,6 +493,7 @@
 <button class="control-btn down" id="downBtn">↓</button>
 </div>
 <button class="pause-btn" id="pauseBtn" onclick="togglePause()" style="display: none;">⏸️ Pausar</button>
+<button class="pause-btn" id="quitGameBtn" onclick="quitGame()" style="display: none; margin-left: 10px; background: linear-gradient(45deg, #d63031, #e84399);">🚫 Sair da Partida</button>
 <div class="instructions" id="gameInstructions" style="display: none;">
 <p>Use os botões para controlar a cobra</p>
 <p>Colete a comida vermelha para crescer!</p>
@@ -320,10 +502,7 @@
 <h2>Game Over!</h2>
 <p>Sua pontuação: <span id="finalScore">0</span></p>
 <div id="newRecordDiv" style="display: none;">
-<p>🎉 Novo recorde! Digite suas iniciais:</p>
-<input class="name-input" id="playerName" maxlength="3" placeholder="ABC" type="text"/>
-<br/>
-<button class="restart-btn" onclick="saveScore()">Salvar e Continuar</button>
+<p>🎉 Novo recorde!</p>
 </div>
 <div id="normalGameOver">
 <button class="restart-btn" onclick="restartGame()">Jogar Novamente</button>
@@ -339,6 +518,7 @@
         const startScreen = document.getElementById('startScreen');
         const gameControls = document.getElementById('gameControls');
         const pauseBtn = document.getElementById('pauseBtn');
+        const quitGameBtn = document.getElementById('quitGameBtn');
         const gameInstructions = document.getElementById('gameInstructions');
         const newRecordDiv = document.getElementById('newRecordDiv');
         const normalGameOver = document.getElementById('normalGameOver');
@@ -346,6 +526,8 @@
         const difficultyDisplay = document.getElementById('difficultyDisplay');
         const currentDifficultyText = document.getElementById('currentDifficultyText');
         const difficultyInfo = document.getElementById('difficultyInfo');
+        const mapInfo = document.getElementById('mapInfo');
+
 
         // Elementos do leaderboard
         const firstName = document.getElementById('first-name');
@@ -358,11 +540,17 @@
         const thirdScore = document.getElementById('third-score');
         const thirdDifficulty = document.getElementById('third-difficulty');
 
-        
+
 let snakeColor = document.getElementById('snakeColor').value;
+let screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
 
 document.getElementById('snakeColor').addEventListener('input', function(e) {
     snakeColor = e.target.value;
+});
+
+document.getElementById('screenBackgroundColor').addEventListener('input', function(e) {
+    screenBackgroundColor = e.target.value;
+    document.getElementById('mainGame').style.background = screenBackgroundColor;
 });
 
 function shadeColor(color, percent) {
@@ -381,28 +569,54 @@ function shadeColor(color, percent) {
 
         // Configurações de dificuldade
         const difficulties = {
-            easy: { 
-                speed: 200, 
-                name: 'Fácil', 
+            easy: {
+                speed: 200,
+                name: 'Fácil',
                 description: 'Velocidade lenta - Ideal para iniciantes!',
-                emoji: '🐌'
+                emoji: '🐌',
+                points: 5
             },
-            normal: { 
-                speed: 150, 
-                name: 'Normal', 
+            normal: {
+                speed: 150,
+                name: 'Normal',
                 description: 'Velocidade média - Perfeito para iniciantes!',
-                emoji: '🐍'
+                emoji: '🐍',
+                points: 10
             },
-            hard: { 
-                speed: 100, 
-                name: 'Difícil', 
+            hard: {
+                speed: 100,
+                name: 'Difícil',
                 description: 'Velocidade rápida - Para experts!',
-                emoji: '🚀'
+                emoji: '🚀',
+                points: 20
+            },
+            insane: {
+                speed: 70,
+                name: 'Insano',
+                description: 'Velocidade extrema e mais pontos por comida - Para os mestres!',
+                emoji: '💀',
+                points: 30
             }
         };
 
         let currentDifficulty = 'normal';
         let gameInterval;
+
+        // NEW: Map configuration
+        const maps = {
+            'normal': {
+                name: 'Padrão',
+                description: 'Paredes normais.',
+                wrapAround: false
+            },
+            'no-walls': {
+                name: 'Sem Paredes',
+                description: 'A cobra atravessa as paredes e reaparece do outro lado!',
+                wrapAround: true
+            }
+        };
+        let currentMap = 'normal'; // NEW: Default map
+
 
         // Ajustar canvas para tela pequena
         const gridSize = 17;
@@ -412,43 +626,77 @@ function shadeColor(color, percent) {
             {x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}
         ];
         let food = {};
-        let dx = 1; // Começa se movendo para a direita
-        let dy = 0;
+        let dx = 0; // Inicialmente parada
+        let dy = 0; // Inicialmente parada
         let score = 0;
-        let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [
-            {name: "---", score: 0, difficulty: "normal"},
-            {name: "---", score: 0, difficulty: "normal"},
-            {name: "---", score: 0, difficulty: "normal"}
-        ];
+        // Modified leaderboard structure to be an object with map names as keys
+        let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboardByMap')) || {};
+
         let gameRunning = false;
         let gameStarted = false;
         let gamePaused = false;
 
-        // Migrar dados antigos do leaderboard (sem dificuldade)
-        leaderboard = leaderboard.map(entry => {
-            if (!entry.difficulty) {
-                return {...entry, difficulty: 'normal'};
+        // Initialize leaderboard for each map if not present
+        function initializeLeaderboards() {
+            for (const mapKey in maps) {
+                if (!leaderboard[mapKey]) {
+                    leaderboard[mapKey] = [
+                        {name: "---", score: 0, difficulty: "normal"},
+                        {name: "---", score: 0, difficulty: "normal"},
+                        {name: "---", score: 0, difficulty: "normal"}
+                    ];
+                } else {
+                    // Ensure existing entries have difficulty, if not already present (migration)
+                    leaderboard[mapKey] = leaderboard[mapKey].map(entry => {
+                        if (!entry.difficulty) {
+                            return {...entry, difficulty: 'normal'};
+                        }
+                        return entry;
+                    });
+                }
             }
-            return entry;
-        });
-        
-        // Atualizar display do leaderboard
+            localStorage.setItem('snakeLeaderboardByMap', JSON.stringify(leaderboard));
+        }
+
+        initializeLeaderboards(); // Call this once on load
+
+        // Update display of the leaderboard based on the current map
         updateLeaderboardDisplay();
 
         function selectDifficulty(difficulty) {
             currentDifficulty = difficulty;
-            
+
             // Remover seleção anterior
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            
+
             // Adicionar seleção atual
             document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('selected');
-            
+
             // Atualizar informações
             const difficultyConfig = difficulties[difficulty];
             difficultyInfo.textContent = difficultyConfig.description;
+        }
+
+        // NEW: selectMap function
+        function selectMap(map) {
+            currentMap = map;
+
+            // Remover seleção anterior (reusing difficulty-btn class for styling)
+            document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Adicionar seleção atual
+            document.querySelector(`.map-selection .difficulty-btn[onclick*="${map}"]`).classList.add('selected');
+
+            // Atualizar informações
+            const mapConfig = maps[map];
+            mapInfo.textContent = mapConfig.description;
+
+            // Update leaderboard display for the newly selected map
+            updateLeaderboardDisplay();
         }
 
         function randomTile() {
@@ -460,7 +708,7 @@ function shadeColor(color, percent) {
                 x: randomTile(),
                 y: randomTile()
             };
-            
+
             // Garantir que a comida não apareça na cobra
             for (let segment of snake) {
                 if (segment.x === food.x && segment.y === food.y) {
@@ -497,12 +745,22 @@ function shadeColor(color, percent) {
         function updateGame() {
             if (!gameRunning || gamePaused) return;
 
+            // Se a cobra estiver parada, não move até que uma direção seja definida
+            if (dx === 0 && dy === 0) return;
+
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
-            // Verificar colisão com paredes
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver();
-                return;
+            // Verificar colisão com paredes ou implementar wrap-around
+            if (maps[currentMap].wrapAround) {
+                if (head.x < 0) head.x = tileCount - 1;
+                else if (head.x >= tileCount) head.x = 0;
+                if (head.y < 0) head.y = tileCount - 1;
+                else if (head.y >= tileCount) head.y = 0;
+            } else {
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                    gameOver();
+                    return;
+                }
             }
 
             // Verificar colisão com o próprio corpo
@@ -517,9 +775,7 @@ function shadeColor(color, percent) {
 
             // Verificar se comeu a comida
             if (head.x === food.x && head.y === food.y) {
-                let foodPoints = 10;
-                if (currentDifficulty === 'easy') foodPoints = 5;
-                else if (currentDifficulty === 'hard') foodPoints = 20;
+                let foodPoints = difficulties[currentDifficulty].points; // Use points from difficulty
                 score += foodPoints;
                 scoreElement.textContent = score;
                 generateFood();
@@ -532,43 +788,61 @@ function shadeColor(color, percent) {
             const difficultyEmojis = {
                 easy: '🐌',
                 normal: '🐍',
-                hard: '🚀'
+                hard: '🚀',
+                insane: '💀'
             };
-            
-            firstName.textContent = leaderboard[0].name;
-            firstScore.textContent = leaderboard[0].score;
-            firstDifficulty.textContent = leaderboard[0].score > 0 ? difficultyEmojis[leaderboard[0].difficulty] || '🐍' : '';
-            
-            secondName.textContent = leaderboard[1].name;
-            secondScore.textContent = leaderboard[1].score;
-            secondDifficulty.textContent = leaderboard[1].score > 0 ? difficultyEmojis[leaderboard[1].difficulty] || '🐍' : '';
-            
-            thirdName.textContent = leaderboard[2].name;
-            thirdScore.textContent = leaderboard[2].score;
-            thirdDifficulty.textContent = leaderboard[2].score > 0 ? difficultyEmojis[leaderboard[2].difficulty] || '🐍' : '';
+
+            const currentMapLeaderboard = leaderboard[currentMap] || [
+                {name: "---", score: 0, difficulty: "normal"},
+                {name: "---", score: 0, difficulty: "normal"},
+                {name: "---", score: 0, difficulty: "normal"}
+            ];
+
+            firstName.textContent = currentMapLeaderboard[0].name;
+            firstScore.textContent = currentMapLeaderboard[0].score;
+            firstDifficulty.textContent = currentMapLeaderboard[0].score > 0 ? difficultyEmojis[currentMapLeaderboard[0].difficulty] || '🐍' : '';
+
+            secondName.textContent = currentMapLeaderboard[1].name;
+            secondScore.textContent = currentMapLeaderboard[1].score;
+            secondDifficulty.textContent = currentMapLeaderboard[1].score > 0 ? difficultyEmojis[currentMapLeaderboard[1].difficulty] || '🐍' : '';
+
+            thirdName.textContent = currentMapLeaderboard[2].name;
+            thirdScore.textContent = currentMapLeaderboard[2].score;
+            thirdDifficulty.textContent = currentMapLeaderboard[2].score > 0 ? difficultyEmojis[currentMapLeaderboard[2].difficulty] || '🐍' : '';
         }
 
         function isNewRecord(score) {
-            return score > leaderboard[2].score;
+            // Check against the current map's leaderboard
+            const currentMapLeaderboard = leaderboard[currentMap] || [];
+            return score > (currentMapLeaderboard[2] ? currentMapLeaderboard[2].score : 0);
         }
 
         function saveScore() {
-            const name = playerNameInput.value.toUpperCase().trim() || "???";
+            const name = currentUser ? currentUser.substring(0, 10).toUpperCase() : "???";
             const newEntry = {
-                name: name.substring(0, 3), 
-                score: score, 
+                name: name,
+                score: score,
                 difficulty: currentDifficulty
             };
-            
-            // Adicionar novo score e reorganizar
-            leaderboard.push(newEntry);
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 3);
-            
-            // Salvar no localStorage
-            localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
+
+            // Get or initialize the leaderboard for the current map
+            if (!leaderboard[currentMap]) {
+                leaderboard[currentMap] = [
+                    {name: "---", score: 0, difficulty: "normal"},
+                    {name: "---", score: 0, difficulty: "normal"},
+                    {name: "---", score: 0, difficulty: "normal"}
+                ];
+            }
+
+            // Add new score to the current map's leaderboard and reorganize
+            leaderboard[currentMap].push(newEntry);
+            leaderboard[currentMap].sort((a, b) => b.score - a.score);
+            leaderboard[currentMap] = leaderboard[currentMap].slice(0, 3);
+
+            // Salvar no localStorage (agora com a estrutura de objeto)
+            localStorage.setItem('snakeLeaderboardByMap', JSON.stringify(leaderboard));
             updateLeaderboardDisplay();
-            
+
             // Continuar para tela normal
             newRecordDiv.style.display = 'none';
             normalGameOver.style.display = 'block';
@@ -577,26 +851,27 @@ function shadeColor(color, percent) {
         function startGame() {
             // Resetar posição da cobra para o centro
             snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
-            dx = 1; // Começa se movendo para a direita
-            dy = 0;
+            dx = 0; // Inicialmente parada
+            dy = 0; // Inicialmente parada
             score = 0;
             scoreElement.textContent = score;
-            
+
             gameRunning = true;
             gameStarted = true;
             gamePaused = false;
             startScreen.style.display = 'none';
             gameControls.style.display = 'grid';
             pauseBtn.style.display = 'block';
+            quitGameBtn.style.display = 'block';
             gameInstructions.style.display = 'block';
             difficultyDisplay.style.display = 'block';
-            
+
             // Mostrar dificuldade atual
             const difficultyConfig = difficulties[currentDifficulty];
             currentDifficultyText.textContent = `${difficultyConfig.emoji} ${difficultyConfig.name}`;
-            
+
             generateFood();
-            
+
             // Iniciar loop do jogo com velocidade baseada na dificuldade
             if (gameInterval) {
                 clearInterval(gameInterval);
@@ -610,29 +885,36 @@ function shadeColor(color, percent) {
             pauseBtn.textContent = gamePaused ? '▶️ Continuar' : '⏸️ Pausar';
         }
 
+        // New function to quit the game
+        function quitGame() {
+            if (confirm('Tem certeza que deseja sair da partida atual?')) {
+                restartGame();
+            }
+        }
+
         function gameOver() {
             gameRunning = false;
             gameStarted = false;
-            
+
             // Parar o loop do jogo
             if (gameInterval) {
                 clearInterval(gameInterval);
             }
-            
+
             finalScoreElement.textContent = score;
-            
+
             // Verificar se é um novo recorde
             if (isNewRecord(score)) {
                 newRecordDiv.style.display = 'block';
                 normalGameOver.style.display = 'none';
-                playerNameInput.value = '';
-                playerNameInput.focus();
+                saveScore(); // Salva o recorde automaticamente
             } else {
                 newRecordDiv.style.display = 'none';
                 normalGameOver.style.display = 'block';
             }
-            
+
             gameOverElement.style.display = 'block';
+            quitGameBtn.style.display = 'none';
         }
 
         function restartGame() {
@@ -640,11 +922,11 @@ function shadeColor(color, percent) {
             if (gameInterval) {
                 clearInterval(gameInterval);
             }
-            
+
             // Resetar tudo
             snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
-            dx = 1;
-            dy = 0;
+            dx = 0; // Inicialmente parada
+            dy = 0; // Inicialmente parada
             score = 0;
             gameRunning = false;
             gameStarted = false;
@@ -654,30 +936,27 @@ function shadeColor(color, percent) {
             startScreen.style.display = 'block';
             gameControls.style.display = 'none';
             pauseBtn.style.display = 'none';
+            quitGameBtn.style.display = 'none';
             gameInstructions.style.display = 'none';
             difficultyDisplay.style.display = 'none';
             pauseBtn.textContent = '⏸️ Pausar';
-            
+
             // Limpar canvas
             ctx.fillStyle = '#2d3436';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             // Resetar divs do game over
             newRecordDiv.style.display = 'none';
             normalGameOver.style.display = 'block';
+
+            // Update leaderboard display for the currently selected map
+            updateLeaderboardDisplay();
         }
 
         function gameLoop() {
             updateGame();
             drawGame();
         }
-
-        // Permitir Enter para salvar score
-        playerNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                saveScore();
-            }
-        });
 
         // Controles touch
         document.getElementById('upBtn').addEventListener('touchstart', (e) => {
@@ -743,10 +1022,7 @@ function shadeColor(color, percent) {
             }
         });
 
-        // Inicializar com dificuldade padrão selecionada
-        selectDifficulty('normal');
-    
-// Impede o comportamento de pull-to-refresh em navegadores móveis
+        // Impede o comportamento de pull-to-refresh em navegadores móveis
 let touchStartY = 0;
 
 window.addEventListener('touchstart', function(e) {
@@ -763,14 +1039,17 @@ window.addEventListener('touchmove', function(e) {
     }
 }, { passive: false });
 
+        // Inicializar com dificuldade padrão selecionada
+        selectDifficulty('normal');
+        // NEW: Inicializar com mapa padrão selecionado
+        selectMap('normal');
 </script>
-<!-- Seletor de joystick -->
-<!-- Joystick flutuante -->
-<div id="floatingJoystick" style="position: fixed; bottom: 40px; left: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
+<div id="floatingJoystick" style="position: fixed; bottom: 40px; right: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
 <div id="joystickThumb" style="width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; position: absolute; left: 40px; top: 40px;"></div>
 </div>
 <script>
 let joystickType = 'classic';
+let joystickPosition = 'right'; // Default position
 
 function toggleJoystick() {
   joystickType = document.getElementById('joystickModel').value;
@@ -783,7 +1062,28 @@ function toggleJoystick() {
   } else {
     classic.style.display = 'none';
     floating.style.display = 'block';
+    updateJoystickPosition(); // Apply the current position when showing the floating joystick
   }
+}
+
+function updateJoystickPosition() {
+    joystickPosition = document.getElementById('joystickPosition').value;
+    const floatingJoystick = document.getElementById('floatingJoystick');
+
+    // Reset previous position styles
+    floatingJoystick.style.left = '';
+    floatingJoystick.style.right = '';
+    floatingJoystick.style.transform = ''; // Clear any transform for centering
+
+    if (joystickPosition === 'left') {
+        floatingJoystick.style.left = '40px';
+    } else if (joystickPosition === 'right') {
+        floatingJoystick.style.right = '40px';
+    } else if (joystickPosition === 'center') {
+        // For centering, we need to adjust based on its own width
+        floatingJoystick.style.left = '50%';
+        floatingJoystick.style.transform = 'translateX(-50%)';
+    }
 }
 
 let origin = null;
@@ -804,16 +1104,20 @@ document.getElementById('floatingJoystick').addEventListener('touchmove', e => {
 
   const thumb = document.getElementById('joystickThumb');
   thumb.style.left = 40 + distance * Math.cos(angle) + 'px';
-  thumb.style.top = 40 + distance * Math.sin(angle) + 'px';
+  thumb.style.top = 40 + distance * Math.cos(angle) + 'px';
 
   if (!gameRunning || !gameStarted) return;
 
+  // Utilize a sensibilidade dos botões para determinar o movimento
+  const sensitivity = parseInt(document.getElementById('sensitivityRange').value);
+  const threshold = sensitivity * 2; // Ajuste o multiplicador conforme necessário
+
   if (Math.abs(dxTouch) > Math.abs(dyTouch)) {
-    if (dxTouch > 10 && dx !== -1) { dx = 1; dy = 0; }
-    if (dxTouch < -10 && dx !== 1) { dx = -1; dy = 0; }
+    if (dxTouch > threshold && dx !== -1) { dx = 1; dy = 0; }
+    if (dxTouch < -threshold && dx !== 1) { dx = -1; dy = 0; }
   } else {
-    if (dyTouch > 10 && dy !== -1) { dx = 0; dy = 1; }
-    if (dyTouch < -10 && dy !== 1) { dx = 0; dy = -1; }
+    if (dyTouch > threshold && dy !== -1) { dx = 0; dy = 1; }
+    if (dyTouch < -threshold && dy !== 1) { dx = 0; dy = -1; }
   }
 }, { passive: false });
 
@@ -826,19 +1130,285 @@ document.getElementById('floatingJoystick').addEventListener('touchend', e => {
 
 function toggleSettings() {
     document.getElementById('settingsMenu').style.display = 'block';
+    showSettingsTab('general'); // Garante que a aba "Geral" seja exibida por padrão
 }
 function closeSettings() {
     document.getElementById('settingsMenu').style.display = 'none';
+    saveUserSettings(); // Salva as configurações ao fechar o menu de configurações
+    // Certifica-se de que a aba "Geral" é selecionada por padrão ao fechar e reabrir
+    showSettingsTab('general');
 }
 
-// Aplicar configurações (exemplo de uso futuro)
-document.getElementById('snakeColor').addEventListener('input', function(e) {
-    // A cor será aplicada no drawGame futuramente
-});
+// Autenticação e exibição de nome
+const loginScreen = document.getElementById('loginScreen');
+const registerScreen = document.getElementById('registerScreen');
+const gameUI = document.getElementById('mainGame');
+const loggedUser = document.getElementById('loggedUser');
+let currentUser = null;
 
-document.getElementById('sensitivityRange').addEventListener('input', function(e) {
-    // A sensibilidade pode ser usada para ajustar resposta dos controles futuramente
-});
+// Adicione esta variável para as configurações do usuário
+let userSettings = {};
+
+// Função para salvar as configurações do usuário atual
+function saveUserSettings() {
+    if (currentUser) {
+        const settingsToSave = {
+            snakeColor: document.getElementById('snakeColor').value,
+            sensitivity: document.getElementById('sensitivityRange').value,
+            joystickModel: document.getElementById('joystickModel').value,
+            screenBackgroundColor: document.getElementById('screenBackgroundColor').value,
+            joystickPosition: document.getElementById('joystickPosition').value
+        };
+        localStorage.setItem(`settings_${currentUser}`, JSON.stringify(settingsToSave));
+    }
+}
+
+// Função para carregar as configurações do usuário atual
+function loadUserSettings() {
+    if (currentUser) {
+        const storedSettings = localStorage.getItem(`settings_${currentUser}`);
+        if (storedSettings) {
+            userSettings = JSON.parse(storedSettings);
+            document.getElementById('snakeColor').value = userSettings.snakeColor || '#00b894';
+            document.getElementById('sensitivityRange').value = userSettings.sensitivity || '5';
+            document.getElementById('joystickModel').value = userSettings.joystickModel || 'classic';
+            document.getElementById('screenBackgroundColor').value = userSettings.screenBackgroundColor || '#1a1a1a';
+            document.getElementById('joystickPosition').value = userSettings.joystickPosition || 'right';
+
+            // Aplica as configurações carregadas
+            snakeColor = document.getElementById('snakeColor').value;
+            screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
+            document.getElementById('mainGame').style.background = screenBackgroundColor;
+            // Chame toggleJoystick para aplicar o modelo do joystick salvo
+            toggleJoystick();
+            updateJoystickPosition(); // Explicitly update joystick position after loading
+        } else {
+            // Se não houver configurações salvas, use os valores padrão e salve-os
+            userSettings = {
+                snakeColor: '#00b894',
+                sensitivity: '5',
+                joystickModel: 'classic',
+                screenBackgroundColor: '#1a1a1a',
+                joystickPosition: 'right'
+            };
+            saveUserSettings(); // Salva as configurações padrão para o novo usuário
+        }
+    }
+}
+
+window.onload = () => {
+    loginScreen.style.display = 'block';
+    gameUI.style.display = 'none';
+};
+
+function showRegister() {
+    loginScreen.style.display = 'none';
+    registerScreen.style.display = 'block';
+}
+function showLogin() {
+    registerScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+}
+
+// Função para validar a senha
+function validatePassword(password) {
+    const minLength = 6;
+    const hasNumber = /[0-9]/.test(password);
+    const hasLetter = /[a-zA-Z]/.test(password);
+
+    if (password.length < minLength) {
+        return 'A senha deve ter no mínimo ' + minLength + ' caracteres.';
+    }
+    if (!hasNumber) {
+        return 'A senha deve conter pelo menos um número.';
+    }
+    if (!hasLetter) {
+        return 'A senha deve conter pelo menos uma letra.';
+    }
+    return null; // Senha válida
+}
+
+function handleRegister() {
+    const user = document.getElementById('registerUser').value.trim();
+    const pass = document.getElementById('registerPass').value.trim();
+
+    if (user === '' || pass === '') {
+        alert('Preencha todos os campos');
+        return;
+    }
+
+    const passwordError = validatePassword(pass);
+    if (passwordError) {
+        alert(passwordError);
+        return;
+    }
+
+    if (localStorage.getItem(`user_${user}`)) {
+        alert('Usuário já existe');
+        return;
+    }
+
+    localStorage.setItem(`user_${user}`, pass);
+
+    // Inicializa as configurações padrão para o novo usuário
+    userSettings = {
+        snakeColor: '#00b894',
+        sensitivity: '5',
+        joystickModel: 'classic',
+        screenBackgroundColor: '#1a1a1a',
+        joystickPosition: 'right'
+    };
+    localStorage.setItem(`settings_${user}`, JSON.stringify(userSettings));
+
+    alert('Cadastro realizado com sucesso!');
+    showLogin();
+}
+
+function handleLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const storedPass = localStorage.getItem(`user_${user}`);
+
+    if (storedPass && storedPass === pass) {
+        currentUser = user;
+        loginScreen.style.display = 'none';
+        gameUI.style.display = 'block';
+        loggedUser.textContent = `Jogador: ${user}`;
+        loadUserSettings(); // Carrega as configurações do usuário
+        updateLeaderboardDisplay(); // Ensure leaderboard is updated after login
+    } else {
+        alert('Usuário ou senha inválidos');
+    }
+}
+
+
+function handleLogout() {
+    saveUserSettings(); // Salva as configurações atuais antes de deslogar
+    localStorage.removeItem("lastUser"); // Pode ser removido, pois currentUser é gerenciado agora
+    currentUser = null; // Limpa o usuário atual
+    location.reload(); // Recarrega a página para voltar à tela de login
+}
+
+// Funções de configuração divididas por grupo
+function showSettingsTab(tabId) {
+    document.querySelectorAll('.settings-tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    document.getElementById(tabId + 'Settings').style.display = 'block';
+    document.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected');
+}
+
+function handleChangeUsername() {
+    const newUsername = document.getElementById('newUsername').value.trim();
+    const currentPass = document.getElementById('currentPassForUsername').value.trim();
+    const usernameChangeError = document.getElementById('usernameChangeError');
+    usernameChangeError.textContent = ''; // Limpar erros anteriores
+
+    if (!currentUser) {
+        usernameChangeError.textContent = 'Nenhum usuário logado.';
+        return;
+    }
+    if (newUsername === '') {
+        usernameChangeError.textContent = 'O novo nome de usuário não pode ser vazio.';
+        return;
+    }
+    if (localStorage.getItem(`user_${newUsername}`) && newUsername !== currentUser) {
+        usernameChangeError.textContent = 'Este nome de usuário já está em uso.';
+        return;
+    }
+    const storedPass = localStorage.getItem(`user_${currentUser}`);
+    if (storedPass !== currentPass) {
+        usernameChangeError.textContent = 'Senha atual incorreta.';
+        return;
+    }
+
+    // Se o novo nome de usuário for diferente do atual
+    if (newUsername !== currentUser) {
+        // Remover usuário antigo e suas configurações
+        localStorage.removeItem(`user_${currentUser}`);
+        localStorage.removeItem(`settings_${currentUser}`);
+        
+        // Clear all map leaderboards because username has changed
+        localStorage.removeItem(`snakeLeaderboardByMap`);
+        leaderboard = {}; // Reset in memory too
+        initializeLeaderboards(); // Re-initialize with default empty leaderboards for all maps
+
+        // Adicionar novo usuário e mover/atualizar configurações
+        localStorage.setItem(`user_${newUsername}`, currentPass);
+        currentUser = newUsername; // Atualiza o usuário logado
+        loggedUser.textContent = `Jogador: ${currentUser}`;
+        saveUserSettings(); // Salva as configurações com o novo nome de usuário
+        
+        updateLeaderboardDisplay(); // Atualiza a exibição do leaderboard
+
+        alert('Nome de usuário alterado com sucesso! Os rankings foram zerados.');
+    } else {
+        alert('O novo nome de usuário é o mesmo que o atual.');
+    }
+
+    // Limpar campos
+    document.getElementById('newUsername').value = '';
+    document.getElementById('currentPassForUsername').value = '';
+}
+
+function handleChangePassword() {
+    const oldPass = document.getElementById('oldPassword').value.trim();
+    const newPass = document.getElementById('newPassword').value.trim();
+    const confirmNewPass = document.getElementById('confirmNewPassword').value.trim();
+    const passwordChangeError = document.getElementById('passwordChangeError');
+    passwordChangeError.textContent = ''; // Limpar erros anteriores
+
+    if (!currentUser) {
+        passwordChangeError.textContent = 'Nenhum usuário logado.';
+        return;
+    }
+    if (oldPass === '' || newPass === '' || confirmNewPass === '') {
+        passwordChangeError.textContent = 'Preencha todos os campos de senha.';
+        return;
+    }
+
+    const storedPass = localStorage.getItem(`user_${currentUser}`);
+    if (storedPass !== oldPass) {
+        passwordChangeError.textContent = 'Senha antiga incorreta.';
+        return;
+    }
+    if (newPass !== confirmNewPass) {
+        passwordChangeError.textContent = 'A nova senha e a confirmação não coincidem.';
+        return;
+    }
+    const passwordError = validatePassword(newPass);
+    if (passwordError) {
+        passwordChangeError.textContent = passwordError;
+        return;
+    }
+    if (oldPass === newPass) {
+        passwordChangeError.textContent = 'A nova senha não pode ser igual à antiga.';
+        return;
+    }
+
+    localStorage.setItem(`user_${currentUser}`, newPass);
+    alert('Senha alterada com sucesso!');
+
+    // Limpar campos
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmNewPassword').value = '';
+}
+
+// Adicione event listeners para salvar as configurações sempre que elas mudarem
+document.getElementById('snakeColor').addEventListener('change', saveUserSettings);
+document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings);
+document.getElementById('joystickModel').addEventListener('change', saveUserSettings);
+document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings);
+document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
+
+// Garante que a aba Geral seja a primeira a ser exibida nas configurações ao carregar
+showSettingsTab('general');
+
 </script>
 </body>
 </html>
