@@ -17,6 +17,7 @@
             font-family: 'Arial', sans-serif;
             touch-action: none;
             user-select: none;
+            overflow: hidden; /* Evita barras de rolagem causadas pelos fogos */
         }
         .game-container {
             text-align: center;
@@ -316,76 +317,229 @@
             justify-content: center;
             gap: 5px; /* Espaço entre as letras */
         }
-
         .animated-title span {
             display: inline-block;
             animation: pulse 1.5s infinite alternate; /* Animação de pulso */
         }
-
         .animated-title span:nth-child(2) { animation-delay: 0.05s; }
         .animated-title span:nth-child(3) { animation-delay: 0.1s; }
         .animated-title span:nth-child(4) { animation-delay: 0.15s; }
         .animated-title span:nth-child(5) { animation-delay: 0.2s; }
-        /* Adicione atrasos para o resto das letras */
-        .animated-title span:nth-child(6) { animation-delay: 0.25s; } /* D */
-        .animated-title span:nth-child(7) { animation-delay: 0.3s; } /* A */
-        .animated-title span:nth-child(8) { animation-delay: 0.35s; } /* C */
-        .animated-title span:nth-child(9) { animation-delay: 0.4s; } /* O */
-        .animated-title span:nth-child(10) { animation-delay: 0.45s; } /* B */
-        .animated-title span:nth-child(11) { animation-delay: 0.5s; } /* R */
-        .animated-title span:nth-child(12) { animation-delay: 0.55s; } /* I */
-        .animated-title span:nth-child(13) { animation-delay: 0.6s; } /* N */
-        .animated-title span:nth-child(14) { animation-delay: 0.65s; } /* H */
-        .animated-title span:nth-child(15) { animation-delay: 0.7s; } /* A */
-
-
+        .animated-title span:nth-child(6) { animation-delay: 0.25s; }
+        .animated-title span:nth-child(7) { animation-delay: 0.3s; }
+        .animated-title span:nth-child(8) { animation-delay: 0.35s; }
+        .animated-title span:nth-child(9) { animation-delay: 0.4s; }
+        .animated-title span:nth-child(10) { animation-delay: 0.45s; }
+        .animated-title span:nth-child(11) { animation-delay: 0.5s; }
+        .animated-title span:nth-child(12) { animation-delay: 0.55s; }
+        .animated-title span:nth-child(13) { animation-delay: 0.6s; }
+        .animated-title span:nth-child(14) { animation-delay: 0.65s; }
+        .animated-title span:nth-child(15) { animation-delay: 0.7s; }
         @keyframes pulse {
             0% {
                 transform: scale(1);
                 text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
             }
             100% {
-                transform: scale(1.05); /* Um leve aumento no tamanho */
-                text-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700; /* Brilho dourado */
+                transform: scale(1.05);
+                text-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700;
             }
         }
-
         @media (max-width: 600px) {
             .animated-title {
-                font-size: 2em; /* Fonte menor para celular */
+                font-size: 2em;
+            }
+        }
+        /* Language selector styling */
+        .language-selector {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        .language-selector-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            padding: 3px;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 25px;
+            transition: all 0.3s;
+        }
+        .language-selector-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .language-selector-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+        .language-selector-button span {
+            display: none;
+        }
+        .language-selector-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            min-width: 100px;
+            display: none;
+        }
+        .language-selector-dropdown.show {
+            display: block;
+        }
+        .language-selector-option {
+            padding: 6px 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .language-selector-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .language-selector-option:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .language-selector-option:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .language-selector-option img {
+            width: 20px;
+            height: 14px;
+            border-radius: 2px;
+        }
+        #mainGame .game-title {
+            margin-top: 40px;
+            font-size: 28px;
+        }
+        #mainGame .language-selector {
+            top: 5px;
+            right: 60px;
+        }
+        .player-score-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 30px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #loggedUser {
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+        .current-score {
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+
+        /* --- ESTILOS PARA TELA DE RECORDE E FOGOS DE ARTIFÍCIO --- */
+        #congratulationsScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Inicia oculto */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+        }
+        #congratulationsScreen h2 {
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+            animation: congrats-pulse 1s infinite alternate;
+        }
+        @keyframes congrats-pulse {
+            to {
+                transform: scale(1.1);
+                text-shadow: 0 0 15px #FFD700, 0 0 30px #FFD700;
+            }
+        }
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 1;
+            animation: firework-explode 1.2s forwards;
+        }
+        @keyframes firework-explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(30); /* Aumenta o tamanho para simular explosão */
+                opacity: 0;
             }
         }
     </style>
 </head>
 <body>
+<div id="congratulationsScreen">
+    <h2 data-lang-key="congrats_title">🎉 Parabéns! Novo Recorde! 🎉</h2>
+    <p><span data-lang-key="your_score_prefix">Sua pontuação: </span><span id="finalScoreCongrats">0</span></p>
+    <button class="restart-btn" onclick="restartGame()" data-lang-key="play_again_button">Jogar Novamente</button>
+</div>
+
 <div class="animated-title">
-    <span><span>🐍   <span><span>J</span><span>O</span><span>G</span><span>O</span>
-    <span>D</span><span>A</span>
-    <span>C</span><span>O</span><span>B</span><span>R</span><span>I</span><span>N</span><span>H</span><span>A</span>
+    <span data-lang-key="title_snake_emoji">🐍</span>
+    <span data-lang-key="title_j">J</span><span data-lang-key="title_o">O</span><span data-lang-key="title_g">G</span><span data-lang-key="title_o2">O</span>
+    <span data-lang-key="title_d">D</span><span data-lang-key="title_a">A</span>
+    <span data-lang-key="title_c">C</span><span data-lang-key="title_o3">O</span><span data-lang-key="title_b">B</span><span data-lang-key="title_r">R</span><span data-lang-key="title_i">I</span><span data-lang-key="title_n">N</span><span data-lang-key="title_h">H</span><span data-lang-key="title_a2">A</span>
 </div>
 <div class="game-container" id="loginScreen">
-<h1>Bem-vindo ao Jogo da Cobrinha</h1>
+<h1 data-lang-key="welcome_title">Bem-vindo ao Jogo da Cobrinha</h1>
 <input class="name-input" id="loginUser" placeholder="Usuário" type="text"/>
 <input class="name-input" id="loginPass" placeholder="Senha" type="password"/>
-<button class="start-btn" onclick="handleLogin()">Entrar</button>
-<p style="color:white; margin-top: 10px;">Ainda não tem conta? <a href="#" onclick="showRegister()">Cadastre-se</a></p>
-<p style="color:white; font-size: 10px; margin-top: 15px;">Desenvolvido por: John Costa</p>
+<button class="start-btn" onclick="handleLogin()" data-lang-key="login_button">Entrar</button>
+<p style="color:white; margin-top: 10px;" data-lang-key="no_account_text">Ainda não tem conta? <a href="#" onclick="showRegister()" data-lang-key="register_link">Cadastre-se</a></p>
+<p style="color:white; font-size: 10px; margin-top: 15px;" data-lang-key="developed_by">Desenvolvido por: John Costa</p>
 </div>
 <div class="game-container" id="registerScreen" style="display:none;">
-<h1>📝 Cadastro</h1>
+<h1 data-lang-key="register_title">📝 Cadastro</h1>
 <input class="name-input" id="registerUser" placeholder="Usuário" type="text"/>
 <input class="name-input" id="registerPass" placeholder="Senha" type="password"/>
-<button class="start-btn" onclick="handleRegister()">Cadastrar</button>
-<p style="color:white; margin-top: 10px;"><a href="#" onclick="showLogin()">Já tem conta? Entrar</a></p>
+<button class="start-btn" onclick="handleRegister()" data-lang-key="register_button">Cadastrar</button>
+<p style="color:white; margin-top: 10px;"><a href="#" onclick="showLogin()" data-lang-key="already_have_account_link">Já tem conta? Entrar</a></p>
 </div>
 <div class="game-container" id="mainGame" style="display: none; position: relative;">
-<h1>🐍 Jogo da Cobrinha</h1><div id="loggedUser" style="color: white; font-size: 14px; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Jogador: ---</div>
-<div class="current-score">Pontos: <span id="score">0</span></div>
+<h1 class="game-title" data-lang-key="game_title">🐍 Jogo da Cobrinha</h1>
+<div class="player-score-container">
+    <div id="loggedUser" style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);" data-lang-key="player_name_prefix">Jogador: ---</div>
+    <div class="current-score">
+        <span id="scorePrefix" data-lang-key="score_prefix">Pontos: </span><span id="score">0</span>
+    </div>
+</div>
 <div class="current-difficulty" id="difficultyDisplay" style="display: none;">
-            Dificuldade: <span id="currentDifficultyText">Normal</span>
+            <span data-lang-key="difficulty_prefix">Dificuldade:</span> <span id="currentDifficultyText">Normal</span>
 </div>
 <div class="leaderboard">
-<h3>🏆 TOP 3</h3>
+<h3 data-lang-key="top3_title">🏆 TOP 3</h3>
 <div class="leaderboard-item">
 <span>1º <span id="first-name">---</span><span class="leaderboard-difficulty" id="first-difficulty"></span></span>
 <span id="first-score">0</span>
@@ -400,91 +554,104 @@
 </div>
 </div>
 <canvas height="320" id="gameCanvas" width="320"></canvas>
-<button id="logoutBtn" onclick="handleLogout()" style="position: absolute; top: 15px; left: 15px; z-index: 1000; background: none; border: none; font-size: 20px; cursor: pointer; color: white;">🚪 Sair</button><button class="" id="settingsBtn" onclick="toggleSettings()" style="position: absolute; top: 15px; right: 15px; z-index: 1000; background: none; border: none; font-size: 24px; cursor: pointer; color: white;">⚙️</button>
+<button id="logoutBtn" onclick="handleLogout()" style="position: absolute; top: 15px; left: 15px; z-index: 1000; background: none; border: none; font-size: 20px; cursor: pointer; color: white;" data-lang-key="logout_button">🚪 Sair</button>
+<button class="" id="settingsBtn" onclick="toggleSettings()" style="position: absolute; top: 15px; right: 15px; z-index: 1000; background: none; border: none; font-size: 24px; cursor: pointer; color: white;">⚙️</button>
 
-<div id="settingsMenu" style="display: none; background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 15px; text-align: left; margin-top: 10px;">
-    <h3 style="margin-top: 0;">⚙️ Configurações do Jogo</h3>
-
-    <div class="settings-tabs">
-        <button class="tab-button selected" onclick="showSettingsTab('general')">Geral</button>
-        <button class="tab-button" onclick="showSettingsTab('controls')">Controles</button>
-        <button class="tab-button" onclick="showSettingsTab('account')">Conta</button>
+    <div class="language-selector" style="position: absolute; top: 5px; right: 60px; z-index: 1000;">
+        <button class="language-selector-button" id="languageButton">
+            <img id="currentFlag" src="https://flagsapi.com/BR/flat/64.png" alt="Brazilian Flag">
+            <span>PT</span>
+        </button>
+        <div class="language-selector-dropdown" id="languageDropdown">
+            <div class="language-selector-option" data-lang="pt">
+                <img src="https://flagsapi.com/BR/flat/64.png" alt="Brazilian Flag">
+                <span>Português</span>
+            </div>
+            <div class="language-selector-option" data-lang="en">
+                <img src="https://flagsapi.com/US/flat/64.png" alt="USA Flag">
+                <span>English</span>
+            </div>
+            <div class="language-selector-option" data-lang="es">
+                <img src="https://flagsapi.com/ES/flat/64.png" alt="Spanish Flag">
+                <span>Español</span>
+            </div>
+        </div>
     </div>
-
+<div id="settingsMenu" style="display: none; background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 15px; text-align: left; margin-top: 10px;">
+    <h3 style="margin-top: 0;" data-lang-key="settings_title">⚙️ Configurações do Jogo</h3>
+    <div class="settings-tabs">
+        <button class="tab-button selected" onclick="showSettingsTab('general')" data-lang-key="tab_general">Geral</button>
+        <button class="tab-button" onclick="showSettingsTab('controls')" data-lang-key="tab_controls">Controles</button>
+        <button class="tab-button" onclick="showSettingsTab('account')" data-lang-key="tab_account">Conta</button>
+    </div>
     <div id="generalSettings" class="settings-tab-content">
-        <label for="snakeColor">Cor da Cobrinha:</label>
+        <label for="snakeColor" data-lang-key="label_snake_color">Cor da Cobrinha:</label>
         <input id="snakeColor" type="color" value="#00b894"/><br/><br/>
-        <label for="screenBackgroundColor">Cor da Tela:</label>
+        <label for="screenBackgroundColor" data-lang-key="label_screen_background_color">Cor da Tela:</label>
         <input type="color" id="screenBackgroundColor" value="#1a1a1a" /><br /><br />
     </div>
-
     <div id="controlsSettings" class="settings-tab-content" style="display:none;">
-        <label for="sensitivityRange">Sensibilidade dos Botões:</label>
+        <label for="sensitivityRange" data-lang-key="label_button_sensitivity">Sensibilidade dos Botões:</label>
         <input id="sensitivityRange" max="10" min="1" style="width: 100%;" type="range" value="5"/><br/><br/>
-        <label for="joystickModel">Modelo de Joystick:</label>
+        <label for="joystickModel" data-lang-key="label_joystick_model">Modelo de Joystick:</label>
         <select id="joystickModel" onchange="toggleJoystick()">
-            <option value="classic">Clássico</option>
-            <option value="floating">Flutuante</option>
+            <option value="classic" data-lang-key="option_classic">Clássico</option>
+            <option value="floating" data-lang-key="option_floating">Flutuante</option>
         </select><br/><br/>
-        <label for="joystickPosition">Posição do Joystick Flutuante:</label>
+        <label for="joystickPosition" data-lang-key="label_joystick_position">Posição do Joystick Flutuante:</label>
         <select id="joystickPosition" onchange="updateJoystickPosition()">
-            <option value="right">Direita</option>
-            <option value="left">Esquerda</option>
-            <option value="center">Centro</option>
+            <option value="right" data-lang-key="option_right">Direita</option>
+            <option value="left" data-lang-key="option_left">Esquerda</option>
+            <option value="center" data-lang-key="option_center">Centro</option>
         </select><br/><br/>
     </div>
-
     <div id="accountSettings" class="settings-tab-content" style="display:none;">
-        <h4>Mudar Nome de Usuário</h4>
+        <h4 data-lang-key="change_username_title">Mudar Nome de Usuário</h4>
         <input class="name-input" id="newUsername" placeholder="Novo Usuário" type="text"/>
         <input class="name-input" id="currentPassForUsername" placeholder="Sua Senha Atual" type="password"/>
-        <button class="restart-btn" onclick="handleChangeUsername()">Confirmar</button>
+        <button class="restart-btn" onclick="handleChangeUsername()" data-lang-key="confirm_button">Confirmar</button>
         <p style="color:red; font-size:12px;" id="usernameChangeError"></p>
-
-        <h4 style="margin-top: 20px;">Mudar Senha</h4>
+        <h4 style="margin-top: 20px;" data-lang-key="change_password_title">Mudar Senha</h4>
         <input class="name-input" id="oldPassword" placeholder="Senha Antiga" type="password"/>
         <input class="name-input" id="newPassword" placeholder="Nova Senha" type="password"/>
         <input class="name-input" id="confirmNewPassword" placeholder="Confirme Nova Senha" type="password"/>
-        <button class="restart-btn" onclick="handleChangePassword()">Confirmar</button>
+        <button class="restart-btn" onclick="handleChangePassword()" data-lang-key="confirm_button_2">Confirmar</button>
         <p style="color:red; font-size:12px;" id="passwordChangeError"></p>
     </div>
-
-    <button class="restart-btn" onclick="closeSettings()" style="margin-top: 20px;">Fechar</button>
+    <button class="restart-btn" onclick="closeSettings()" style="margin-top: 20px;" data-lang-key="close_button">Fechar</button>
 </div>
 <div id="startScreen">
-<button class="start-btn" onclick="startGame()">Iniciar Jogo</button>
+<button class="start-btn" onclick="startGame()" data-lang-key="start_game_button">Iniciar Jogo</button>
 <div class="difficulty-selection">
-<h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;">Escolha a Dificuldade:</h3>
-<button class="difficulty-btn easy" onclick="selectDifficulty('easy')">
+<h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;" data-lang-key="choose_difficulty_title">Escolha a Dificuldade:</h3>
+<button class="difficulty-btn easy" onclick="selectDifficulty('easy')" data-lang-key="difficulty_easy_button">
                     🐌 Fácil
                 </button>
-<button class="difficulty-btn normal selected" onclick="selectDifficulty('normal')">
+<button class="difficulty-btn normal selected" onclick="selectDifficulty('normal')" data-lang-key="difficulty_normal_button">
                     🐍 Normal
                 </button>
-<button class="difficulty-btn hard" onclick="selectDifficulty('hard')">
+<button class="difficulty-btn hard" onclick="selectDifficulty('hard')" data-lang-key="difficulty_hard_button">
                     🚀 Difícil
                 </button>
-<button class="difficulty-btn insane" onclick="selectDifficulty('insane')">
+<button class="difficulty-btn insane" onclick="selectDifficulty('insane')" data-lang-key="difficulty_insane_button">
                     💀 Insano
                 </button>
 <div class="difficulty-info" id="difficultyInfo">
                     Velocidade média - Perfeito para iniciantes!
                 </div>
 </div>
-
 <div class="map-selection" style="margin-top: 20px;">
-    <h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;">Escolha o Mapa:</h3>
-    <button class="difficulty-btn selected" onclick="selectMap('normal')">
+    <h3 style="color: white; margin: 10px 0 8px 0; font-size: 14px;" data-lang-key="choose_map_title">Escolha o Mapa:</h3>
+    <button class="difficulty-btn selected" onclick="selectMap('normal')" data-lang-key="map_default_button">
         🧱 Padrão
     </button>
-    <button class="difficulty-btn" onclick="selectMap('no-walls')">
+    <button class="difficulty-btn" onclick="selectMap('no-walls')" data-lang-key="map_no_walls_button">
         🌌 Sem Paredes
     </button>
     <div class="difficulty-info" id="mapInfo">
         Paredes normais.
     </div>
 </div>
-
 </div>
 <div class="controls" id="gameControls" style="display: none;">
 <button class="control-btn up" id="upBtn">↑</button>
@@ -492,21 +659,16 @@
 <button class="control-btn right" id="rightBtn">→</button>
 <button class="control-btn down" id="downBtn">↓</button>
 </div>
-<button class="pause-btn" id="pauseBtn" onclick="togglePause()" style="display: none;">⏸️ Pausar</button>
-<button class="pause-btn" id="quitGameBtn" onclick="quitGame()" style="display: none; margin-left: 10px; background: linear-gradient(45deg, #d63031, #e84399);">🚫 Sair da Partida</button>
+<button class="pause-btn" id="pauseBtn" onclick="togglePause()" style="display: none;" data-lang-key="pause_button">⏸️ Pausar</button>
+<button class="pause-btn" id="quitGameBtn" onclick="quitGame()" style="display: none; margin-left: 10px; background: linear-gradient(45deg, #d63031, #e84399);" data-lang-key="quit_game_button">🚫 Sair da Partida</button>
 <div class="instructions" id="gameInstructions" style="display: none;">
-<p>Use os botões para controlar a cobra</p>
-<p>Colete a comida vermelha para crescer!</p>
+<p data-lang-key="instructions_controls">Use os botões para controlar a cobra</p>
+<p data-lang-key="instructions_food">Colete a comida vermelha para crescer!</p>
 </div>
 <div class="game-over" id="gameOver">
-<h2>Game Over!</h2>
-<p>Sua pontuação: <span id="finalScore">0</span></p>
-<div id="newRecordDiv" style="display: none;">
-<p>🎉 Novo recorde!</p>
-</div>
-<div id="normalGameOver">
-<button class="restart-btn" onclick="restartGame()">Jogar Novamente</button>
-</div>
+<h2 data-lang-key="game_over_title">Game Over!</h2>
+<p><span id="yourScorePrefix" data-lang-key="your_score_prefix">Sua pontuação: </span><span id="finalScore">0</span></p>
+<button class="restart-btn" onclick="restartGame()" data-lang-key="play_again_button">Jogar Novamente</button>
 </div>
 </div>
 <script>
@@ -520,14 +682,15 @@
         const pauseBtn = document.getElementById('pauseBtn');
         const quitGameBtn = document.getElementById('quitGameBtn');
         const gameInstructions = document.getElementById('gameInstructions');
-        const newRecordDiv = document.getElementById('newRecordDiv');
-        const normalGameOver = document.getElementById('normalGameOver');
-        const playerNameInput = document.getElementById('playerName');
         const difficultyDisplay = document.getElementById('difficultyDisplay');
         const currentDifficultyText = document.getElementById('currentDifficultyText');
         const difficultyInfo = document.getElementById('difficultyInfo');
         const mapInfo = document.getElementById('mapInfo');
 
+        // --- NOVOS ELEMENTOS ---
+        const congratulationsScreen = document.getElementById('congratulationsScreen');
+        const finalScoreCongrats = document.getElementById('finalScoreCongrats');
+        let fireworksInterval; // Para controlar o intervalo dos fogos
 
         // Elementos do leaderboard
         const firstName = document.getElementById('first-name');
@@ -540,397 +703,197 @@
         const thirdScore = document.getElementById('third-score');
         const thirdDifficulty = document.getElementById('third-difficulty');
 
+        let snakeColor;
+        let screenBackgroundColor;
 
-let snakeColor = document.getElementById('snakeColor').value;
-let screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
-
-document.getElementById('snakeColor').addEventListener('input', function(e) {
-    snakeColor = e.target.value;
-});
-
-document.getElementById('screenBackgroundColor').addEventListener('input', function(e) {
-    screenBackgroundColor = e.target.value;
-    document.getElementById('mainGame').style.background = screenBackgroundColor;
-});
-
-function shadeColor(color, percent) {
-    let num = parseInt(color.slice(1),16),
-        amt = Math.round(2.55 * percent),
-        R = (num >> 16) + amt,
-        G = (num >> 8 & 0x00FF) + amt,
-        B = (num & 0x0000FF) + amt;
-    return "#" + (
-        0x1000000 +
-        (R<255?R<1?0:R:255)*0x10000 +
-        (G<255?G<1?0:G:255)*0x100 +
-        (B<255?B<1?0:B:255)
-    ).toString(16).slice(1);
-}
-
-        // Configurações de dificuldade
+        document.getElementById('snakeColor').addEventListener('input', function(e) {
+            snakeColor = e.target.value;
+        });
+        document.getElementById('screenBackgroundColor').addEventListener('input', function(e) {
+            screenBackgroundColor = e.target.value;
+            document.getElementById('mainGame').style.background = screenBackgroundColor;
+        });
+        function shadeColor(color, percent) {
+            let num = parseInt(color.slice(1),16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) + amt,
+                G = (num >> 8 & 0x00FF) + amt,
+                B = (num & 0x0000FF) + amt;
+            return "#" + (
+                0x1000000 +
+                (R<255?R<1?0:R:255)*0x10000 +
+                (G<255?G<1?0:G:255)*0x100 +
+                (B<255?B<1?0:B:255)
+            ).toString(16).slice(1);
+        }
         const difficulties = {
-            easy: {
-                speed: 200,
-                name: 'Fácil',
-                description: 'Velocidade lenta - Ideal para iniciantes!',
-                emoji: '🐌',
-                points: 5
-            },
-            normal: {
-                speed: 150,
-                name: 'Normal',
-                description: 'Velocidade média - Perfeito para iniciantes!',
-                emoji: '🐍',
-                points: 10
-            },
-            hard: {
-                speed: 100,
-                name: 'Difícil',
-                description: 'Velocidade rápida - Para experts!',
-                emoji: '🚀',
-                points: 20
-            },
-            insane: {
-                speed: 70,
-                name: 'Insano',
-                description: 'Velocidade extrema e mais pontos por comida - Para os mestres!',
-                emoji: '💀',
-                points: 30
-            }
+            easy: { speed: 200, name_pt: 'Fácil', name_en: 'Easy', name_es: 'Fácil', description_pt: 'Velocidade lenta - Ideal para iniciantes!', description_en: 'Slow speed - Ideal for beginners!', description_es: 'Velocidad lenta - ¡Ideal para principiantes!', emoji: '🐌', points: 5 },
+            normal: { speed: 150, name_pt: 'Normal', name_en: 'Normal', name_es: 'Normal', description_pt: 'Velocidade média - Perfeito para iniciantes!', description_en: 'Medium speed - Perfect for beginners!', description_es: 'Velocidad media - ¡Perfecto para principiantes!', emoji: '🐍', points: 10 },
+            hard: { speed: 100, name_pt: 'Difícil', name_en: 'Hard', name_es: 'Difícil', description_pt: 'Velocidade rápida - Para experts!', description_en: 'Fast speed - For experts!', description_es: 'Velocidad rápida - ¡Para expertos!', emoji: '🚀', points: 20 },
+            insane: { speed: 70, name_pt: 'Insano', name_en: 'Insane', name_es: 'Insano', description_pt: 'Velocidade extrema e mais pontos por comida - Para os mestres!', description_en: 'Extreme speed and more points per food - For masters!', description_es: 'Velocidad extrema y más puntos por comida - ¡Para los maestros!', emoji: '💀', points: 30 }
         };
-
         let currentDifficulty = 'normal';
         let gameInterval;
-
-        // NEW: Map configuration
         const maps = {
-            'normal': {
-                name: 'Padrão',
-                description: 'Paredes normais.',
-                wrapAround: false
-            },
-            'no-walls': {
-                name: 'Sem Paredes',
-                description: 'A cobra atravessa as paredes e reaparece do outro lado!',
-                wrapAround: true
-            }
+            'normal': { name_pt: 'Padrão', name_en: 'Standard', name_es: 'Estándar', description_pt: 'Paredes normais.', description_en: 'Normal walls.', description_es: 'Paredes normales.', wrapAround: false },
+            'no-walls': { name_pt: 'Sem Paredes', name_en: 'No Walls', name_es: 'Sin Paredes', description_pt: 'A cobra atravessa as paredes e reaparece do outro lado!', description_en: 'The snake passes through walls and reappears on the other side!', description_es: '¡La serpiente atraviesa las paredes y reaparece del otro lado!', wrapAround: true }
         };
-        let currentMap = 'normal'; // NEW: Default map
-
-
-        // Ajustar canvas para tela pequena
+        let currentMap = 'normal';
         const gridSize = 17;
         const tileCount = Math.floor(canvas.width / gridSize);
-
-        let snake = [
-            {x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}
-        ];
+        let snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
         let food = {};
-        let dx = 0; // Inicialmente parada
-        let dy = 0; // Inicialmente parada
+        let dx = 0;
+        let dy = 0;
         let score = 0;
-        // Modified leaderboard structure to be an object with map names as keys
         let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboardByMap')) || {};
-
         let gameRunning = false;
         let gameStarted = false;
         let gamePaused = false;
+        const translations = {
+            'pt': { 'congrats_title': '🎉 Parabéns! Novo Recorde! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'O', 'title_g': 'G', 'title_o2': 'O', 'title_d': 'D', 'title_a': 'A', 'title_c': 'C', 'title_o3': 'O', 'title_b': 'B', 'title_r': 'R', 'title_i': 'I', 'title_n': 'N', 'title_h': 'H', 'title_a2': 'A', 'welcome_title': 'Bem-vindo ao Jogo da Cobrinha', 'login_button': 'Entrar', 'no_account_text': 'Ainda não tem conta?', 'register_link': 'Cadastre-se', 'developed_by': 'Desenvolvido por: John Costa', 'register_title': '📝 Cadastro', 'register_button': 'Cadastrar', 'already_have_account_link': 'Já tem conta? Entrar', 'game_title': '🐍 Jogo da Cobrinha', 'player_name_prefix': 'Jogador:', 'score_prefix': 'Pontos:', 'difficulty_prefix': 'Dificuldade:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪 Sair', 'settings_title': '⚙️ Configurações do Jogo', 'tab_general': 'Geral', 'tab_controls': 'Controles', 'tab_account': 'Conta', 'label_snake_color': 'Cor da Cobrinha:', 'label_screen_background_color': 'Cor da Tela:', 'label_button_sensitivity': 'Sensibilidade dos Botões:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clássico', 'option_floating': 'Flutuante', 'label_joystick_position': 'Posição do Joystick Flutuante:', 'option_right': 'Direita', 'option_left': 'Esquerda', 'option_center': 'Centro', 'change_username_title': 'Mudar Nome de Usuário', 'confirm_button': 'Confirmar', 'change_password_title': 'Mudar Senha', 'confirm_button_2': 'Confirmar', 'close_button': 'Fechar', 'start_game_button': 'Iniciar Jogo', 'choose_difficulty_title': 'Escolha a Dificuldade:', 'difficulty_easy_button': '🐌 Fácil', 'difficulty_normal_button': '🐍 Normal', 'difficulty_hard_button': '🚀 Difícil', 'difficulty_insane_button': '💀 Insano', 'choose_map_title': 'Escolha o Mapa:', 'map_default_button': '🧱 Padrão', 'map_no_walls_button': '🌌 Sem Paredes', 'pause_button': '⏸️ Pausar', 'quit_game_button': '🚫 Sair da Partida', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Sua pontuação:', 'play_again_button': 'Jogar Novamente', 'instructions_controls': 'Use os botões para controlar a cobra', 'instructions_food': 'Colete a comida vermelha para crescer!', 'alert_fill_all_fields': 'Preencha todos os campos', 'alert_user_exists': 'Usuário já existe', 'alert_registration_success': 'Cadastro realizado com sucesso!', 'alert_invalid_credentials': 'Usuário ou senha inválidos', 'alert_confirm_quit': 'Tem certeza que deseja sair da partida atual?', 'alert_no_user_logged_in': 'Nenhum usuário logado.', 'alert_new_username_empty': 'O novo nome de usuário não pode ser vazio.', 'alert_username_taken': 'Este nome de usuário já está em uso.', 'alert_incorrect_current_password': 'Senha atual incorreta.', 'alert_username_changed_leaderboard_reset': 'Nome de usuário alterado com sucesso! Os rankings foram zerados.', 'alert_new_username_same_as_current': 'O novo nome de usuário é o mesmo que o atual.', 'alert_fill_all_password_fields': 'Preencha todos os campos de senha.', 'alert_old_password_incorrect': 'Senha antiga incorreta.', 'alert_new_passwords_dont_match': 'A nova senha e a confirmação não coincidem.', 'alert_password_changed_success': 'Senha alterada com sucesso!', 'alert_new_password_same_as_old': 'A nova senha não pode ser igual à antiga.', 'password_min_length': 'A senha deve ter no mínimo {minLength} caracteres.', 'password_needs_number': 'A senha deve conter pelo menos um número.', 'password_needs_letter': 'A senha deve conter pelo menos uma letra.' },
+            'en': { 'congrats_title': '🎉 Congratulations! New Record! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'S', 'title_o': 'N', 'title_g': 'A', 'title_o2': 'K', 'title_d': 'E', 'title_a': '', 'title_c': 'G', 'title_o3': 'A', 'title_b': 'M', 'title_r': 'E', 'title_i': '', 'title_n': '', 'title_h': '', 'title_a2': '', 'welcome_title': 'Welcome to Snake Game', 'login_button': 'Login', 'no_account_text': 'Don\'t have an account yet?', 'register_link': 'Register', 'developed_by': 'John Costa', 'register_title': '📝 Register', 'register_button': 'Register', 'already_have_account_link': 'Already have an account? Login', 'game_title': '🐍 Snake Game', 'player_name_prefix': 'Player:', 'score_prefix': 'Score:', 'difficulty_prefix': 'Difficulty:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪 Logout', 'settings_title': '⚙️ Game Settings', 'tab_general': 'General', 'tab_controls': 'Controls', 'tab_account': 'Account', 'label_snake_color': 'Snake Color:', 'label_screen_background_color': 'Screen Color:', 'label_button_sensitivity': 'Button Sensitivity:', 'label_joystick_model': 'Joystick Model:', 'option_classic': 'Classic', 'option_floating': 'Floating', 'label_joystick_position': 'Floating Joystick Position:', 'option_right': 'Right', 'option_left': 'Left', 'option_center': 'Center', 'change_username_title': 'Change Username', 'confirm_button': 'Confirm', 'change_password_title': 'Change Password', 'confirm_button_2': 'Confirm', 'close_button': 'Close', 'start_game_button': 'Start Game', 'choose_difficulty_title': 'Choose Difficulty:', 'difficulty_easy_button': '🐌 Easy', 'difficulty_normal_button': '🐍 Normal', 'difficulty_hard_button': '🚀 Hard', 'difficulty_insane_button': '💀 Insane', 'choose_map_title': 'Choose Map:', 'map_default_button': '🧱 Standard', 'map_no_walls_button': '🌌 No Walls', 'pause_button': '⏸️ Pause', 'quit_game_button': '🚫 Quit Game', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Your Score:', 'play_again_button': 'Play Again', 'instructions_controls': 'Use the buttons to control the snake', 'instructions_food': 'Collect red food to grow!', 'alert_fill_all_fields': 'Please fill in all fields', 'alert_user_exists': 'User already exists', 'alert_registration_success': 'Registration successful!', 'alert_invalid_credentials': 'Invalid username or password', 'alert_confirm_quit': 'Are you sure you want to quit the current game?', 'alert_no_user_logged_in': 'No user logged in.', 'alert_new_username_empty': 'New username cannot be empty.', 'alert_username_taken': 'This username is already in use.', 'alert_incorrect_current_password': 'Incorrect current password.', 'alert_username_changed_leaderboard_reset': 'Username changed successfully! Leaderboards have been reset.', 'alert_new_username_same_as_current': 'The new username is the same as the current one.',
+            'alert_fill_all_password_fields': 'Please fill in all password fields.', 'alert_old_password_incorrect': 'Incorrect old password.', 'alert_new_passwords_dont_match': 'New password and confirmation do not match.', 'alert_password_changed_success': 'Password changed successfully!', 'alert_new_password_same_as_old': 'New password cannot be the same as the old one.', 'password_min_length': 'Password must be at least {minLength} characters long.', 'password_needs_number': 'Password must contain at least one number.', 'password_needs_letter': 'Password must contain at least one letter.' },
+            'es': { 'congrats_title': '🎉 ¡Felicidades! ¡Nuevo Récord! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'U', 'title_g': 'E', 'title_o2': 'G', 'title_d': 'O', 'title_a': '', 'title_c': 'D', 'title_o3': 'E', 'title_b': ' ', 'title_r': 'L', 'title_i': 'A', 'title_n': ' ', 'title_h': 'S', 'title_a2': 'ERPENTE', 'welcome_title': 'Bienvenido al Juego de la Serpiente', 'login_button': 'Iniciar Sesión', 'no_account_text': '¿Todavía no tienes cuenta?', 'register_link': 'Registrarse', 'developed_by': 'John Costa', 'register_title': '📝 Registro', 'register_button': 'Registrar', 'already_have_account_link': '¿Ya tienes cuenta? Iniciar Sesión', 'game_title': '🐍 Juego de la Serpiente', 'player_name_prefix': 'Jugador:', 'score_prefix': 'Puntos:', 'difficulty_prefix': 'Dificultad:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪 Salir', 'settings_title': '⚙️ Ajustes del Juego', 'tab_general': 'General', 'tab_controls': 'Controles', 'tab_account': 'Cuenta', 'label_snake_color': 'Color de la Serpiente:', 'label_screen_background_color': 'Color de la Pantalla:', 'label_button_sensitivity': 'Sensibilidad de los Botones:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clásico', 'option_floating': 'Flotante', 'label_joystick_position': 'Posición del Joystick Flotante:', 'option_right': 'Derecha', 'option_left': 'Izquierda', 'option_center': 'Centro', 'change_username_title': 'Cambiar Nombre de Usuario', 'confirm_button': 'Confirmar', 'change_password_title': 'Cambiar Contraseña', 'confirm_button_2': 'Confirmar', 'close_button': 'Cerrar', 'start_game_button': 'Iniciar Juego', 'choose_difficulty_title': 'Elige la Dificultad:', 'difficulty_easy_button': '🐌 Fácil', 'difficulty_normal_button': '🐍 Normal', 'difficulty_hard_button': '🚀 Difícil', 'difficulty_insane_button': '💀 Insano', 'choose_map_title': 'Elige el Mapa:', 'map_default_button': '🧱 Estándar', 'map_no_walls_button': '🌌 Sin Paredes', 'pause_button': '⏸️ Pausar', 'quit_game_button': '🚫 Salir del Juego', 'game_over_title': '¡Fin del Juego!', 'your_score_prefix': 'Tu puntuación:', 'play_again_button': 'Jugar de Nuevo', 'instructions_controls': 'Usa los botones para controlar la serpiente', 'instructions_food': '¡Recoge la comida roja para crecer!', 'alert_fill_all_fields': 'Por favor, rellene todos los campos', 'alert_user_exists': 'El usuario ya existe', 'alert_registration_success': '¡Registro exitoso!', 'alert_invalid_credentials': 'Usuario o contraseña inválidos', 'alert_confirm_quit': '¿Estás seguro de que quieres salir del juego actual?', 'alert_no_user_logged_in': 'Ningún usuario ha iniciado sesión.', 'alert_new_username_empty': 'El nuevo nombre de usuario no puede estar vacío.', 'alert_username_taken': 'Este nombre de usuario ya está en uso.', 'alert_incorrect_current_password': 'Contraseña actual incorrecta.', 'alert_username_changed_leaderboard_reset': '¡Nombre de usuario cambiado con éxito! Las tablas de clasificación han sido restablecidas.', 'alert_new_username_same_as_current': 'El nuevo nombre de usuario es el mismo que el actual.', 'alert_fill_all_password_fields': 'Por favor, rellene todos los campos de contraseña.', 'alert_old_password_incorrect': 'Contraseña antigua incorrecta.', 'alert_new_passwords_dont_match': 'La nueva contraseña y la confirmación no coinciden.', 'alert_password_changed_success': '¡Contraseña cambiada con éxito!', 'alert_new_password_same_as_old': 'La nueva contraseña no puede ser igual a la antigua.', 'password_min_length': 'La contraseña debe tener al menos {minLength} caracteres.', 'password_needs_number': 'La contraseña debe contener al menos un número.', 'password_needs_letter': 'La contraseña debe contener al menos una letra.' }
+        };
+        let currentLanguage = localStorage.getItem('snakeGameLanguage') || 'pt';
 
-        // Initialize leaderboard for each map if not present
-        function initializeLeaderboards() {
-            for (const mapKey in maps) {
-                if (!leaderboard[mapKey]) {
-                    leaderboard[mapKey] = [
-                        {name: "---", score: 0, difficulty: "normal"},
-                        {name: "---", score: 0, difficulty: "normal"},
-                        {name: "---", score: 0, difficulty: "normal"}
-                    ];
-                } else {
-                    // Ensure existing entries have difficulty, if not already present (migration)
-                    leaderboard[mapKey] = leaderboard[mapKey].map(entry => {
-                        if (!entry.difficulty) {
-                            return {...entry, difficulty: 'normal'};
-                        }
-                        return entry;
-                    });
-                }
-            }
-            localStorage.setItem('snakeLeaderboardByMap', JSON.stringify(leaderboard));
+        function updateContent() {
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                let text = translations[currentLanguage][key];
+                if (key.startsWith('title_') && element.tagName === 'SPAN' && element.closest('.animated-title')) {
+                    if (key === 'title_snake_emoji') { element.textContent = text; }
+                    else { if (text === '') { element.style.display = 'none'; } else { element.style.display = 'inline-block'; element.textContent = text; } }
+                } else if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) { element.setAttribute('placeholder', text); }
+                else if (element.tagName === 'SELECT') { element.querySelectorAll('option').forEach(option => { const optionKey = option.getAttribute('data-lang-key'); if (optionKey && translations[currentLanguage][optionKey]) { option.textContent = translations[currentLanguage][optionKey]; } });
+                } else if (key === 'no_account_text' || key === 'already_have_account_link') {
+                    const linkText = translations[currentLanguage][key.replace('_text', '_link') || key.replace('_link', '_link')];
+                    if (linkText) { const anchor = element.querySelector('a'); if (anchor) { anchor.textContent = linkText; element.innerHTML = element.innerHTML.replace(/<a[^>]*>.*?<\/a>/, `<a href="#" onclick="${anchor.onclick}" data-lang-key="${anchor.getAttribute('data-lang-key')}">${linkText}</a>`); } }
+                    if (key === 'no_account_text') { const paragraphText = translations[currentLanguage]['no_account_text']; const linkPart = translations[currentLanguage]['register_link']; element.innerHTML = `${paragraphText} <a href="#" onclick="showRegister()" data-lang-key="register_link">${linkPart}</a>`;
+                    } else if (key === 'already_have_account_link') { const linkPart = translations[currentLanguage]['already_have_account_link']; element.innerHTML = `<a href="#" onclick="showLogin()" data-lang-key="already_have_account_link">${linkPart}</a>`; }
+                } else if (key === 'score_prefix') { if (element.id === 'scorePrefix') { element.textContent = text; }
+                } else if (key === 'your_score_prefix') { if (element.id === 'yourScorePrefix' || element.parentElement.parentElement.id === 'congratulationsScreen') { element.textContent = text; }
+                } else { element.textContent = text; }
+            });
+            document.querySelectorAll('.difficulty-btn').forEach(btn => { const difficulty = btn.className.split(' ').find(cls => difficulties[cls]); if (difficulty) { const descElement = btn.nextElementSibling; if (descElement && descElement.classList.contains('difficulty-info')) { descElement.textContent = difficulties[difficulty]['description_' + currentLanguage]; } } });
+            document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => { const mapType = btn.getAttribute('onclick').match(/'(.*?)'/)[1]; if (mapType && maps[mapType]) { const descElement = btn.nextElementSibling; if (descElement && descElement.classList.contains('difficulty-info')) { descElement.textContent = maps[mapType]['description_' + currentLanguage]; } } });
+            document.querySelectorAll('.difficulty-btn[data-lang-key^="difficulty_"]').forEach(btn => { const difficultyKey = btn.getAttribute('data-lang-key'); const difficultyName = difficultyKey.replace('difficulty_', '').replace('_button', ''); if (difficulties[difficultyName]) { btn.textContent = `${difficulties[difficultyName].emoji} ${difficulties[difficultyName]['name_' + currentLanguage]}`; } });
+            document.querySelectorAll('.map-selection .difficulty-btn[data-lang-key^="map_"]').forEach(btn => { const mapKey = btn.getAttribute('data-lang-key'); const mapName = mapKey.replace('map_', '').replace('_button', ''); if (maps[mapName]) { btn.textContent = `${maps[mapName]['name_' + currentLanguage]}`; } });
+            document.getElementById('loginUser').placeholder = translations[currentLanguage]['placeholder_username'] || 'Usuário'; document.getElementById('loginPass').placeholder = translations[currentLanguage]['placeholder_password'] || 'Senha'; document.getElementById('registerUser').placeholder = translations[currentLanguage]['placeholder_username'] || 'Usuário'; document.getElementById('registerPass').placeholder = translations[currentLanguage]['placeholder_password'] || 'Senha'; document.getElementById('newUsername').placeholder = translations[currentLanguage]['placeholder_new_username'] || 'Novo Usuário'; document.getElementById('currentPassForUsername').placeholder = translations[currentLanguage]['placeholder_current_password'] || 'Sua Senha Atual'; document.getElementById('oldPassword').placeholder = translations[currentLanguage]['placeholder_old_password'] || 'Senha Antiga'; document.getElementById('newPassword').placeholder = translations[currentLanguage]['placeholder_new_password'] || 'Nova Senha'; document.getElementById('confirmNewPassword').placeholder = translations[currentLanguage]['placeholder_confirm_new_password'] || 'Confirme Nova Senha';
+            const currentFlag = document.getElementById('currentFlag'); const languageButtonSpan = document.querySelector('#languageButton span');
+            if (currentLanguage === 'pt') { currentFlag.src = 'https://flagsapi.com/BR/flat/64.png'; languageButtonSpan.textContent = 'PT'; } else if (currentLanguage === 'en') { currentFlag.src = 'https://flagsapi.com/US/flat/64.png'; languageButtonSpan.textContent = 'EN'; } else if (currentLanguage === 'es') { currentFlag.src = 'https://flagsapi.com/ES/flat/64.png'; languageButtonSpan.textContent = 'ES'; }
         }
-
-        initializeLeaderboards(); // Call this once on load
-
-        // Update display of the leaderboard based on the current map
+        function toggleLanguageDropdown() { document.getElementById('languageDropdown').classList.toggle('show'); }
+        function selectLanguage(lang) { currentLanguage = lang; localStorage.setItem('snakeGameLanguage', lang); updateContent(); toggleLanguageDropdown(); }
+        window.addEventListener('click', function(event) { if (!event.target.closest('.language-selector')) { const dropdown = document.getElementById('languageDropdown'); if (dropdown.classList.contains('show')) { dropdown.classList.remove('show'); } } });
+        document.getElementById('languageButton').addEventListener('click', toggleLanguageDropdown);
+        document.querySelectorAll('.language-selector-option').forEach(option => { option.addEventListener('click', function() { selectLanguage(this.dataset.lang); }); });
+        function initializeLeaderboards() { for (const mapKey in maps) { if (!leaderboard[mapKey]) { leaderboard[mapKey] = [ {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"} ]; } else { leaderboard[mapKey] = leaderboard[mapKey].map(entry => { if (!entry.difficulty) { return {...entry, difficulty: 'normal'}; } return entry; }); } } localStorage.setItem('snakeLeaderboardByMap', JSON.stringify(leaderboard)); }
+        initializeLeaderboards();
         updateLeaderboardDisplay();
-
-        function selectDifficulty(difficulty) {
-            currentDifficulty = difficulty;
-
-            // Remover seleção anterior
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-
-            // Adicionar seleção atual
-            document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('selected');
-
-            // Atualizar informações
-            const difficultyConfig = difficulties[difficulty];
-            difficultyInfo.textContent = difficultyConfig.description;
-        }
-
-        // NEW: selectMap function
-        function selectMap(map) {
-            currentMap = map;
-
-            // Remover seleção anterior (reusing difficulty-btn class for styling)
-            document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-
-            // Adicionar seleção atual
-            document.querySelector(`.map-selection .difficulty-btn[onclick*="${map}"]`).classList.add('selected');
-
-            // Atualizar informações
-            const mapConfig = maps[map];
-            mapInfo.textContent = mapConfig.description;
-
-            // Update leaderboard display for the newly selected map
-            updateLeaderboardDisplay();
-        }
-
-        function randomTile() {
-            return Math.floor(Math.random() * tileCount);
-        }
-
-        function generateFood() {
-            food = {
-                x: randomTile(),
-                y: randomTile()
-            };
-
-            // Garantir que a comida não apareça na cobra
-            for (let segment of snake) {
-                if (segment.x === food.x && segment.y === food.y) {
-                    generateFood();
-                    return;
-                }
-            }
-        }
-
-        function drawGame() {
-            // Limpar canvas
-            ctx.fillStyle = '#2d3436';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Desenhar corpo da cobra
-            ctx.fillStyle = snakeColor;
-            for (let i = 1; i < snake.length; i++) {
-                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
-            }
-
-            // Desenhar cabeça da cobra com tom mais escuro
-            ctx.fillStyle = shadeColor(snakeColor, -20);
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-
-            // Desenhar comida
-            ctx.fillStyle = '#e17055';
-            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-
-            // Adicionar brilho na comida
-            ctx.fillStyle = '#fd79a8';
-            ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6);
-        }
-
+        function selectDifficulty(difficulty) { currentDifficulty = difficulty; document.querySelectorAll('.difficulty-btn').forEach(btn => { btn.classList.remove('selected'); }); document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('selected'); const difficultyConfig = difficulties[difficulty]; difficultyInfo.textContent = difficultyConfig['description_' + currentLanguage]; }
+        function selectMap(map) { currentMap = map; document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => { btn.classList.remove('selected'); }); document.querySelector(`.map-selection .difficulty-btn[onclick*="${map}"]`).classList.add('selected'); const mapConfig = maps[map]; mapInfo.textContent = mapConfig['description_' + currentLanguage]; updateLeaderboardDisplay(); }
+        function randomTile() { return Math.floor(Math.random() * tileCount); }
+        function generateFood() { food = { x: randomTile(), y: randomTile() }; for (let segment of snake) { if (segment.x === food.x && segment.y === food.y) { generateFood(); return; } } }
+        function drawGame() { ctx.fillStyle = '#2d3436'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = snakeColor; for (let i = 1; i < snake.length; i++) { ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2); } ctx.fillStyle = shadeColor(snakeColor, -20); ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2); ctx.fillStyle = '#e17055'; ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2); ctx.fillStyle = '#fd79a8'; ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6); }
         function updateGame() {
             if (!gameRunning || gamePaused) return;
-
-            // Se a cobra estiver parada, não move até que uma direção seja definida
             if (dx === 0 && dy === 0) return;
-
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-            // Verificar colisão com paredes ou implementar wrap-around
             if (maps[currentMap].wrapAround) {
-                if (head.x < 0) head.x = tileCount - 1;
-                else if (head.x >= tileCount) head.x = 0;
-                if (head.y < 0) head.y = tileCount - 1;
-                else if (head.y >= tileCount) head.y = 0;
+                if (head.x < 0) head.x = tileCount - 1; else if (head.x >= tileCount) head.x = 0;
+                if (head.y < 0) head.y = tileCount - 1; else if (head.y >= tileCount) head.y = 0;
             } else {
-                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                    gameOver();
-                    return;
-                }
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) { gameOver(); return; }
             }
-
-            // Verificar colisão com o próprio corpo
-            for (let segment of snake) {
-                if (head.x === segment.x && head.y === segment.y) {
-                    gameOver();
-                    return;
-                }
-            }
-
+            for (let segment of snake) { if (head.x === segment.x && head.y === segment.y) { gameOver(); return; } }
             snake.unshift(head);
-
-            // Verificar se comeu a comida
-            if (head.x === food.x && head.y === food.y) {
-                let foodPoints = difficulties[currentDifficulty].points; // Use points from difficulty
-                score += foodPoints;
-                scoreElement.textContent = score;
-                generateFood();
-            } else {
-                snake.pop();
-            }
+            if (head.x === food.x && head.y === food.y) { let foodPoints = difficulties[currentDifficulty].points; score += foodPoints; scoreElement.textContent = score; generateFood(); }
+            else { snake.pop(); }
         }
-
         function updateLeaderboardDisplay() {
-            const difficultyEmojis = {
-                easy: '🐌',
-                normal: '🐍',
-                hard: '🚀',
-                insane: '💀'
-            };
-
-            const currentMapLeaderboard = leaderboard[currentMap] || [
-                {name: "---", score: 0, difficulty: "normal"},
-                {name: "---", score: 0, difficulty: "normal"},
-                {name: "---", score: 0, difficulty: "normal"}
-            ];
-
-            firstName.textContent = currentMapLeaderboard[0].name;
-            firstScore.textContent = currentMapLeaderboard[0].score;
-            firstDifficulty.textContent = currentMapLeaderboard[0].score > 0 ? difficultyEmojis[currentMapLeaderboard[0].difficulty] || '🐍' : '';
-
-            secondName.textContent = currentMapLeaderboard[1].name;
-            secondScore.textContent = currentMapLeaderboard[1].score;
-            secondDifficulty.textContent = currentMapLeaderboard[1].score > 0 ? difficultyEmojis[currentMapLeaderboard[1].difficulty] || '🐍' : '';
-
-            thirdName.textContent = currentMapLeaderboard[2].name;
-            thirdScore.textContent = currentMapLeaderboard[2].score;
-            thirdDifficulty.textContent = currentMapLeaderboard[2].score > 0 ? difficultyEmojis[currentMapLeaderboard[2].difficulty] || '🐍' : '';
+            const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
+            const currentMapLeaderboard = leaderboard[currentMap] || [ {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"} ];
+            firstName.textContent = currentMapLeaderboard[0].name; firstScore.textContent = currentMapLeaderboard[0].score; firstDifficulty.textContent = currentMapLeaderboard[0].score > 0 ? difficultyEmojis[currentMapLeaderboard[0].difficulty] || '🐍' : '';
+            secondName.textContent = currentMapLeaderboard[1].name; secondScore.textContent = currentMapLeaderboard[1].score; secondDifficulty.textContent = currentMapLeaderboard[1].score > 0 ? difficultyEmojis[currentMapLeaderboard[1].difficulty] || '🐍' : '';
+            thirdName.textContent = currentMapLeaderboard[2].name; thirdScore.textContent = currentMapLeaderboard[2].score; thirdDifficulty.textContent = currentMapLeaderboard[2].score > 0 ? difficultyEmojis[currentMapLeaderboard[2].difficulty] || '🐍' : '';
         }
-
-        function isNewRecord(score) {
-            // Check against the current map's leaderboard
-            const currentMapLeaderboard = leaderboard[currentMap] || [];
-            return score > (currentMapLeaderboard[2] ? currentMapLeaderboard[2].score : 0);
-        }
-
+        function isNewRecord(score) { const currentMapLeaderboard = leaderboard[currentMap] || []; return score > (currentMapLeaderboard[2] ? currentMapLeaderboard[2].score : 0); }
         function saveScore() {
             const name = currentUser ? currentUser.substring(0, 10).toUpperCase() : "???";
-            const newEntry = {
-                name: name,
-                score: score,
-                difficulty: currentDifficulty
-            };
-
-            // Get or initialize the leaderboard for the current map
-            if (!leaderboard[currentMap]) {
-                leaderboard[currentMap] = [
-                    {name: "---", score: 0, difficulty: "normal"},
-                    {name: "---", score: 0, difficulty: "normal"},
-                    {name: "---", score: 0, difficulty: "normal"}
-                ];
-            }
-
-            // Add new score to the current map's leaderboard and reorganize
+            const newEntry = { name: name, score: score, difficulty: currentDifficulty };
+            if (!leaderboard[currentMap]) { leaderboard[currentMap] = [ {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"}, {name: "---", score: 0, difficulty: "normal"} ]; }
             leaderboard[currentMap].push(newEntry);
             leaderboard[currentMap].sort((a, b) => b.score - a.score);
             leaderboard[currentMap] = leaderboard[currentMap].slice(0, 3);
-
-            // Salvar no localStorage (agora com a estrutura de objeto)
             localStorage.setItem('snakeLeaderboardByMap', JSON.stringify(leaderboard));
             updateLeaderboardDisplay();
-
-            // Continuar para tela normal
-            newRecordDiv.style.display = 'none';
-            normalGameOver.style.display = 'block';
         }
 
-        function startGame() {
-            // Resetar posição da cobra para o centro
-            snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
-            dx = 0; // Inicialmente parada
-            dy = 0; // Inicialmente parada
-            score = 0;
-            scoreElement.textContent = score;
-
-            gameRunning = true;
-            gameStarted = true;
-            gamePaused = false;
-            startScreen.style.display = 'none';
-            gameControls.style.display = 'grid';
-            pauseBtn.style.display = 'block';
-            quitGameBtn.style.display = 'block';
-            gameInstructions.style.display = 'block';
-            difficultyDisplay.style.display = 'block';
-
-            // Mostrar dificuldade atual
-            const difficultyConfig = difficulties[currentDifficulty];
-            currentDifficultyText.textContent = `${difficultyConfig.emoji} ${difficultyConfig.name}`;
-
-            generateFood();
-
-            // Iniciar loop do jogo com velocidade baseada na dificuldade
-            if (gameInterval) {
-                clearInterval(gameInterval);
+        // --- FUNÇÃO DE FOGOS DE ARTIFÍCIO (NOVA) ---
+        function triggerFireworks() {
+            congratulationsScreen.style.display = 'flex';
+            function createFirework() {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                // Cores aleatórias para os fogos
+                const colors = ['#ffc700', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff'];
+                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.left = Math.random() * window.innerWidth + 'px';
+                firework.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(firework);
+                // Remove o elemento após a animação
+                setTimeout(() => { firework.remove(); }, 1200);
             }
+            // Cria fogos de artifício em intervalos
+            fireworksInterval = setInterval(createFirework, 300);
+        }
+        
+        function startGame() {
+            snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}]; dx = 0; dy = 0; score = 0; scoreElement.textContent = score;
+            gameRunning = true; gameStarted = true; gamePaused = false;
+            startScreen.style.display = 'none'; gameControls.style.display = 'grid'; pauseBtn.style.display = 'block'; quitGameBtn.style.display = 'block'; gameInstructions.style.display = 'block'; difficultyDisplay.style.display = 'block';
+            const difficultyConfig = difficulties[currentDifficulty];
+            currentDifficultyText.textContent = `${difficultyConfig.emoji} ${difficultyConfig['name_' + currentLanguage]}`;
+            generateFood();
+            if (gameInterval) { clearInterval(gameInterval); }
             gameInterval = setInterval(gameLoop, difficultyConfig.speed);
         }
-
-        function togglePause() {
-            if (!gameRunning || !gameStarted) return;
-            gamePaused = !gamePaused;
-            pauseBtn.textContent = gamePaused ? '▶️ Continuar' : '⏸️ Pausar';
-        }
-
-        // New function to quit the game
-        function quitGame() {
-            if (confirm('Tem certeza que deseja sair da partida atual?')) {
-                restartGame();
-            }
-        }
-
+        function togglePause() { if (!gameRunning || !gameStarted) return; gamePaused = !gamePaused; pauseBtn.textContent = gamePaused ? translations[currentLanguage]['pause_button_continue'] || '▶️ Continuar' : translations[currentLanguage]['pause_button'] || '⏸️ Pausar'; }
+        function quitGame() { if (confirm(translations[currentLanguage]['alert_confirm_quit'])) { restartGame(); } }
+        
+        // --- FUNÇÃO GAMEOVER ATUALIZADA ---
         function gameOver() {
             gameRunning = false;
             gameStarted = false;
-
-            // Parar o loop do jogo
             if (gameInterval) {
                 clearInterval(gameInterval);
             }
-
-            finalScoreElement.textContent = score;
-
-            // Verificar se é um novo recorde
-            if (isNewRecord(score)) {
-                newRecordDiv.style.display = 'block';
-                normalGameOver.style.display = 'none';
-                saveScore(); // Salva o recorde automaticamente
-            } else {
-                newRecordDiv.style.display = 'none';
-                normalGameOver.style.display = 'block';
-            }
-
-            gameOverElement.style.display = 'block';
             quitGameBtn.style.display = 'none';
+
+            if (isNewRecord(score) && score > 0) {
+                saveScore();
+                finalScoreCongrats.textContent = score;
+                triggerFireworks();
+            } else {
+                finalScoreElement.textContent = score;
+                gameOverElement.style.display = 'block';
+            }
         }
 
+        // --- FUNÇÃO RESTARTGAME ATUALIZADA ---
         function restartGame() {
-            // Parar o loop do jogo
-            if (gameInterval) {
-                clearInterval(gameInterval);
+            if (gameInterval) { clearInterval(gameInterval); }
+            // Para o efeito de fogos de artifício se estiver ativo
+            if (fireworksInterval) {
+                clearInterval(fireworksInterval);
+                fireworksInterval = null;
             }
+            congratulationsScreen.style.display = 'none'; // Esconde a tela de parabéns
 
-            // Resetar tudo
             snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
-            dx = 0; // Inicialmente parada
-            dy = 0; // Inicialmente parada
-            score = 0;
-            gameRunning = false;
-            gameStarted = false;
-            gamePaused = false;
+            dx = 0; dy = 0; score = 0; gameRunning = false; gameStarted = false; gamePaused = false;
             scoreElement.textContent = score;
             gameOverElement.style.display = 'none';
             startScreen.style.display = 'block';
@@ -939,231 +902,45 @@ function shadeColor(color, percent) {
             quitGameBtn.style.display = 'none';
             gameInstructions.style.display = 'none';
             difficultyDisplay.style.display = 'none';
-            pauseBtn.textContent = '⏸️ Pausar';
-
-            // Limpar canvas
+            pauseBtn.textContent = translations[currentLanguage]['pause_button'] || '⏸️ Pausar';
             ctx.fillStyle = '#2d3436';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Resetar divs do game over
-            newRecordDiv.style.display = 'none';
-            normalGameOver.style.display = 'block';
-
-            // Update leaderboard display for the currently selected map
             updateLeaderboardDisplay();
         }
 
-        function gameLoop() {
-            updateGame();
-            drawGame();
-        }
-
-        // Controles touch
-        document.getElementById('upBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !gameStarted || dy === 1) return;
-            dx = 0;
-            dy = -1;
-        });
-
-        document.getElementById('downBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !gameStarted || dy === -1) return;
-            dx = 0;
-            dy = 1;
-        });
-
-        document.getElementById('leftBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !gameStarted || dx === 1) return;
-            dx = -1;
-            dy = 0;
-        });
-
-        document.getElementById('rightBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !gameStarted || dx === -1) return;
-            dx = 1;
-            dy = 0;
-        });
-
-        // Controles do teclado (para compatibilidade)
+        function gameLoop() { updateGame(); drawGame(); }
+        document.getElementById('upBtn').addEventListener('touchstart', (e) => { e.preventDefault(); if (!gameRunning || !gameStarted || dy === 1) return; dx = 0; dy = -1; });
+        document.getElementById('downBtn').addEventListener('touchstart', (e) => { e.preventDefault(); if (!gameRunning || !gameStarted || dy === -1) return; dx = 0; dy = 1; });
+        document.getElementById('leftBtn').addEventListener('touchstart', (e) => { e.preventDefault(); if (!gameRunning || !gameStarted || dx === 1) return; dx = -1; dy = 0; });
+        document.getElementById('rightBtn').addEventListener('touchstart', (e) => { e.preventDefault(); if (!gameRunning || !gameStarted || dx === -1) return; dx = 1; dy = 0; });
         document.addEventListener('keydown', (e) => {
             if (!gameRunning || !gameStarted) return;
-
             switch(e.key) {
-                case 'ArrowUp':
-                    if (dy !== 1) {
-                        dx = 0;
-                        dy = -1;
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (dy !== -1) {
-                        dx = 0;
-                        dy = 1;
-                    }
-                    break;
-                case 'ArrowLeft':
-                    if (dx !== 1) {
-                        dx = -1;
-                        dy = 0;
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (dx !== -1) {
-                        dx = 1;
-                        dy = 0;
-                    }
-                    break;
-                case ' ':
-                    togglePause();
-                    break;
+                case 'ArrowUp': if (dy !== 1) { dx = 0; dy = -1; } break;
+                case 'ArrowDown': if (dy !== -1) { dx = 0; dy = 1; } break;
+                case 'ArrowLeft': if (dx !== 1) { dx = -1; dy = 0; } break;
+                case 'ArrowRight': if (dx !== -1) { dx = 1; dy = 0; } break;
+                case ' ': togglePause(); break;
             }
         });
-
-        // Impede o comportamento de pull-to-refresh em navegadores móveis
-let touchStartY = 0;
-
-window.addEventListener('touchstart', function(e) {
-    if (e.touches.length !== 1) return;
-    touchStartY = e.touches[0].clientY;
-}, { passive: false });
-
-window.addEventListener('touchmove', function(e) {
-    const touchY = e.touches[0].clientY;
-    const touchDiff = touchY - touchStartY;
-
-    if (touchStartY < 10 && touchDiff > 10) {
-        e.preventDefault(); // Bloqueia o pull-to-refresh
-    }
-}, { passive: false });
-
-        // Inicializar com dificuldade padrão selecionada
-        selectDifficulty('normal');
-        // NEW: Inicializar com mapa padrão selecionado
-        selectMap('normal');
+        let touchStartY = 0; window.addEventListener('touchstart', function(e) { if (e.touches.length !== 1) return; touchStartY = e.touches[0].clientY; }, { passive: false }); window.addEventListener('touchmove', function(e) { const touchY = e.touches[0].clientY; const touchDiff = touchY - touchStartY; if (touchStartY < 10 && touchDiff > 10) { e.preventDefault(); } }, { passive: false });
+        selectDifficulty('normal'); selectMap('normal');
 </script>
 <div id="floatingJoystick" style="position: fixed; bottom: 40px; right: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
 <div id="joystickThumb" style="width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; position: absolute; left: 40px; top: 40px;"></div>
 </div>
 <script>
-let joystickType = 'classic';
-let joystickPosition = 'right'; // Default position
-
-function toggleJoystick() {
-  joystickType = document.getElementById('joystickModel').value;
-  const classic = document.getElementById('gameControls');
-  const floating = document.getElementById('floatingJoystick');
-
-  if (joystickType === 'classic') {
-    classic.style.display = 'grid';
-    floating.style.display = 'none';
-  } else {
-    classic.style.display = 'none';
-    floating.style.display = 'block';
-    updateJoystickPosition(); // Apply the current position when showing the floating joystick
-  }
-}
-
-function updateJoystickPosition() {
-    joystickPosition = document.getElementById('joystickPosition').value;
-    const floatingJoystick = document.getElementById('floatingJoystick');
-
-    // Reset previous position styles
-    floatingJoystick.style.left = '';
-    floatingJoystick.style.right = '';
-    floatingJoystick.style.transform = ''; // Clear any transform for centering
-
-    if (joystickPosition === 'left') {
-        floatingJoystick.style.left = '40px';
-    } else if (joystickPosition === 'right') {
-        floatingJoystick.style.right = '40px';
-    } else if (joystickPosition === 'center') {
-        // For centering, we need to adjust based on its own width
-        floatingJoystick.style.left = '50%';
-        floatingJoystick.style.transform = 'translateX(-50%)';
-    }
-}
-
+let joystickType = 'classic'; let joystickPosition = 'right';
+function toggleJoystick() { joystickType = document.getElementById('joystickModel').value; const classic = document.getElementById('gameControls'); const floating = document.getElementById('floatingJoystick'); if (joystickType === 'classic') { classic.style.display = 'grid'; floating.style.display = 'none'; } else { classic.style.display = 'none'; floating.style.display = 'block'; updateJoystickPosition(); } }
+function updateJoystickPosition() { joystickPosition = document.getElementById('joystickPosition').value; const floatingJoystick = document.getElementById('floatingJoystick'); floatingJoystick.style.left = ''; floatingJoystick.style.right = ''; floatingJoystick.style.transform = ''; if (joystickPosition === 'left') { floatingJoystick.style.left = '40px'; } else if (joystickPosition === 'right') { floatingJoystick.style.right = '40px'; } else if (joystickPosition === 'center') { floatingJoystick.style.left = '50%'; floatingJoystick.style.transform = 'translateX(-50%)'; } }
 let origin = null;
-document.getElementById('floatingJoystick').addEventListener('touchstart', e => {
-  const touch = e.touches[0];
-  origin = { x: touch.clientX, y: touch.clientY };
-}, { passive: false });
-
-document.getElementById('floatingJoystick').addEventListener('touchmove', e => {
-  if (!origin) return;
-  e.preventDefault();
-  const touch = e.touches[0];
-  const dxTouch = touch.clientX - origin.x;
-  const dyTouch = touch.clientY - origin.y;
-
-  const angle = Math.atan2(dyTouch, dxTouch);
-  const distance = Math.min(Math.hypot(dxTouch, dyTouch), 40);
-
-  const thumb = document.getElementById('joystickThumb');
-  thumb.style.left = 40 + distance * Math.cos(angle) + 'px';
-  thumb.style.top = 40 + distance * Math.cos(angle) + 'px';
-
-  if (!gameRunning || !gameStarted) return;
-
-  // Utilize a sensibilidade dos botões para determinar o movimento
-  const sensitivity = parseInt(document.getElementById('sensitivityRange').value);
-  const threshold = sensitivity * 2; // Ajuste o multiplicador conforme necessário
-
-  if (Math.abs(dxTouch) > Math.abs(dyTouch)) {
-    if (dxTouch > threshold && dx !== -1) { dx = 1; dy = 0; }
-    if (dxTouch < -threshold && dx !== 1) { dx = -1; dy = 0; }
-  } else {
-    if (dyTouch > threshold && dy !== -1) { dx = 0; dy = 1; }
-    if (dyTouch < -threshold && dy !== 1) { dx = 0; dy = -1; }
-  }
-}, { passive: false });
-
-document.getElementById('floatingJoystick').addEventListener('touchend', e => {
-  origin = null;
-  document.getElementById('joystickThumb').style.left = '40px';
-  document.getElementById('joystickThumb').style.top = '40px';
-});
-
-
-function toggleSettings() {
-    document.getElementById('settingsMenu').style.display = 'block';
-    showSettingsTab('general'); // Garante que a aba "Geral" seja exibida por padrão
-}
-function closeSettings() {
-    document.getElementById('settingsMenu').style.display = 'none';
-    saveUserSettings(); // Salva as configurações ao fechar o menu de configurações
-    // Certifica-se de que a aba "Geral" é selecionada por padrão ao fechar e reabrir
-    showSettingsTab('general');
-}
-
-// Autenticação e exibição de nome
-const loginScreen = document.getElementById('loginScreen');
-const registerScreen = document.getElementById('registerScreen');
-const gameUI = document.getElementById('mainGame');
-const loggedUser = document.getElementById('loggedUser');
-let currentUser = null;
-
-// Adicione esta variável para as configurações do usuário
-let userSettings = {};
-
-// Função para salvar as configurações do usuário atual
-function saveUserSettings() {
-    if (currentUser) {
-        const settingsToSave = {
-            snakeColor: document.getElementById('snakeColor').value,
-            sensitivity: document.getElementById('sensitivityRange').value,
-            joystickModel: document.getElementById('joystickModel').value,
-            screenBackgroundColor: document.getElementById('screenBackgroundColor').value,
-            joystickPosition: document.getElementById('joystickPosition').value
-        };
-        localStorage.setItem(`settings_${currentUser}`, JSON.stringify(settingsToSave));
-    }
-}
-
-// Função para carregar as configurações do usuário atual
+document.getElementById('floatingJoystick').addEventListener('touchstart', e => { const floatingJoystick = document.getElementById('floatingJoystick'); const touch = e.touches[0]; const rect = floatingJoystick.getBoundingClientRect(); const joystickCenterX = rect.left + rect.width / 2; const joystickCenterY = rect.top + rect.height / 2; const distance = Math.hypot(touch.clientX - joystickCenterX, touch.clientY - joystickCenterY); const maxDistanceToReposition = 100; if (distance < maxDistanceToReposition) { let newLeft = touch.clientX - rect.width / 2; let newTop = touch.clientY - rect.height / 2; newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - rect.width)); newTop = Math.max(0, Math.min(newTop, window.innerHeight - rect.height)); floatingJoystick.style.left = `${newLeft}px`; floatingJoystick.style.top = `${newTop}px`; floatingJoystick.style.right = 'auto'; floatingJoystick.style.transform = 'none'; origin = { x: touch.clientX, y: touch.clientY }; } else { origin = { x: touch.clientX, y: touch.clientY }; } }, { passive: false });
+document.getElementById('floatingJoystick').addEventListener('touchmove', e => { if (!origin) return; e.preventDefault(); const touch = e.touches[0]; const dxTouch = touch.clientX - origin.x; const dyTouch = touch.clientY - origin.y; const angle = Math.atan2(dyTouch, dxTouch); const distance = Math.min(Math.hypot(dxTouch, dyTouch), 40); const thumb = document.getElementById('joystickThumb'); thumb.style.left = 40 + distance * Math.cos(angle) + 'px'; thumb.style.top = 40 + distance * Math.sin(angle) + 'px'; if (!gameRunning || !gameStarted) return; const sensitivity = parseInt(document.getElementById('sensitivityRange').value); const threshold = sensitivity * 2; if (Math.abs(dxTouch) > Math.abs(dyTouch)) { if (dxTouch > threshold && dx !== -1) { dx = 1; dy = 0; } if (dxTouch < -threshold && dx !== 1) { dx = -1; dy = 0; } } else { if (dyTouch > threshold && dy !== -1) { dx = 0; dy = 1; } if (dyTouch < -threshold && dy !== -1) { dx = 0; dy = -1; } } }, { passive: false });
+document.getElementById('floatingJoystick').addEventListener('touchend', e => { origin = null; document.getElementById('joystickThumb').style.left = '40px'; document.getElementById('joystickThumb').style.top = '40px'; });
+function toggleSettings() { document.getElementById('settingsMenu').style.display = 'block'; showSettingsTab('general'); }
+function closeSettings() { document.getElementById('settingsMenu').style.display = 'none'; saveUserSettings(); showSettingsTab('general'); }
+const loginScreen = document.getElementById('loginScreen'); const registerScreen = document.getElementById('registerScreen'); const gameUI = document.getElementById('mainGame'); const loggedUser = document.getElementById('loggedUser'); let currentUser = null; let userSettings = {};
+function saveUserSettings() { if (currentUser) { const settingsToSave = { snakeColor: document.getElementById('snakeColor').value, sensitivity: document.getElementById('sensitivityRange').value, joystickModel: document.getElementById('joystickModel').value, screenBackgroundColor: document.getElementById('screenBackgroundColor').value, joystickPosition: document.getElementById('joystickPosition').value, language: currentLanguage }; localStorage.setItem(`settings_${currentUser}`, JSON.stringify(settingsToSave)); } }
 function loadUserSettings() {
     if (currentUser) {
         const storedSettings = localStorage.getItem(`settings_${currentUser}`);
@@ -1174,241 +951,72 @@ function loadUserSettings() {
             document.getElementById('joystickModel').value = userSettings.joystickModel || 'classic';
             document.getElementById('screenBackgroundColor').value = userSettings.screenBackgroundColor || '#1a1a1a';
             document.getElementById('joystickPosition').value = userSettings.joystickPosition || 'right';
-
-            // Aplica as configurações carregadas
+            currentLanguage = userSettings.language || 'pt';
             snakeColor = document.getElementById('snakeColor').value;
             screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
             document.getElementById('mainGame').style.background = screenBackgroundColor;
-            // Chame toggleJoystick para aplicar o modelo do joystick salvo
-            toggleJoystick();
-            updateJoystickPosition(); // Explicitly update joystick position after loading
+            toggleJoystick(); updateJoystickPosition(); updateContent();
         } else {
-            // Se não houver configurações salvas, use os valores padrão e salve-os
-            userSettings = {
-                snakeColor: '#00b894',
-                sensitivity: '5',
-                joystickModel: 'classic',
-                screenBackgroundColor: '#1a1a1a',
-                joystickPosition: 'right'
-            };
-            saveUserSettings(); // Salva as configurações padrão para o novo usuário
+            userSettings = { snakeColor: '#00b894', sensitivity: '5', joystickModel: 'classic', screenBackgroundColor: '#1a1a1a', joystickPosition: 'right', language: 'pt' };
+            saveUserSettings(); currentLanguage = 'pt'; updateContent();
         }
     }
 }
-
-window.onload = () => {
-    loginScreen.style.display = 'block';
-    gameUI.style.display = 'none';
-};
-
-function showRegister() {
-    loginScreen.style.display = 'none';
-    registerScreen.style.display = 'block';
-}
-function showLogin() {
-    registerScreen.style.display = 'none';
-    loginScreen.style.display = 'block';
-}
-
-// Função para validar a senha
-function validatePassword(password) {
-    const minLength = 6;
-    const hasNumber = /[0-9]/.test(password);
-    const hasLetter = /[a-zA-Z]/.test(password);
-
-    if (password.length < minLength) {
-        return 'A senha deve ter no mínimo ' + minLength + ' caracteres.';
-    }
-    if (!hasNumber) {
-        return 'A senha deve conter pelo menos um número.';
-    }
-    if (!hasLetter) {
-        return 'A senha deve conter pelo menos uma letra.';
-    }
-    return null; // Senha válida
-}
-
+window.onload = () => { loginScreen.style.display = 'block'; gameUI.style.display = 'none'; updateContent(); };
+function showRegister() { loginScreen.style.display = 'none'; registerScreen.style.display = 'block'; }
+function showLogin() { registerScreen.style.display = 'none'; loginScreen.style.display = 'block'; }
+function validatePassword(password) { const minLength = 6; const hasNumber = /[0-9]/.test(password); const hasLetter = /[a-zA-Z]/.test(password); if (password.length < minLength) { return translations[currentLanguage]['password_min_length'].replace('{minLength}', minLength); } if (!hasNumber) { return translations[currentLanguage]['password_needs_number']; } if (!hasLetter) { return translations[currentLanguage]['password_needs_letter']; } return null; }
 function handleRegister() {
-    const user = document.getElementById('registerUser').value.trim();
-    const pass = document.getElementById('registerPass').value.trim();
-
-    if (user === '' || pass === '') {
-        alert('Preencha todos os campos');
-        return;
-    }
-
-    const passwordError = validatePassword(pass);
-    if (passwordError) {
-        alert(passwordError);
-        return;
-    }
-
-    if (localStorage.getItem(`user_${user}`)) {
-        alert('Usuário já existe');
-        return;
-    }
-
+    const user = document.getElementById('registerUser').value.trim(); const pass = document.getElementById('registerPass').value.trim();
+    if (user === '' || pass === '') { alert(translations[currentLanguage]['alert_fill_all_fields']); return; }
+    const passwordError = validatePassword(pass); if (passwordError) { alert(passwordError); return; }
+    if (localStorage.getItem(`user_${user}`)) { alert(translations[currentLanguage]['alert_user_exists']); return; }
     localStorage.setItem(`user_${user}`, pass);
-
-    // Inicializa as configurações padrão para o novo usuário
-    userSettings = {
-        snakeColor: '#00b894',
-        sensitivity: '5',
-        joystickModel: 'classic',
-        screenBackgroundColor: '#1a1a1a',
-        joystickPosition: 'right'
-    };
+    userSettings = { snakeColor: '#00b894', sensitivity: '5', joystickModel: 'classic', screenBackgroundColor: '#1a1a1a', joystickPosition: 'right', language: 'pt' };
     localStorage.setItem(`settings_${user}`, JSON.stringify(userSettings));
-
-    alert('Cadastro realizado com sucesso!');
-    showLogin();
+    alert(translations[currentLanguage]['alert_registration_success']); showLogin();
 }
-
 function handleLogin() {
-    const user = document.getElementById('loginUser').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    const storedPass = localStorage.getItem(`user_${user}`);
-
+    const user = document.getElementById('loginUser').value.trim(); const pass = document.getElementById('loginPass').value.trim(); const storedPass = localStorage.getItem(`user_${user}`);
     if (storedPass && storedPass === pass) {
-        currentUser = user;
-        loginScreen.style.display = 'none';
-        gameUI.style.display = 'block';
-        loggedUser.textContent = `Jogador: ${user}`;
-        loadUserSettings(); // Carrega as configurações do usuário
-        updateLeaderboardDisplay(); // Ensure leaderboard is updated after login
-    } else {
-        alert('Usuário ou senha inválidos');
-    }
+        currentUser = user; loginScreen.style.display = 'none'; gameUI.style.display = 'block';
+        loadUserSettings();
+        loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${user}`;
+        updateLeaderboardDisplay();
+    } else { alert(translations[currentLanguage]['alert_invalid_credentials']); }
 }
-
-
-function handleLogout() {
-    saveUserSettings(); // Salva as configurações atuais antes de deslogar
-    localStorage.removeItem("lastUser"); // Pode ser removido, pois currentUser é gerenciado agora
-    currentUser = null; // Limpa o usuário atual
-    location.reload(); // Recarrega a página para voltar à tela de login
-}
-
-// Funções de configuração divididas por grupo
-function showSettingsTab(tabId) {
-    document.querySelectorAll('.settings-tab-content').forEach(tab => {
-        tab.style.display = 'none';
-    });
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    document.getElementById(tabId + 'Settings').style.display = 'block';
-    document.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected');
-}
-
+function handleLogout() { saveUserSettings(); localStorage.removeItem("lastUser"); currentUser = null; location.reload(); }
+function showSettingsTab(tabId) { document.querySelectorAll('.settings-tab-content').forEach(tab => { tab.style.display = 'none'; }); document.querySelectorAll('.tab-button').forEach(btn => { btn.classList.remove('selected'); }); document.getElementById(tabId + 'Settings').style.display = 'block'; document.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected'); }
 function handleChangeUsername() {
-    const newUsername = document.getElementById('newUsername').value.trim();
-    const currentPass = document.getElementById('currentPassForUsername').value.trim();
-    const usernameChangeError = document.getElementById('usernameChangeError');
-    usernameChangeError.textContent = ''; // Limpar erros anteriores
-
-    if (!currentUser) {
-        usernameChangeError.textContent = 'Nenhum usuário logado.';
-        return;
-    }
-    if (newUsername === '') {
-        usernameChangeError.textContent = 'O novo nome de usuário não pode ser vazio.';
-        return;
-    }
-    if (localStorage.getItem(`user_${newUsername}`) && newUsername !== currentUser) {
-        usernameChangeError.textContent = 'Este nome de usuário já está em uso.';
-        return;
-    }
-    const storedPass = localStorage.getItem(`user_${currentUser}`);
-    if (storedPass !== currentPass) {
-        usernameChangeError.textContent = 'Senha atual incorreta.';
-        return;
-    }
-
-    // Se o novo nome de usuário for diferente do atual
+    const newUsername = document.getElementById('newUsername').value.trim(); const currentPass = document.getElementById('currentPassForUsername').value.trim(); const usernameChangeError = document.getElementById('usernameChangeError'); usernameChangeError.textContent = '';
+    if (!currentUser) { usernameChangeError.textContent = translations[currentLanguage]['alert_no_user_logged_in']; return; }
+    if (newUsername === '') { usernameChangeError.textContent = translations[currentLanguage]['alert_new_username_empty']; return; }
+    if (localStorage.getItem(`user_${newUsername}`) && newUsername !== currentUser) { usernameChangeError.textContent = translations[currentLanguage]['alert_username_taken']; return; }
+    const storedPass = localStorage.getItem(`user_${currentUser}`); if (storedPass !== currentPass) { usernameChangeError.textContent = translations[currentLanguage]['alert_incorrect_current_password']; return; }
     if (newUsername !== currentUser) {
-        // Remover usuário antigo e suas configurações
-        localStorage.removeItem(`user_${currentUser}`);
-        localStorage.removeItem(`settings_${currentUser}`);
-        
-        // Clear all map leaderboards because username has changed
-        localStorage.removeItem(`snakeLeaderboardByMap`);
-        leaderboard = {}; // Reset in memory too
-        initializeLeaderboards(); // Re-initialize with default empty leaderboards for all maps
-
-        // Adicionar novo usuário e mover/atualizar configurações
-        localStorage.setItem(`user_${newUsername}`, currentPass);
-        currentUser = newUsername; // Atualiza o usuário logado
-        loggedUser.textContent = `Jogador: ${currentUser}`;
-        saveUserSettings(); // Salva as configurações com o novo nome de usuário
-        
-        updateLeaderboardDisplay(); // Atualiza a exibição do leaderboard
-
-        alert('Nome de usuário alterado com sucesso! Os rankings foram zerados.');
-    } else {
-        alert('O novo nome de usuário é o mesmo que o atual.');
-    }
-
-    // Limpar campos
-    document.getElementById('newUsername').value = '';
-    document.getElementById('currentPassForUsername').value = '';
+        localStorage.removeItem(`user_${currentUser}`); localStorage.removeItem(`settings_${currentUser}`);
+        localStorage.removeItem(`snakeLeaderboardByMap`); leaderboard = {}; initializeLeaderboards();
+        localStorage.setItem(`user_${newUsername}`, currentPass); currentUser = newUsername;
+        loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUser}`;
+        saveUserSettings(); updateLeaderboardDisplay();
+        alert(translations[currentLanguage]['alert_username_changed_leaderboard_reset']);
+    } else { alert(translations[currentLanguage]['alert_new_username_same_as_current']); }
+    document.getElementById('newUsername').value = ''; document.getElementById('currentPassForUsername').value = '';
 }
-
 function handleChangePassword() {
-    const oldPass = document.getElementById('oldPassword').value.trim();
-    const newPass = document.getElementById('newPassword').value.trim();
-    const confirmNewPass = document.getElementById('confirmNewPassword').value.trim();
-    const passwordChangeError = document.getElementById('passwordChangeError');
-    passwordChangeError.textContent = ''; // Limpar erros anteriores
-
-    if (!currentUser) {
-        passwordChangeError.textContent = 'Nenhum usuário logado.';
-        return;
-    }
-    if (oldPass === '' || newPass === '' || confirmNewPass === '') {
-        passwordChangeError.textContent = 'Preencha todos os campos de senha.';
-        return;
-    }
-
-    const storedPass = localStorage.getItem(`user_${currentUser}`);
-    if (storedPass !== oldPass) {
-        passwordChangeError.textContent = 'Senha antiga incorreta.';
-        return;
-    }
-    if (newPass !== confirmNewPass) {
-        passwordChangeError.textContent = 'A nova senha e a confirmação não coincidem.';
-        return;
-    }
-    const passwordError = validatePassword(newPass);
-    if (passwordError) {
-        passwordChangeError.textContent = passwordError;
-        return;
-    }
-    if (oldPass === newPass) {
-        passwordChangeError.textContent = 'A nova senha não pode ser igual à antiga.';
-        return;
-    }
-
+    const oldPass = document.getElementById('oldPassword').value.trim(); const newPass = document.getElementById('newPassword').value.trim(); const confirmNewPass = document.getElementById('confirmNewPassword').value.trim(); const passwordChangeError = document.getElementById('passwordChangeError'); passwordChangeError.textContent = '';
+    if (!currentUser) { passwordChangeError.textContent = translations[currentLanguage]['alert_no_user_logged_in']; return; }
+    if (oldPass === '' || newPass === '' || confirmNewPass === '') { passwordChangeError.textContent = translations[currentLanguage]['alert_fill_all_password_fields']; return; }
+    const storedPass = localStorage.getItem(`user_${currentUser}`); if (storedPass !== oldPass) { passwordChangeError.textContent = translations[currentLanguage]['alert_old_password_incorrect']; return; }
+    if (newPass !== confirmNewPass) { passwordChangeError.textContent = translations[currentLanguage]['alert_new_passwords_dont_match']; return; }
+    const passwordError = validatePassword(newPass); if (passwordError) { passwordChangeError.textContent = passwordError; return; }
+    if (oldPass === newPass) { passwordChangeError.textContent = translations[currentLanguage]['alert_new_password_same_as_old']; return; }
     localStorage.setItem(`user_${currentUser}`, newPass);
-    alert('Senha alterada com sucesso!');
-
-    // Limpar campos
-    document.getElementById('oldPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmNewPassword').value = '';
+    alert(translations[currentLanguage]['alert_password_changed_success']);
+    document.getElementById('oldPassword').value = ''; document.getElementById('newPassword').value = ''; document.getElementById('confirmNewPassword').value = '';
 }
-
-// Adicione event listeners para salvar as configurações sempre que elas mudarem
-document.getElementById('snakeColor').addEventListener('change', saveUserSettings);
-document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings);
-document.getElementById('joystickModel').addEventListener('change', saveUserSettings);
-document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings);
-document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
-
-// Garante que a aba Geral seja a primeira a ser exibida nas configurações ao carregar
+document.getElementById('snakeColor').addEventListener('change', saveUserSettings); document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings); document.getElementById('joystickModel').addEventListener('change', saveUserSettings); document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings); document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
 showSettingsTab('general');
-
 </script>
 </body>
 </html>
