@@ -151,7 +151,7 @@
         }
 
         /* --- FORMULÁRIOS E INPUTS --- */
-        .name-input {
+        .name-input, #skinSelector {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
@@ -161,16 +161,30 @@
             text-align: center;
             margin-bottom: 10px;
             width: 100%;
-            /* text-transform: uppercase; */
             transition: border-color 0.2s, background-color 0.2s;
         }
-
+        #skinSelector {
+            text-align: left; /* Alinha o texto do select à esquerda */
+            -webkit-appearance: none; /* Remove a aparência padrão no Chrome/Safari */
+            -moz-appearance: none; /* Remove a aparência padrão no Firefox */
+            appearance: none; /* Remove a aparência padrão */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: .65em auto;
+            padding-right: 30px; /* Espaço para a seta */
+        }
+        #skinSelector option {
+            background-color: #1a1d2d;
+            color: white;
+        }
+        
         .name-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
             text-transform: none;
         }
 
-        .name-input:focus {
+        .name-input:focus, #skinSelector:focus {
             outline: none;
             border-color: #4a72ff;
             background-color: rgba(0, 0, 0, 0.3);
@@ -229,6 +243,7 @@
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.1);
             font-size: 14px;
+            transition: background-color 0.3s;
         }
         .leaderboard-difficulty {
             font-size: 12px;
@@ -566,15 +581,15 @@
 
 <div class="leaderboard">
     <h3 data-lang-key="top3_title">🏆 TOP 3</h3>
-    <div class="leaderboard-item">
+    <div class="leaderboard-item" id="leaderboard-item-1">
         <span>1º <span id="first-name">---</span><span class="leaderboard-difficulty" id="first-difficulty"></span></span>
         <span id="first-score">0</span>
     </div>
-    <div class="leaderboard-item">
+    <div class="leaderboard-item" id="leaderboard-item-2">
         <span>2º <span id="second-name">---</span><span class="leaderboard-difficulty" id="second-difficulty"></span></span>
         <span id="second-score">0</span>
     </div>
-    <div class="leaderboard-item">
+    <div class="leaderboard-item" id="leaderboard-item-3">
         <span>3º <span id="third-name">---</span><span class="leaderboard-difficulty" id="third-difficulty"></span></span>
         <span id="third-score">0</span>
     </div>
@@ -601,27 +616,28 @@
         <button class="tab-button" onclick="showSettingsTab('account')" data-lang-key="tab_account">Conta</button>
     </div>
     <div id="generalSettings" class="settings-tab-content">
-        <label for="snakeColor" data-lang-key="label_snake_color">Cor da Cobrinha:</label>
-        <input id="snakeColor" type="color" value="#00b894"/><br/><br/>
+        <label for="skinSelector" data-lang-key="label_skin">Visual da Cobrinha:</label>
+        <select id="skinSelector" onchange="selectSkin(this.value)"></select>
+        
+        <div id="colorPickerContainer" style="display: none; margin-top: 10px;">
+            <label for="snakeColorPicker" data-lang-key="label_snake_color">Cor Personalizada:</label>
+            <input id="snakeColorPicker" type="color" value="#00b894"/>
+        </div>
+        <br/><br/>
+        
         <label for="screenBackgroundColor" data-lang-key="label_screen_background_color">Cor da Tela:</label>
         <input type="color" id="screenBackgroundColor" value="#1a1a1a" /><br /><br />
     </div>
     <div id="controlsSettings" class="settings-tab-content" style="display:none;">
-        <div class="setting-item">
-            <label for="hideControlsCheckbox" data-lang-key="label_hide_controls">Ocultar Controles na Tela:</label>
-            <input id="hideControlsCheckbox" type="checkbox" onchange="toggleOnScreenControlsVisibility()">
-        </div>
-        <br/><br/>
-        
         <label for="sensitivityRange" data-lang-key="label_button_sensitivity">Sensibilidade dos Botões:</label>
         <input id="sensitivityRange" max="10" min="1" type="range" value="5"/><br/><br/>
         <label for="joystickModel" data-lang-key="label_joystick_model">Modelo de Joystick:</label>
-        <select id="joystickModel" onchange="toggleJoystick()">
+        <select id="joystickModel" class="name-input" onchange="toggleJoystick()">
             <option value="classic" data-lang-key="option_classic">Clássico</option>
             <option value="floating" data-lang-key="option_floating">Flutuante</option>
         </select><br/><br/>
         <label for="joystickPosition" data-lang-key="label_joystick_position">Posição do Joystick Flutuante:</label>
-        <select id="joystickPosition" onchange="updateJoystickPosition()">
+        <select id="joystickPosition" class="name-input" onchange="updateJoystickPosition()">
             <option value="right" data-lang-key="option_right">Direita</option>
             <option value="left" data-lang-key="option_left">Esquerda</option>
             <option value="center" data-lang-key="option_center">Centro</option>
@@ -713,12 +729,10 @@
         measurementId: "G-P0TL8K8GH6"
     };
 
-    // Inicializa o Firebase, Auth e Firestore
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- Elementos do Jogo ---
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
@@ -746,20 +760,27 @@
     const thirdName = document.getElementById('third-name');
     const thirdScore = document.getElementById('third-score');
     const thirdDifficulty = document.getElementById('third-difficulty');
-
-    let snakeColor;
     let screenBackgroundColor;
+    
+    // --- Sistema de Skins ---
+    // MODIFICAÇÃO: Cores da skin 'spider' atualizadas para serem mais vibrantes.
+    // 'bodyColor' e 'headColor' foram renomeados para 'blueColor' e 'redColor' para maior clareza.
+    const skins = {
+        'custom': { name_pt: 'Personalizada', name_en: 'Custom', name_es: 'Personalizado', unlockScore: 0, bodyColor: null, headColor: null },
+        'default': { name_pt: 'Padrão', name_en: 'Default', name_es: 'Estándar', unlockScore: 0, bodyColor: '#00b894', headColor: '#008269' },
+        'spider': { name_pt: 'Aranha (1000 Pontos)', name_en: 'Spider (1000 Points)', name_es: 'Araña (1000 Puntos)', unlockScore: 1000, blueColor: '#005AFF', redColor: '#FF0000' }
+    };
+    let currentSkin = 'default';
+    let unlockedSkins = ['default'];
+    let userHighScore = 0;
 
-    document.getElementById('snakeColor').addEventListener('input', function(e) {
-        snakeColor = e.target.value;
-    });
     document.getElementById('screenBackgroundColor').addEventListener('input', function(e) {
         screenBackgroundColor = e.target.value;
         document.getElementById('mainGame').style.background = screenBackgroundColor;
     });
     function shadeColor(color, percent) {
-        let num = parseInt(color.slice(1),16), amt = Math.round(2.55 * percent), R = (num >> 16) + amt, G = (num >> 8 & 0x00FF) + amt, B = (num & 0x0000FF) + amt;
-        return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+        let f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+        return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
     }
     const difficulties = {
         easy: { speed: 200, name_pt: 'Fácil', name_en: 'Easy', name_es: 'Fácil', description_pt: 'Velocidade lenta - Ideal para relaxar!', description_en: 'Slow speed - Ideal for relaxing!', description_es: 'Velocidad lenta - ¡Ideal para relajarse!', emoji: '🐌', points: 5 },
@@ -785,9 +806,9 @@
     let gameStarted = false;
     let gamePaused = false;
     const translations = {
-        'pt': { 'congrats_title': '🎉 Parabéns! Novo Recorde! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'o', 'title_g': 'g', 'title_o2': 'o', 'title_d': ' d', 'title_a': 'a', 'title_c': ' C', 'title_o3': 'o', 'title_b': 'b', 'title_r': 'r', 'title_i': 'i', 'title_n': 'n', 'title_h': 'h', 'title_a2': 'a', 'welcome_title': 'Bem-vindo', 'login_button': 'Entrar', 'no_account_text': 'Ainda não tem conta?', 'register_link': 'Cadastre-se', 'developed_by': 'Desenvolvido por: John Costa', 'register_title': '📝 Cadastro', 'register_button': 'Cadastrar', 'already_have_account_link': 'Já tem conta? Entrar', 'game_title': '🐍 Jogo da Cobrinha', 'player_name_prefix': 'Jogador:', 'score_prefix': 'Pontos:', 'difficulty_prefix': 'Dificuldade:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Sair', 'settings_title': '⚙️ Configurações', 'tab_general': 'Geral', 'tab_controls': 'Controles', 'tab_account': 'Conta', 'label_snake_color': 'Cor da Cobrinha:', 'label_screen_background_color': 'Cor da Tela:', 'label_button_sensitivity': 'Sensibilidade dos Botões:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clássico', 'option_floating': 'Flutuante', 'label_joystick_position': 'Posição do Joystick Flutuante:', 'option_right': 'Direita', 'option_left': 'Esquerda', 'option_center': 'Centro', 'change_username_title': 'Mudar Nome de Usuário', 'change_email_title': 'Mudar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Mudar Senha', 'close_button': 'Fechar', 'start_game_button': 'Iniciar Jogo', 'choose_difficulty_title': 'Escolha a Dificuldade:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Escolha o Mapa:', 'map_default_button': '🧱<br>Padrão', 'map_no_walls_button': '🌌<br>Sem Paredes', 'pause_button': '⏸️ Pausar', 'quit_game_button': '🚫 Sair', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Sua pontuação:', 'play_again_button': 'Jogar Novamente', 'instructions_controls': 'Use os botões para controlar a cobra', 'instructions_food': 'Colete a comida vermelha para crescer!', 'alert_fill_all_fields': 'Preencha todos os campos', 'alert_user_exists': 'Este email já está cadastrado', 'alert_registration_success': 'Cadastro realizado com sucesso!', 'alert_invalid_credentials': 'Email ou senha inválidos', 'alert_confirm_quit': 'Tem certeza que deseja sair da partida atual?', 'alert_no_user_logged_in': 'Nenhum usuário logado.', 'alert_new_email_empty': 'O novo email não pode ser vazio.', 'alert_email_taken': 'Este email já está em uso.', 'alert_incorrect_current_password': 'Senha atual incorreta.', 'alert_email_changed_success': 'Email alterado com sucesso!', 'alert_new_email_same_as_current': 'O novo email é o mesmo que o atual.', 'alert_fill_all_password_fields': 'Preencha todos os campos de senha.', 'alert_old_password_incorrect': 'Senha antiga incorreta.', 'alert_new_passwords_dont_match': 'A nova senha e a confirmação não coincidem.', 'alert_password_changed_success': 'Senha alterada com sucesso!', 'alert_new_password_same_as_old': 'A nova senha não pode ser igual à antiga.', 'password_min_length': 'A senha deve ter no mínimo {minLength} caracteres.', 'password_needs_number': 'A senha deve conter pelo menos um número.', 'password_needs_letter': 'A senha deve conter pelo menos uma letra.', 'label_hide_controls': 'Ocultar Controles na Tela', 'alert_invalid_email': 'Por favor, insira um endereço de e-mail válido.', 'choose_username_title': 'Escolha seu nome de usuário', 'choose_username_subtitle': 'Este nome será exibido no jogo e no ranking.', 'alert_username_taken': 'Este nome de usuário já está em uso.', 'alert_username_empty': 'O nome de usuário não pode ser vazio.', 'alert_username_changed_success': 'Nome de usuário alterado com sucesso!', 'alert_new_username_same_as_current': 'O novo nome de usuário é o mesmo que o atual.', 'forgot_password_link': 'Esqueci a senha?', 'alert_enter_email_for_reset': 'Por favor, insira seu email no campo correspondente para redefinir a senha.', 'alert_password_reset_success': 'Email de redefinição de senha enviado! Verifique sua caixa de entrada.'},
-        'en': { 'congrats_title': '🎉 Congratulations! New Record! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'S', 'title_o': 'n', 'title_g': 'a', 'title_o2': 'k', 'title_d': 'e', 'title_a': ' G', 'title_c': 'a', 'title_o3': 'm', 'title_b': 'e', 'title_r': '', 'title_i': '', 'title_n': '', 'title_h': '', 'title_a2': '', 'welcome_title': 'Welcome', 'login_button': 'Login', 'no_account_text': 'Don\'t have an account?', 'register_link': 'Sign Up', 'developed_by': 'Developed by: John Costa', 'register_title': '📝 Sign Up', 'register_button': 'Sign Up', 'already_have_account_link': 'Already have an account? Login', 'game_title': '🐍 Snake Game', 'player_name_prefix': 'Player:', 'score_prefix': 'Score:', 'difficulty_prefix': 'Difficulty:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Logout', 'settings_title': '⚙️ Settings', 'tab_general': 'General', 'tab_controls': 'Controls', 'tab_account': 'Account', 'label_snake_color': 'Snake Color:', 'label_screen_background_color': 'Screen Color:', 'label_button_sensitivity': 'Button Sensitivity:', 'label_joystick_model': 'Joystick Model:', 'option_classic': 'Classic', 'option_floating': 'Floating', 'label_joystick_position': 'Floating Joystick Position:', 'option_right': 'Right', 'option_left': 'Left', 'option_center': 'Center', 'change_username_title': 'Change Username', 'change_email_title': 'Change Email', 'confirm_button': 'Confirm', 'confirm_button_2': 'Confirm', 'confirm_button_3': 'Confirm', 'change_password_title': 'Change Password', 'close_button': 'Close', 'start_game_button': 'Start Game', 'choose_difficulty_title': 'Choose Difficulty:', 'difficulty_easy_button': '🐌<br>Easy', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Hard', 'difficulty_insane_button': '💀<br>Insane', 'choose_map_title': 'Choose Map:', 'map_default_button': '🧱<br>Standard', 'map_no_walls_button': '🌌<br>No Walls', 'pause_button': '⏸️ Pause', 'quit_game_button': '🚫 Quit', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Your Score:', 'play_again_button': 'Play Again', 'instructions_controls': 'Use the buttons to control the snake', 'instructions_food': 'Collect red food to grow!', 'alert_fill_all_fields': 'Please fill in all fields', 'alert_user_exists': 'This email is already registered', 'alert_registration_success': 'Registration successful!', 'alert_invalid_credentials': 'Invalid email or password', 'alert_confirm_quit': 'Are you sure you want to quit the current game?', 'alert_no_user_logged_in': 'No user logged in.', 'alert_new_email_empty': 'New email cannot be empty.', 'alert_email_taken': 'This email is already in use.', 'alert_incorrect_current_password': 'Incorrect current password.', 'alert_email_changed_success': 'Email changed successfully!', 'alert_new_email_same_as_current': 'The new email is the same as the current one.', 'alert_fill_all_password_fields': 'Please fill in all password fields.', 'alert_old_password_incorrect': 'Incorrect old password.', 'alert_new_passwords_dont_match': 'New password and confirmation do not match.', 'alert_password_changed_success': 'Password changed successfully!', 'alert_new_password_same_as_old': 'New password cannot be the same as the old one.', 'password_min_length': 'Password must be at least {minLength} characters long.', 'password_needs_number': 'Password must contain at least one number.', 'password_needs_letter': 'Password must contain at least one letter.', 'label_hide_controls': 'Hide On-Screen Controls', 'alert_invalid_email': 'Please enter a valid email address.', 'choose_username_title': 'Choose your username', 'choose_username_subtitle': 'This name will be displayed in-game and on the leaderboard.', 'alert_username_taken': 'This username is already taken.', 'alert_username_empty': 'Username cannot be empty.', 'alert_username_changed_success': 'Username changed successfully!', 'alert_new_username_same_as_current': 'The new username is the same as the current one.', 'forgot_password_link': 'Forgot password?', 'alert_enter_email_for_reset': 'Please enter your email in the field to reset your password.', 'alert_password_reset_success': 'Password reset email sent! Check your inbox.' },
-        'es': { 'congrats_title': '🎉 ¡Felicidades! ¡Nuevo Récord! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'u', 'title_g': 'e', 'title_o2': 'g', 'title_d': 'o', 'title_a': ' d', 'title_c': 'e', 'title_o3': ' l', 'title_b': 'a', 'title_r': ' S', 'title_i': 'e', 'title_n': 'r', 'title_h': 'p', 'title_a2': 'iente', 'welcome_title': 'Bienvenido', 'login_button': 'Iniciar Sesión', 'no_account_text': '¿No tienes cuenta?', 'register_link': 'Regístrate', 'developed_by': 'Desarrollado por: John Costa', 'register_title': '📝 Registro', 'register_button': 'Registrar', 'already_have_account_link': '¿Ya tienes cuenta? Iniciar Sesión', 'game_title': '🐍 Juego de la Serpiente', 'player_name_prefix': 'Jugador:', 'score_prefix': 'Puntos:', 'difficulty_prefix': 'Dificultad:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Salir', 'settings_title': '⚙️ Ajustes', 'tab_general': 'General', 'tab_controls': 'Controles', 'tab_account': 'Cuenta', 'label_snake_color': 'Color de la Serpiente:', 'label_screen_background_color': 'Color de la Pantalla:', 'label_button_sensitivity': 'Sensibilidad de los Botones:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clásico', 'option_floating': 'Flotante', 'label_joystick_position': 'Posición del Joystick Flotante:', 'option_right': 'Derecha', 'option_left': 'Izquierda', 'option_center': 'Centro', 'change_username_title': 'Cambiar Nombre de Usuario', 'change_email_title': 'Cambiar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Cambiar Contraseña', 'close_button': 'Cerrar', 'start_game_button': 'Iniciar Juego', 'choose_difficulty_title': 'Elige la Dificultad:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Elige el Mapa:', 'map_default_button': '🧱<br>Estándar', 'map_no_walls_button': '🌌<br>Sin Paredes', 'pause_button': '⏸️ Pausar', 'quit_game_button': '🚫 Salir', 'game_over_title': '¡Fin del Juego!', 'your_score_prefix': 'Tu puntuación:', 'play_again_button': 'Jugar de Nuevo', 'instructions_controls': 'Usa los botones para controlar la serpiente', 'instructions_food': '¡Recoge la comida roja para crecer!', 'alert_fill_all_fields': 'Por favor, rellene todos los campos', 'alert_user_exists': 'Este correo electrónico ya está registrado', 'alert_registration_success': '¡Registro exitoso!', 'alert_invalid_credentials': 'Correo electrónico o contraseña no válidos', 'alert_confirm_quit': '¿Estás seguro de que quieres salir del juego actual?', 'alert_no_user_logged_in': 'Ningún usuario ha iniciado sesión.', 'alert_new_email_empty': 'El nuevo correo electrónico no puede estar vacío.', 'alert_email_taken': 'Este correo electrónico ya está en uso.', 'alert_incorrect_current_password': 'Contraseña actual incorrecta.', 'alert_email_changed_success': '¡Correo electrónico cambiado con éxito!', 'alert_new_email_same_as_current': 'El nuevo correo electrónico es el mismo que el actual.', 'alert_fill_all_password_fields': 'Por favor, rellene todos los campos de contraseña.', 'alert_old_password_incorrect': 'Contraseña antigua incorrecta.', 'alert_new_passwords_dont_match': 'La nueva contraseña y la confirmación no coinciden.', 'alert_password_changed_success': '¡Contraseña cambiada con éxito!', 'alert_new_password_same_as_old': 'La nueva contraseña no puede ser igual a la antigua.', 'password_min_length': 'La contraseña debe tener al menos {minLength} caracteres.', 'password_needs_number': 'La contraseña debe contener al menos un número.', 'password_needs_letter': 'La contraseña debe contener al menos una letra.', 'label_hide_controls': 'Ocultar Controles en Pantalla', 'alert_invalid_email': 'Por favor, introduce una dirección de correo electrónico válida.', 'choose_username_title': 'Elige tu nombre de usuario', 'choose_username_subtitle': 'Este nombre se mostrará en el juego y en la clasificación.', 'alert_username_taken': 'Este nombre de usuario ya está en uso.', 'alert_username_empty': 'El nombre de usuario no puede estar vacío.', 'alert_username_changed_success': '¡Nombre de usuario cambiado con éxito!', 'alert_new_username_same_as_current': 'El nuevo nombre de usuario es el mismo que el actual.', 'forgot_password_link': '¿Olvidaste la contraseña?', 'alert_enter_email_for_reset': 'Por favor, introduce tu correo electrónico en el campo para restablecer la contraseña.', 'alert_password_reset_success': '¡Correo de restablecimiento de contraseña enviado! Revisa tu bandeja de entrada.' }
+        'pt': { 'label_skin': 'Visual da Cobrinha:', 'label_snake_color': 'Cor Personalizada:', 'skin_custom': 'Personalizada', 'skin_default': 'Padrão', 'skin_spider': 'Aranha', 'congrats_title': '🎉 Parabéns! Novo Recorde! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'o', 'title_g': 'g', 'title_o2': 'o', 'title_d': ' d', 'title_a': 'a', 'title_c': ' C', 'title_o3': 'o', 'title_b': 'b', 'title_r': 'r', 'title_i': 'i', 'title_n': 'n', 'title_h': 'h', 'title_a2': 'a', 'welcome_title': 'Bem-vindo', 'login_button': 'Entrar', 'no_account_text': 'Ainda não tem conta?', 'register_link': 'Cadastre-se', 'developed_by': 'Desenvolvido por: John Costa', 'register_title': '📝 Cadastro', 'register_button': 'Cadastrar', 'already_have_account_link': 'Já tem conta? Entrar', 'game_title': '🐍 Jogo da Cobrinha', 'player_name_prefix': 'Jogador:', 'score_prefix': 'Pontos:', 'difficulty_prefix': 'Dificuldade:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Sair', 'settings_title': '⚙️ Configurações', 'tab_general': 'Geral', 'tab_controls': 'Controles', 'tab_account': 'Conta', 'label_screen_background_color': 'Cor da Tela:', 'label_button_sensitivity': 'Sensibilidade dos Botões:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clássico', 'option_floating': 'Flutuante', 'label_joystick_position': 'Posição do Joystick Flutuante:', 'option_right': 'Direita', 'option_left': 'Esquerda', 'option_center': 'Centro', 'change_username_title': 'Mudar Nome de Usuário', 'change_email_title': 'Mudar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Mudar Senha', 'close_button': 'Fechar', 'start_game_button': 'Iniciar Jogo', 'choose_difficulty_title': 'Escolha a Dificuldade:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Escolha o Mapa:', 'map_default_button': '🧱<br>Padrão', 'map_no_walls_button': '🌌<br>Sem Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Sair', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Sua pontuação:', 'play_again_button': 'Jogar Novamente', 'instructions_controls': 'Use os botões para controlar a cobra', 'instructions_food': 'Colete a comida vermelha para crescer!', 'alert_fill_all_fields': 'Preencha todos os campos', 'alert_user_exists': 'Este email já está cadastrado', 'alert_registration_success': 'Cadastro realizado com sucesso!', 'alert_invalid_credentials': 'Email ou senha inválidos', 'alert_confirm_quit': 'Tem certeza que deseja sair da partida atual?', 'alert_no_user_logged_in': 'Nenhum usuário logado.', 'alert_new_email_empty': 'O novo email não pode ser vazio.', 'alert_email_taken': 'Este email já está em uso.', 'alert_incorrect_current_password': 'Senha atual incorreta.', 'alert_email_changed_success': 'Email alterado com sucesso!', 'alert_new_email_same_as_current': 'O novo email é o mesmo que o atual.', 'alert_fill_all_password_fields': 'Preencha todos os campos de senha.', 'alert_old_password_incorrect': 'Senha antiga incorreta.', 'alert_new_passwords_dont_match': 'A nova senha e a confirmação não coincidem.', 'alert_password_changed_success': 'Senha alterada com sucesso!', 'alert_new_password_same_as_old': 'A nova senha não pode ser igual à antiga.', 'password_min_length': 'A senha deve ter no mínimo {minLength} caracteres.', 'password_needs_number': 'A senha deve conter pelo menos um número.', 'password_needs_letter': 'A senha deve conter pelo menos uma letra.', 'alert_invalid_email': 'Por favor, insira um endereço de e-mail válido.', 'choose_username_title': 'Escolha seu nome de usuário', 'choose_username_subtitle': 'Este nome será exibido no jogo e no ranking.', 'alert_username_taken': 'Este nome de usuário já está em uso.', 'alert_username_empty': 'O nome de usuário não pode ser vazio.', 'alert_username_changed_success': 'Nome de usuário alterado com sucesso!', 'alert_new_username_same_as_current': 'O novo nome de usuário é o mesmo que o atual.', 'forgot_password_link': 'Esqueci a senha?', 'alert_enter_email_for_reset': 'Por favor, insira seu email no campo correspondente para redefinir a senha.', 'alert_password_reset_success': 'Email de redefinição de senha enviado! Verifique sua caixa de entrada.'},
+        'en': { 'label_skin': 'Snake Skin:', 'label_snake_color': 'Custom Color:', 'skin_custom': 'Custom', 'skin_default': 'Default', 'skin_spider': 'Spider', 'congrats_title': '🎉 Congratulations! New Record! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'S', 'title_o': 'n', 'title_g': 'a', 'title_o2': 'k', 'title_d': 'e', 'title_a': ' G', 'title_c': 'a', 'title_o3': 'm', 'title_b': 'e', 'title_r': '', 'title_i': '', 'title_n': '', 'title_h': '', 'title_a2': '', 'welcome_title': 'Welcome', 'login_button': 'Login', 'no_account_text': 'Don\'t have an account?', 'register_link': 'Sign Up', 'developed_by': 'Developed by: John Costa', 'register_title': '📝 Sign Up', 'register_button': 'Sign Up', 'already_have_account_link': 'Already have an account? Login', 'game_title': '🐍 Snake Game', 'player_name_prefix': 'Player:', 'score_prefix': 'Score:', 'difficulty_prefix': 'Difficulty:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Logout', 'settings_title': '⚙️ Settings', 'tab_general': 'General', 'tab_controls': 'Controls', 'tab_account': 'Account', 'label_screen_background_color': 'Screen Color:', 'label_button_sensitivity': 'Button Sensitivity:', 'label_joystick_model': 'Joystick Model:', 'option_classic': 'Classic', 'option_floating': 'Floating', 'label_joystick_position': 'Floating Joystick Position:', 'option_right': 'Right', 'option_left': 'Left', 'option_center': 'Center', 'change_username_title': 'Change Username', 'change_email_title': 'Change Email', 'confirm_button': 'Confirm', 'confirm_button_2': 'Confirm', 'confirm_button_3': 'Confirm', 'change_password_title': 'Change Password', 'close_button': 'Close', 'start_game_button': 'Start Game', 'choose_difficulty_title': 'Choose Difficulty:', 'difficulty_easy_button': '🐌<br>Easy', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Hard', 'difficulty_insane_button': '💀<br>Insane', 'choose_map_title': 'Choose Map:', 'map_default_button': '🧱<br>Standard', 'map_no_walls_button': '🌌<br>No Walls', 'pause_button': 'Pause', 'continue_button': 'Continue', 'quit_game_button': '🚫 Quit', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Your Score:', 'play_again_button': 'Play Again', 'instructions_controls': 'Use the buttons to control the snake', 'instructions_food': 'Collect red food to grow!', 'alert_fill_all_fields': 'Please fill in all fields', 'alert_user_exists': 'This email is already registered', 'alert_registration_success': 'Registration successful!', 'alert_invalid_credentials': 'Invalid email or password', 'alert_confirm_quit': 'Are you sure you want to quit the current game?', 'alert_no_user_logged_in': 'No user logged in.', 'alert_new_email_empty': 'New email cannot be empty.', 'alert_email_taken': 'This email is already in use.', 'alert_incorrect_current_password': 'Incorrect current password.', 'alert_email_changed_success': 'Email changed successfully!', 'alert_new_email_same_as_current': 'The new email is the same as the current one.', 'alert_fill_all_password_fields': 'Please fill in all password fields.', 'alert_old_password_incorrect': 'Incorrect old password.', 'alert_new_passwords_dont_match': 'New password and confirmation do not match.', 'alert_password_changed_success': 'Password changed successfully!', 'alert_new_password_same_as_old': 'New password cannot be the same as the old one.', 'password_min_length': 'Password must be at least {minLength} characters long.', 'password_needs_number': 'Password must contain at least one number.', 'password_needs_letter': 'Password must contain at least one letter.', 'alert_invalid_email': 'Please enter a valid email address.', 'choose_username_title': 'Choose your username', 'choose_username_subtitle': 'This name will be displayed in-game and on the leaderboard.', 'alert_username_taken': 'This username is already taken.', 'alert_username_empty': 'Username cannot be empty.', 'alert_username_changed_success': 'Username changed successfully!', 'alert_new_username_same_as_current': 'The new username is the same as the current one.', 'forgot_password_link': 'Forgot password?', 'alert_enter_email_for_reset': 'Please enter your email in the field to reset your password.', 'alert_password_reset_success': 'Password reset email sent! Check your inbox.' },
+        'es': { 'label_skin': 'Aspecto de Serpiente:', 'label_snake_color': 'Color Personalizado:', 'skin_custom': 'Personalizado', 'skin_default': 'Estándar', 'skin_spider': 'Araña', 'congrats_title': '🎉 ¡Felicidades! ¡Nuevo Récord! 🎉', 'title_snake_emoji': '🐍', 'title_j': 'J', 'title_o': 'u', 'title_g': 'e', 'title_o2': 'g', 'title_d': 'o', 'title_a': ' d', 'title_c': 'e', 'title_o3': ' l', 'title_b': 'a', 'title_r': ' S', 'title_i': 'e', 'title_n': 'r', 'title_h': 'p', 'title_a2': 'iente', 'welcome_title': 'Bienvenido', 'login_button': 'Iniciar Sesión', 'no_account_text': '¿No tienes cuenta?', 'register_link': 'Regístrate', 'developed_by': 'Desarrollado por: John Costa', 'register_title': '📝 Registro', 'register_button': 'Registrar', 'already_have_account_link': '¿Ya tienes cuenta? Iniciar Sesión', 'game_title': '🐍 Juego de la Serpiente', 'player_name_prefix': 'Jugador:', 'score_prefix': 'Puntos:', 'difficulty_prefix': 'Dificultad:', 'top3_title': '🏆 TOP 3', 'logout_button': 'Salir', 'settings_title': '⚙️ Ajustes', 'tab_general': 'General', 'tab_controls': 'Controles', 'tab_account': 'Cuenta', 'label_screen_background_color': 'Color de la Pantalla:', 'label_button_sensitivity': 'Sensibilidad de los Botones:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clásico', 'option_floating': 'Flotante', 'label_joystick_position': 'Posición del Joystick Flotante:', 'option_right': 'Derecha', 'option_left': 'Izquierda', 'option_center': 'Centro', 'change_username_title': 'Cambiar Nombre de Usuario', 'change_email_title': 'Cambiar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Cambiar Contraseña', 'close_button': 'Cerrar', 'start_game_button': 'Iniciar Juego', 'choose_difficulty_title': 'Elige la Dificultad:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Elige el Mapa:', 'map_default_button': '🧱<br>Estándar', 'map_no_walls_button': '🌌<br>Sin Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Salir', 'game_over_title': '¡Fin del Juego!', 'your_score_prefix': 'Tu puntuación:', 'play_again_button': 'Jugar de Nuevo', 'instructions_controls': 'Usa los botones para controlar la serpiente', 'instructions_food': '¡Recoge la comida roja para crecer!', 'alert_fill_all_fields': 'Por favor, rellene todos los campos', 'alert_user_exists': 'Este correo electrónico ya está registrado', 'alert_registration_success': '¡Registro exitoso!', 'alert_invalid_credentials': 'Correo electrónico o contraseña no válidos', 'alert_confirm_quit': '¿Estás seguro de que quieres salir del juego actual?', 'alert_no_user_logged_in': 'Ningún usuario ha iniciado sesión.', 'alert_new_email_empty': 'El nuevo correo electrónico no puede estar vacío.', 'alert_email_taken': 'Este correo electrónico ya está en uso.', 'alert_incorrect_current_password': 'Contraseña actual incorrecta.', 'alert_email_changed_success': '¡Correo electrónico cambiado con éxito!', 'alert_new_email_same_as_current': 'El nuevo correo electrónico es el mismo que el actual.', 'alert_fill_all_password_fields': 'Por favor, rellene todos los campos de contraseña.', 'alert_old_password_incorrect': 'Contraseña antigua incorrecta.', 'alert_new_passwords_dont_match': 'La nueva contraseña y la confirmación no coinciden.', 'alert_password_changed_success': '¡Contraseña cambiada con éxito!', 'alert_new_password_same_as_old': 'La nueva contraseña no puede ser igual a la antigua.', 'password_min_length': 'La contraseña debe tener al menos {minLength} caracteres.', 'password_needs_number': 'La contraseña debe contener al menos un número.', 'password_needs_letter': 'La contraseña debe contener al menos una letra.', 'alert_invalid_email': 'Por favor, introduce una dirección de correo electrónico válida.', 'choose_username_title': 'Elige tu nombre de usuario', 'choose_username_subtitle': 'Este nombre se mostrará en el juego y en la clasificación.', 'alert_username_taken': 'Este nombre de usuario ya está en uso.', 'alert_username_empty': 'El nombre de usuario no puede estar vacío.', 'alert_username_changed_success': '¡Nombre de usuario cambiado con éxito!', 'alert_new_username_same_as_current': 'El nuevo nombre de usuario es el mismo que el actual.', 'forgot_password_link': '¿Olvidaste la contraseña?', 'alert_enter_email_for_reset': 'Por favor, introduce tu correo electrónico en el campo para restablecer la contraseña.', 'alert_password_reset_success': '¡Correo de restablecimiento de contraseña enviado! Revisa tu bandeja de entrada.' }
     };
     let currentLanguage = localStorage.getItem('snakeGameLanguage') || 'pt';
 
@@ -796,16 +817,14 @@
         document.querySelectorAll('[data-lang-key]').forEach(element => {
             const key = element.getAttribute('data-lang-key');
             const text = lang[key];
-            if (!text) return;
+            if (!text && !key.startsWith('skin_')) return;
 
-            // Specific logic for the main title to avoid breaking it
             if (key.startsWith('title_') && element.closest('.main-title')) {
                 const fullTitle = [ lang['title_snake_emoji'], lang['title_j'], lang['title_o'], lang['title_g'], lang['title_o2'], lang['title_d'], lang['title_a'], lang['title_c'], lang['title_o3'], lang['title_b'], lang['title_r'], lang['title_i'], lang['title_n'], lang['title_h'], lang['title_a2'] ].join('');
                 document.querySelector('.main-title').textContent = fullTitle.replace(/,/g, ''); 
-                return; // Stop further processing for this element
+                return;
             }
             
-            // Logic for player name display
             if (key === 'player_name_prefix') {
                  if (currentUsername) {
                     element.textContent = `${text} ${currentUsername}`;
@@ -819,13 +838,19 @@
                 element.innerHTML = `${text} <a href="#" onclick="showRegister()">${linkText}</a>`;
             } else if (key === 'already_have_account_link') {
                 element.innerHTML = `<a href="#" onclick="showLogin()">${text}</a>`;
-            } else if (key.endsWith('_button')) {
+            } else if (key === 'pause_button' && !gamePaused) {
+                element.innerHTML = `⏸️ ${text}`;
+            } else if (key === 'continue_button' && gamePaused) {
+                 element.innerHTML = `▶️ ${text}`;
+            }
+            else if (key.endsWith('_button')) {
                 element.innerHTML = text;
             }
             else {
-                element.textContent = text;
+                if (text) element.textContent = text;
             }
         });
+        populateSkinSelector();
         selectDifficulty(currentDifficulty);
         selectMap(currentMap);
     }
@@ -853,7 +878,107 @@
     }
     function randomTile() { return Math.floor(Math.random() * tileCount); }
     function generateFood() { food = { x: randomTile(), y: randomTile() }; for (let segment of snake) { if (segment.x === food.x && segment.y === food.y) { generateFood(); return; } } }
-    function drawGame() { ctx.fillStyle = '#11131e'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = snakeColor; for (let i = 1; i < snake.length; i++) { ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2); } ctx.fillStyle = shadeColor(snakeColor, -20); ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2); ctx.fillStyle = '#e17055'; ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2); ctx.fillStyle = '#fd79a8'; ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6); }
+    
+    // ==========================================================================================
+    // === GRANDE MODIFICAÇÃO AQUI: Função `drawGame` totalmente reestruturada para a skin do Aranha ===
+    // ==========================================================================================
+    function drawGame() {
+        ctx.fillStyle = '#11131e';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const skinOptions = skins[currentSkin] || skins['default'];
+
+        // Função auxiliar para desenhar a teia
+        const drawWebPattern = (x, y) => {
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'; // Teia preta sutil
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // Linhas verticais
+            ctx.moveTo(x + gridSize / 3, y);
+            ctx.lineTo(x + gridSize / 3, y + gridSize);
+            ctx.moveTo(x + (gridSize / 3) * 2, y);
+            ctx.lineTo(x + (gridSize / 3) * 2, y + gridSize);
+            // Linhas horizontais
+            ctx.moveTo(x, y + gridSize / 3);
+            ctx.lineTo(x + gridSize, y + gridSize / 3);
+            ctx.moveTo(x, y + (gridSize / 3) * 2);
+            ctx.lineTo(x + gridSize, y + (gridSize / 3) * 2);
+            ctx.stroke();
+        };
+
+        // Lógica de desenho específica para a skin do Aranha
+        if (currentSkin === 'spider') {
+            const redColor = skinOptions.redColor;
+            const blueColor = skinOptions.blueColor;
+
+            // Desenha o corpo alternando cores
+            for (let i = snake.length - 1; i > 0; i--) {
+                const segment = snake[i];
+                const segmentX = segment.x * gridSize;
+                const segmentY = segment.y * gridSize;
+                
+                // Alterna cor: par é vermelho, ímpar é azul
+                const isRedSegment = i % 2 === 0;
+                ctx.fillStyle = isRedSegment ? redColor : blueColor;
+                ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
+
+                // Desenha a teia apenas nos segmentos vermelhos
+                if (isRedSegment) {
+                    drawWebPattern(segmentX, segmentY);
+                }
+            }
+
+            // Desenha a cabeça (sempre vermelha)
+            const head = snake[0];
+            const headX = head.x * gridSize;
+            const headY = head.y * gridSize;
+            ctx.fillStyle = redColor;
+            ctx.fillRect(headX, headY, gridSize - 2, gridSize - 2);
+            drawWebPattern(headX, headY); // Teia na cabeça também
+
+            // Desenha os olhos da máscara
+            const eyeXOffset = gridSize * 0.2;
+            const eyeYOffset = gridSize * 0.2;
+            const eyeWidth = gridSize * 0.25;
+            const eyeHeight = gridSize * 0.5;
+            
+            ctx.fillStyle = 'white'; // Olhos brancos
+            ctx.fillRect(headX + eyeXOffset, headY + eyeYOffset, eyeWidth, eyeHeight); // Olho esquerdo
+            ctx.fillRect(headX + gridSize - eyeXOffset - eyeWidth - 2, headY + eyeYOffset, eyeWidth, eyeHeight); // Olho direito
+
+            ctx.strokeStyle = 'black'; // Borda preta
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(headX + eyeXOffset, headY + eyeYOffset, eyeWidth, eyeHeight);
+            ctx.strokeRect(headX + gridSize - eyeXOffset - eyeWidth - 2, headY + eyeYOffset, eyeWidth, eyeHeight);
+
+        } else {
+            // Lógica de desenho para outras skins (Padrão, Personalizada, etc.)
+            let bodyColor, headColor;
+            if (currentSkin === 'custom') {
+                bodyColor = document.getElementById('snakeColorPicker').value;
+                headColor = shadeColor(bodyColor, -20);
+            } else {
+                bodyColor = skinOptions.bodyColor;
+                headColor = skinOptions.headColor;
+            }
+            
+            // Corpo
+            ctx.fillStyle = bodyColor;
+            for (let i = 1; i < snake.length; i++) {
+                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
+            }
+            // Cabeça
+            ctx.fillStyle = headColor;
+            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
+        }
+
+        // Desenha a comida (sem alterações)
+        ctx.fillStyle = '#e17055';
+        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        ctx.fillStyle = '#fd79a8';
+        ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6);
+    }
+    
     function updateGame() {
         if (!gameRunning || gamePaused) return; if (dx === 0 && dy === 0) return;
         const head = {x: snake[0].x + dx, y: snake[0].y + dy};
@@ -871,29 +996,29 @@
         try {
             const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
             const mapIdentifier = currentMap || 'normal';
-
-            const querySnapshot = await db.collection('scores')
-                                          .where('map', '==', mapIdentifier)
-                                          .orderBy('score', 'desc')
-                                          .limit(3)
-                                          .get();
-            const topScores = querySnapshot.docs.map(doc => doc.data());
+            const user = auth.currentUser;
+            const querySnapshot = await db.collection('scores').where('map', '==', mapIdentifier).orderBy('score', 'desc').limit(3).get();
+            const topScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`leaderboard-item-${i}`).style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+            }
+
             firstName.textContent = "---"; firstScore.textContent = "0"; firstDifficulty.textContent = "";
             secondName.textContent = "---"; secondScore.textContent = "0"; secondDifficulty.textContent = "";
             thirdName.textContent = "---"; thirdScore.textContent = "0"; thirdDifficulty.textContent = "";
 
             if (topScores[0]) {
-                firstName.textContent = topScores[0].name; firstScore.textContent = topScores[0].score;
-                firstDifficulty.textContent = difficultyEmojis[topScores[0].difficulty] || '🐍';
+                firstName.textContent = topScores[0].name; firstScore.textContent = topScores[0].score; firstDifficulty.textContent = difficultyEmojis[topScores[0].difficulty] || '🐍';
+                if (user && topScores[0].userId === user.uid) { document.getElementById('leaderboard-item-1').style.backgroundColor = '#d68910'; }
             }
             if (topScores[1]) {
-                secondName.textContent = topScores[1].name; secondScore.textContent = topScores[1].score;
-                secondDifficulty.textContent = difficultyEmojis[topScores[1].difficulty] || '🐍';
+                secondName.textContent = topScores[1].name; secondScore.textContent = topScores[1].score; secondDifficulty.textContent = difficultyEmojis[topScores[1].difficulty] || '🐍';
+                if (user && topScores[1].userId === user.uid) { document.getElementById('leaderboard-item-2').style.backgroundColor = '#d68910'; }
             }
             if (topScores[2]) {
-                thirdName.textContent = topScores[2].name; thirdScore.textContent = topScores[2].score;
-                thirdDifficulty.textContent = difficultyEmojis[topScores[2].difficulty] || '🐍';
+                thirdName.textContent = topScores[2].name; thirdScore.textContent = topScores[2].score; thirdDifficulty.textContent = difficultyEmojis[topScores[2].difficulty] || '🐍';
+                if (user && topScores[2].userId === user.uid) { document.getElementById('leaderboard-item-3').style.backgroundColor = '#d68910'; }
             }
         } catch (error) {
             console.error("Erro ao buscar o leaderboard online: ", error);
@@ -901,19 +1026,13 @@
         }
     }
 
+
     async function isNewRecord(score) {
         try {
             if (!currentUsername) return false;
-            const querySnapshot = await db.collection('scores')
-                                          .where('map', '==', currentMap)
-                                          .orderBy('score', 'desc')
-                                          .limit(3)
-                                          .get();
+            const querySnapshot = await db.collection('scores').where('map', '==', currentMap).orderBy('score', 'desc').limit(3).get();
             const topScores = querySnapshot.docs.map(doc => doc.data());
-            if (topScores.length < 3 || score > topScores[topScores.length - 1].score) {
-                return true;
-            }
-            return false;
+            return topScores.length < 3 || score > topScores[topScores.length - 1].score;
         } catch (error) {
             console.error("Erro ao verificar recorde: ", error);
             return false;
@@ -922,22 +1041,11 @@
 
     async function saveScore() {
         const user = auth.currentUser;
-        if (!user || !currentUsername) {
-            console.log("Nenhum usuário/username logado, pontuação não será salva.");
-            return;
-        }
+        if (!user || !currentUsername) return;
         try {
             const name = currentUsername.substring(0, 15).toUpperCase();
-            const newEntry = {
-                userId: user.uid,
-                name: name,
-                score: score,
-                difficulty: currentDifficulty,
-                map: currentMap,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            const newEntry = { userId: user.uid, name, score, difficulty: currentDifficulty, map: currentMap, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
             await db.collection('scores').add(newEntry);
-            console.log("Pontuação enviada para o servidor!");
             await updateLeaderboardDisplay();
         } catch (error) {
             console.error("Erro ao salvar a pontuação no servidor: ", error);
@@ -977,13 +1085,21 @@
     function togglePause() { 
         if (!gameRunning || !gameStarted) return; 
         gamePaused = !gamePaused; 
-        pauseBtn.innerHTML = gamePaused ? '▶️ Continuar' : '⏸️ Pausar'; 
+        pauseBtn.innerHTML = gamePaused ? `▶️ ${translations[currentLanguage].continue_button}` : `⏸️ ${translations[currentLanguage].pause_button}`; 
     }
     function quitGame() { if (confirm(translations[currentLanguage]['alert_confirm_quit'])) { restartGame(); } }
+    
     async function gameOver() {
         gameRunning = false; gameStarted = false;
         if (gameInterval) { clearInterval(gameInterval); }
         quitGameBtn.style.display = 'none'; reenterPrompt.style.display = 'none';
+        
+        if (score > userHighScore) {
+            userHighScore = score;
+            await updateUserHighScore(userHighScore);
+            checkSkinUnlocks();
+        }
+
         if (await isNewRecord(score) && score > 0) {
             await saveScore();
             finalScoreCongrats.textContent = score;
@@ -993,6 +1109,7 @@
             gameOverElement.style.display = 'flex';
         }
     }
+
     function restartGame() {
         if (gameInterval) { clearInterval(gameInterval); }
         if (fireworksInterval) { clearInterval(fireworksInterval); fireworksInterval = null; }
@@ -1002,7 +1119,7 @@
         scoreElement.textContent = score; gameOverElement.style.display = 'none'; startScreen.style.display = 'block';
         gameControls.style.display = 'none'; pauseBtn.style.display = 'none'; quitGameBtn.style.display = 'none';
         gameInstructions.style.display = 'none'; difficultyDisplay.style.display = 'none';
-        pauseBtn.innerHTML = '⏸️ Pausar';
+        pauseBtn.innerHTML = `⏸️ ${translations[currentLanguage].pause_button}`;
         ctx.fillStyle = '#2d3436'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         updateLeaderboardDisplay();
     }
@@ -1017,7 +1134,7 @@
             case 'ArrowUp': if (dy !== 1) { dx = 0; dy = -1; } break;
             case 'ArrowDown': if (dy !== -1) { dx = 0; dy = 1; } break;
             case 'ArrowLeft': if (dx !== 1) { dx = -1; dy = 0; } break;
-            case 'ArrowRight': if (dx !== -1) { dx = 1; dy = 0; } break;
+            case 'ArrowRight': if (dx !== 1) { dx = 1; dy = 0; } break;
             case ' ': togglePause(); break;
         }
     });
@@ -1035,13 +1152,16 @@
     selectDifficulty('normal'); selectMap('normal');
     
     let joystickType = 'classic'; let joystickPosition = 'right';
-    function toggleOnScreenControlsVisibility() { toggleJoystick(); saveUserSettings(); }
+
     function toggleJoystick() {
-        joystickType = document.getElementById('joystickModel').value; const classic = document.getElementById('gameControls');
-        const floating = document.getElementById('floatingJoystick'); const hideControls = document.getElementById('hideControlsCheckbox').checked;
-        if (joystickType === 'classic') { classic.style.display = hideControls ? 'none' : 'grid'; floating.style.display = 'none';
+        joystickType = document.getElementById('joystickModel').value;
+        const classic = document.getElementById('gameControls');
+        const floating = document.getElementById('floatingJoystick');
+        
+        if (joystickType === 'classic') { classic.style.display = 'grid'; floating.style.display = 'none';
         } else { classic.style.display = 'none'; floating.style.display = 'block'; updateJoystickPosition(); }
     }
+    
     function updateJoystickPosition() { joystickPosition = document.getElementById('joystickPosition').value; const floatingJoystick = document.getElementById('floatingJoystick'); floatingJoystick.style.left = ''; floatingJoystick.style.right = ''; floatingJoystick.style.transform = ''; if (joystickPosition === 'left') { floatingJoystick.style.left = '40px'; } else if (joystickPosition === 'right') { floatingJoystick.style.right = '40px'; } else if (joystickPosition === 'center') { floatingJoystick.style.left = '50%'; floatingJoystick.style.transform = 'translateX(-50%)'; } }
     let origin = null;
     document.getElementById('floatingJoystick').addEventListener('touchstart', e => { const floatingJoystick = document.getElementById('floatingJoystick'); const touch = e.touches[0]; const rect = floatingJoystick.getBoundingClientRect(); const joystickCenterX = rect.left + rect.width / 2; const joystickCenterY = rect.top + rect.height / 2; const distance = Math.hypot(touch.clientX - joystickCenterX, touch.clientY - joystickCenterY); const maxDistanceToReposition = 100; if (distance < maxDistanceToReposition) { let newLeft = touch.clientX - rect.width / 2; let newTop = touch.clientY - rect.height / 2; newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - rect.width)); newTop = Math.max(0, Math.min(newTop, window.innerHeight - rect.height)); floatingJoystick.style.left = `${newLeft}px`; floatingJoystick.style.top = `${newTop}px`; floatingJoystick.style.right = 'auto'; floatingJoystick.style.transform = 'none'; origin = { x: touch.clientX, y: touch.clientY }; } else { origin = { x: touch.clientX, y: touch.clientY }; } }, { passive: false });
@@ -1050,31 +1170,70 @@
     function toggleSettings() { document.getElementById('settingsMenu').style.display = 'block'; showSettingsTab('general'); }
     function closeSettings() { document.getElementById('settingsMenu').style.display = 'none'; saveUserSettings(); showSettingsTab('general'); }
     
-    // --- Autenticação e Gerenciamento de Usuário ---
     const loginScreen = document.getElementById('loginScreen');
     const registerScreen = document.getElementById('registerScreen');
     const gameUI = document.getElementById('mainGame');
     const loggedUser = document.getElementById('loggedUser');
     let currentUsername = null; 
     let userSettings = {};
+    
+    document.getElementById('loginPass').addEventListener('keydown', function(event) { if (event.key === 'Enter') { event.preventDefault(); handleLogin(); } });
+
+    function selectSkin(skinKey) {
+        if (unlockedSkins.includes(skinKey) || skinKey === 'custom') {
+            currentSkin = skinKey;
+        } else {
+            currentSkin = 'default';
+            document.getElementById('skinSelector').value = 'default';
+        }
+        const colorPickerContainer = document.getElementById('colorPickerContainer');
+        colorPickerContainer.style.display = currentSkin === 'custom' ? 'block' : 'none';
+    }
+
+    function checkSkinUnlocks() {
+        unlockedSkins = ['custom', 'default']; // Adicionado 'custom'
+        for (const key in skins) {
+            if (userHighScore >= skins[key].unlockScore && !unlockedSkins.includes(key)) {
+                unlockedSkins.push(key);
+            }
+        }
+    }
+    
+    function populateSkinSelector() {
+        const selector = document.getElementById('skinSelector');
+        selector.innerHTML = '';
+        
+        unlockedSkins.forEach(key => {
+            const skin = skins[key];
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = skin['name_' + currentLanguage] || skin.name_pt;
+            selector.appendChild(option);
+        });
+        selector.value = currentSkin;
+    }
+
+    async function updateUserHighScore(newScore) {
+        const user = auth.currentUser;
+        if (user) {
+            try { await db.collection('users').doc(user.uid).update({ highScore: newScore }); } catch (error) { console.error("Erro ao atualizar high score:", error); }
+        }
+    }
+
 
     async function saveUserSettings() {
         const user = auth.currentUser;
         if (user) {
             const settingsToSave = {
-                snakeColor: document.getElementById('snakeColor').value,
+                skin: currentSkin,
+                customSnakeColor: document.getElementById('snakeColorPicker').value,
                 sensitivity: document.getElementById('sensitivityRange').value,
                 joystickModel: document.getElementById('joystickModel').value,
                 screenBackgroundColor: document.getElementById('screenBackgroundColor').value,
                 joystickPosition: document.getElementById('joystickPosition').value,
-                hideControls: document.getElementById('hideControlsCheckbox').checked,
                 language: currentLanguage
             };
-            try {
-                await db.collection('users').doc(user.uid).set({ settings: settingsToSave }, { merge: true });
-            } catch (error) {
-                console.error("Erro ao salvar configurações do usuário:", error);
-            }
+            try { await db.collection('users').doc(user.uid).set({ settings: settingsToSave }, { merge: true }); } catch (error) { console.error("Erro ao salvar configurações do usuário:", error); }
         }
     }
 
@@ -1084,21 +1243,26 @@
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 currentUsername = userData.username;
+                userHighScore = userData.highScore || 0;
                 userSettings = userData.settings || {};
 
-                document.getElementById('snakeColor').value = userSettings.snakeColor || '#00b894';
+                currentSkin = userSettings.skin || 'default';
+                document.getElementById('snakeColorPicker').value = userSettings.customSnakeColor || '#00b894';
                 document.getElementById('sensitivityRange').value = userSettings.sensitivity || '5';
                 document.getElementById('joystickModel').value = userSettings.joystickModel || 'classic';
                 document.getElementById('screenBackgroundColor').value = userSettings.screenBackgroundColor || '#1a1a1a';
                 document.getElementById('joystickPosition').value = userSettings.joystickPosition || 'right';
-                document.getElementById('hideControlsCheckbox').checked = userSettings.hideControls || false;
+                
+                checkSkinUnlocks();
+                populateSkinSelector();
+                selectSkin(currentSkin); // Garante que a UI do seletor de cor seja atualizada
+                
                 selectLanguage(userSettings.language || 'pt');
-            } else { // Configurações padrão para um novo usuário
-                userSettings = { snakeColor: '#00b894', sensitivity: '5', joystickModel: 'classic', screenBackgroundColor: '#1a1a1a', joystickPosition: 'right', hideControls: false, language: 'pt' };
+            } else {
+                userSettings = { skin: 'default', customSnakeColor: '#00b894', sensitivity: '5', joystickModel: 'classic', screenBackgroundColor: '#1a1a1a', joystickPosition: 'right', language: 'pt' };
                 selectLanguage('pt');
             }
 
-            snakeColor = document.getElementById('snakeColor').value;
             screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
             document.getElementById('mainGame').style.background = screenBackgroundColor;
             loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
@@ -1112,18 +1276,12 @@
 
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // Usuário está logado
             await loadUserSettings(user.uid);
-            loginScreen.style.display = 'none';
-            registerScreen.style.display = 'none';
-            gameUI.style.display = 'block';
+            loginScreen.style.display = 'none'; registerScreen.style.display = 'none'; gameUI.style.display = 'block';
             await updateLeaderboardDisplay();
         } else {
-            // Usuário deslogado
             currentUsername = null;
-            loginScreen.style.display = 'block';
-            registerScreen.style.display = 'none';
-            gameUI.style.display = 'none';
+            loginScreen.style.display = 'block'; registerScreen.style.display = 'none'; gameUI.style.display = 'none';
         }
         updateContent();
     });
@@ -1137,13 +1295,8 @@
     
     async function isUsernameTaken(username) {
         if (!username) return false;
-        try {
-            const snapshot = await db.collection('users').where('username_lowercase', '==', username.toLowerCase()).limit(1).get();
-            return !snapshot.empty;
-        } catch (error) {
-            console.error("Erro ao verificar nome de usuário:", error);
-            return true; // Assume como ocupado em caso de erro para evitar duplicatas
-        }
+        try { const snapshot = await db.collection('users').where('username_lowercase', '==', username.toLowerCase()).limit(1).get(); return !snapshot.empty; }
+        catch (error) { console.error("Erro ao verificar nome de usuário:", error); return true; }
     }
 
     async function handleRegister() {
@@ -1160,73 +1313,41 @@
             const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
             const user = userCredential.user;
             
-            // Salva o nome de usuário e configurações padrão no Firestore
             await db.collection('users').doc(user.uid).set({
-                username: username,
-                username_lowercase: username.toLowerCase(),
-                email: email,
+                username, username_lowercase: username.toLowerCase(), email, highScore: 0, 
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                settings: { /* Configurações padrão aqui, se desejar */ }
+                settings: { skin: 'default', customSnakeColor: '#00b894' }
             });
             
             alert(translations[currentLanguage]['alert_registration_success']);
-            // onAuthStateChanged irá lidar com a transição de tela
         } catch (error) {
             console.error("Erro no cadastro:", error);
-            if (error.code === 'auth/email-already-in-use') {
-                alert(translations[currentLanguage]['alert_user_exists']);
-            } else {
-                alert(error.message);
-            }
+            alert(error.code === 'auth/email-already-in-use' ? translations[currentLanguage]['alert_user_exists'] : error.message);
         }
     }
     
     async function handleLogin() {
         const email = document.getElementById('loginEmail').value.trim();
         const pass = document.getElementById('loginPass').value.trim();
-        
         if (email === '' || pass === '') { alert(translations[currentLanguage]['alert_fill_all_fields']); return; }
-
-        try {
-            await auth.signInWithEmailAndPassword(email, pass);
-            // onAuthStateChanged irá lidar com a transição de tela
-        } catch (error) {
-            console.error("Erro no login:", error);
-            alert(translations[currentLanguage]['alert_invalid_credentials']);
-        }
+        try { await auth.signInWithEmailAndPassword(email, pass); }
+        catch (error) { console.error("Erro no login:", error); alert(translations[currentLanguage]['alert_invalid_credentials']); }
     }
 
-    // --- NOVA FUNÇÃO DE RECUPERAÇÃO DE SENHA ---
     async function handlePasswordReset() {
         const email = document.getElementById('loginEmail').value.trim();
-
-        if (email === '') {
-            alert(translations[currentLanguage]['alert_enter_email_for_reset']);
-            return;
-        }
-
-        try {
-            await auth.sendPasswordResetEmail(email);
-            alert(translations[currentLanguage]['alert_password_reset_success']);
-        } catch (error) {
-            console.error("Erro ao enviar email de recuperação:", error);
-            alert(error.message);
-        }
+        if (email === '') { alert(translations[currentLanguage]['alert_enter_email_for_reset']); return; }
+        try { await auth.sendPasswordResetEmail(email); alert(translations[currentLanguage]['alert_password_reset_success']); }
+        catch (error) { console.error("Erro ao enviar email de recuperação:", error); alert(error.message); }
     }
 
     function handleLogout() {
-        saveUserSettings(); // Salva as últimas configurações antes de sair
-        auth.signOut().catch(error => console.error("Erro ao sair:", error));
+        saveUserSettings(); auth.signOut().catch(error => console.error("Erro ao sair:", error));
     }
 
     function showSettingsTab(tabId) { document.querySelectorAll('.settings-tab-content').forEach(tab => { tab.style.display = 'none'; }); document.querySelectorAll('.tab-button').forEach(btn => { btn.classList.remove('selected'); }); document.getElementById(tabId + 'Settings').style.display = 'block'; document.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected'); }
     
-    // As funções de reautenticação são necessárias para operações sensíveis
-    async function reauthenticate(currentPassword) {
-        const user = auth.currentUser;
-        const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
-        return user.reauthenticateWithCredential(cred);
-    }
+    async function reauthenticate(currentPassword) { const user = auth.currentUser; const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword); return user.reauthenticateWithCredential(cred); }
     
     async function handleChangeUsername() {
         const newUsername = document.getElementById('newUsername').value.trim();
@@ -1242,22 +1363,13 @@
         
         try {
             await reauthenticate(currentPass);
-            await db.collection('users').doc(user.uid).update({
-                username: newUsername,
-                username_lowercase: newUsername.toLowerCase()
-            });
-            currentUsername = newUsername; // Atualiza localmente
-            loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
+            await db.collection('users').doc(user.uid).update({ username: newUsername, username_lowercase: newUsername.toLowerCase() });
+            currentUsername = newUsername; loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
             alert(translations[currentLanguage]['alert_username_changed_success']);
-            document.getElementById('newUsername').value = '';
-            document.getElementById('currentPassForUsername').value = '';
+            document.getElementById('newUsername').value = ''; document.getElementById('currentPassForUsername').value = '';
         } catch (error) {
             console.error("Erro ao mudar nome de usuário:", error);
-            if (error.code === 'auth/wrong-password') {
-                usernameChangeError.textContent = translations[currentLanguage]['alert_incorrect_current_password'];
-            } else {
-                 usernameChangeError.textContent = 'Erro: ' + error.message;
-            }
+            usernameChangeError.textContent = error.code === 'auth/wrong-password' ? translations[currentLanguage]['alert_incorrect_current_password'] : 'Erro: ' + error.message;
         }
     }
 
@@ -1274,21 +1386,15 @@
         if (newEmail.toLowerCase() === user.email.toLowerCase()) { emailChangeError.textContent = translations[currentLanguage]['alert_new_email_same_as_current']; return; }
 
         try {
-            await reauthenticate(currentPass);
-            await user.updateEmail(newEmail);
-            // Atualiza o email no Firestore também
+            await reauthenticate(currentPass); await user.updateEmail(newEmail);
             await db.collection('users').doc(user.uid).update({ email: newEmail });
             alert(translations[currentLanguage]['alert_email_changed_success']);
             document.getElementById('newEmail').value = ''; document.getElementById('currentPassForEmail').value = '';
         } catch (error) {
             console.error("Erro ao mudar email:", error);
-            if (error.code === 'auth/wrong-password') {
-                emailChangeError.textContent = translations[currentLanguage]['alert_incorrect_current_password'];
-            } else if (error.code === 'auth/email-already-in-use') {
-                emailChangeError.textContent = translations[currentLanguage]['alert_email_taken'];
-            } else {
-                emailChangeError.textContent = 'Erro: ' + error.message;
-            }
+            if (error.code === 'auth/wrong-password') { emailChangeError.textContent = translations[currentLanguage]['alert_incorrect_current_password']; }
+            else if (error.code === 'auth/email-already-in-use') { emailChangeError.textContent = translations[currentLanguage]['alert_email_taken']; }
+            else { emailChangeError.textContent = 'Erro: ' + error.message; }
         }
     }
     
@@ -1307,20 +1413,15 @@
         if (oldPass === newPass) { passwordChangeError.textContent = translations[currentLanguage]['alert_new_password_same_as_old']; return; }
 
         try {
-            await reauthenticate(oldPass);
-            await user.updatePassword(newPass);
+            await reauthenticate(oldPass); await user.updatePassword(newPass);
             alert(translations[currentLanguage]['alert_password_changed_success']);
             document.getElementById('oldPassword').value = ''; document.getElementById('newPassword').value = ''; document.getElementById('confirmNewPassword').value = '';
         } catch (error) {
             console.error("Erro ao mudar senha:", error);
-             if (error.code === 'auth/wrong-password') {
-                passwordChangeError.textContent = translations[currentLanguage]['alert_old_password_incorrect'];
-            } else {
-                passwordChangeError.textContent = 'Erro: ' + error.message;
-            }
+            passwordChangeError.textContent = error.code === 'auth/wrong-password' ? translations[currentLanguage]['alert_old_password_incorrect'] : 'Erro: ' + error.message;
         }
     }
-    document.getElementById('snakeColor').addEventListener('change', saveUserSettings); document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings); document.getElementById('joystickModel').addEventListener('change', saveUserSettings); document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings); document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
+    document.getElementById('snakeColorPicker').addEventListener('change', saveUserSettings); document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings); document.getElementById('joystickModel').addEventListener('change', saveUserSettings); document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings); document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
     showSettingsTab('general');
 </script>
 </body>
