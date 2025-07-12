@@ -164,7 +164,7 @@
         }
 
         /* --- FORMULÁRIOS E INPUTS --- */
-        .name-input, #skinSelector {
+        .name-input, #skinSelector, #supportType, #supportMessage {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
@@ -176,7 +176,7 @@
             width: 100%;
             transition: border-color 0.2s, background-color 0.2s;
         }
-        #skinSelector {
+        #skinSelector, #supportType {
             text-align: left; /* Alinha o texto do select à esquerda */
             -webkit-appearance: none; /* Remove a aparência padrão no Chrome/Safari */
             -moz-appearance: none; /* Remove a aparência padrão no Firefox */
@@ -187,7 +187,7 @@
             background-size: .65em auto;
             padding-right: 30px; /* Espaço para a seta */
         }
-        #skinSelector option {
+        #skinSelector option, #supportType option {
             background-color: #1a1d2d;
             color: white;
         }
@@ -197,7 +197,7 @@
             text-transform: none;
         }
 
-        .name-input:focus, #skinSelector:focus {
+        .name-input:focus, #skinSelector:focus, #supportType:focus, #supportMessage:focus {
             outline: none;
             border-color: #4a72ff;
             background-color: rgba(0, 0, 0, 0.3);
@@ -575,7 +575,80 @@
             align-items: center;
             gap: 5px;
         }
+        #skinPreviewCanvas {
+            display: block;
+            margin: 15px auto; /* Adiciona espaço e centraliza */
+            background: #11131e; /* Mesmo fundo do canvas principal */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
         
+        /* --- ESTILOS PARA O MODO PAISAGEM (TELA VIRADA) --- */
+        body.landscape-mode {
+            /* Alinha os contêineres principais lado a lado */
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        body.landscape-mode .main-title {
+            /* Reduz um pouco o título para caber melhor */
+            font-size: 2em;
+            margin-bottom: 0;
+        }
+
+        body.landscape-mode .game-container {
+            /* Permite que o contêiner do jogo cresça para preencher a altura */
+            height: 95vh;
+            max-height: 500px;
+            flex-shrink: 0;
+        }
+
+        /* Reorganiza a tela principal do jogo */
+        body.landscape-mode #mainGame {
+            display: flex !important; /* Força o flex display */
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Cria um contêiner para canvas e controles */
+        body.landscape-mode #game-and-controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        /* Ajusta o layout dos controles para ficar ao lado do canvas */
+        body.landscape-mode .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            width: 130px; /* Largura ajustada */
+            height: 130px; /* Altura ajustada */
+            gap: 8px;
+            margin-top: 0;
+            margin-left: 20px; /* Espaço entre o canvas e os controles */
+        }
+
+        /* Reorganiza os botões no novo grid */
+        body.landscape-mode .controls .up { grid-column: 1 / span 2; grid-row: 1; }
+        body.landscape-mode .controls .down { grid-column: 1 / span 2; grid-row: 2; }
+        body.landscape-mode .controls .left { grid-column: 1; grid-row: 1 / span 2; align-self: center; height: 50%; }
+        body.landscape-mode .controls .right { grid-column: 2; grid-row: 1 / span 2; align-self: center; height: 50%; }
+
+        /* Ajusta o posicionamento do joystick flutuante */
+        body.landscape-mode #floatingJoystick {
+            bottom: 50%;
+            transform: translateY(50%);
+            right: 25px;
+        }
+
+        body.landscape-mode #joystickPosition option[value="center"] {
+            display: none; /* Oculta a opção "Centro" que não faz sentido em paisagem */
+        }
 </style>
 </head>
 <body>
@@ -588,7 +661,7 @@
 <div id="congratulationsScreen">
     <h2 data-lang-key="congrats_title">🎉 Parabéns! Novo Recorde! 🎉</h2>
     <p><span data-lang-key="your_score_prefix">Sua pontuação: </span><span id="finalScoreCongrats">0</span></p>
-    <p><span data-lang-key="coins_earned_in_game_prefix">Moedas ganhas nesta partida: </span><span id="coinsEarnedCongrats">0</span> SC</p>
+    <p><span data-lang-key="coins_earned_in_game_prefix">Moedas ganhas nesta partida: </span><span id="coinsEarnedCongrats">0</span>🪙</p>
     <button class="btn btn-primary restart-btn" onclick="restartGame()" data-lang-key="play_again_button">Jogar Novamente</button>
 </div>
 
@@ -690,14 +763,22 @@
         <button class="tab-button selected" onclick="showSettingsTab('general')" data-lang-key="tab_general">Geral</button>
         <button class="tab-button" onclick="showSettingsTab('controls')" data-lang-key="tab_controls">Controles</button>
         <button class="tab-button" onclick="showSettingsTab('account')" data-lang-key="tab_account">Conta</button>
+        <button class="tab-button" onclick="showSettingsTab('support')" data-lang-key="tab_support">Suporte</button>
     </div>
     <div id="generalSettings" class="settings-tab-content">
         <label for="skinSelector" data-lang-key="label_skin">Visual da Cobrinha:</label>
         <select id="skinSelector" onchange="selectSkin(this.value)"></select>
-        
+        <canvas id="skinPreviewCanvas" width="120" height="40"></canvas>
+        <button id="buySkinBtn" onclick="handlePurchase()" class="btn btn-primary" style="display: none; width: 100%; margin-top: 5px;"></button>
         <div id="colorPickerContainer" style="display: none; margin-top: 10px;">
             <label for="snakeColorPicker" data-lang-key="label_snake_color">Cor Personalizada:</label>
             <input id="snakeColorPicker" type="color" value="#00b894"/>
+        </div>
+        <br/><br/>
+
+        <div class="setting-item">
+            <label for="screenOrientationToggle" data-lang-key="label_screen_orientation">Modo Paisagem (Virar Tela):</label>
+            <input type="checkbox" id="screenOrientationToggle" onchange="toggleScreenOrientation(this.checked)">
         </div>
         <br/><br/>
         
@@ -738,8 +819,26 @@
         <input class="name-input" id="confirmNewPassword" placeholder="Confirme Nova Senha" type="password"/>
         <button class="btn btn-primary" onclick="handleChangePassword()" data-lang-key="confirm_button_3">Confirmar</button>
         <p style="color:red; font-size:12px; min-height: 15px;" id="passwordChangeError"></p>
-
-        </div>
+    </div>
+    <div id="supportSettings" class="settings-tab-content" style="display:none;">
+        <h4 data-lang-key="support_title">Contatar Suporte</h4>
+        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;" data-lang-key="support_description">Encontrou um problema ou tem alguma sugestão? Nos envie uma mensagem!</p>
+        
+        <label for="supportType" data-lang-key="label_support_type">Tópico:</label>
+        <select id="supportType" class="name-input">
+            <option value="bug" data-lang-key="option_bug">Reportar Bug</option>
+            <option value="player" data-lang-key="option_player">Reportar Jogador</option>
+            <option value="feedback" data-lang-key="option_feedback">Feedback/Sugestão</option>
+            <option value="other" data-lang-key="option_other">Outro</option>
+        </select>
+        
+        <label for="supportMessage" data-lang-key="label_support_message">Sua Mensagem:</label>
+        <textarea id="supportMessage" class="name-input" rows="4" style="text-align: left; padding: 10px; resize: vertical;" placeholder="Descreva seu problema ou sugestão detalhadamente aqui..."></textarea>
+        
+        <p style="color:limegreen; font-size:12px; min-height: 15px;" id="supportSuccessMessage"></p>
+        
+        <button class="btn btn-primary" onclick="handleSupportRequest()" data-lang-key="send_button" style="width: 100%;">Enviar</button>
+    </div>
     <button class="btn btn-secondary" onclick="closeSettings()" style="margin-top: 20px; width:100%;" data-lang-key="close_button">Fechar</button>
 </div>
 
@@ -781,7 +880,7 @@
 <div class="game-over" id="gameOver">
 <h2>Game Over!</h2>
 <p><span id="yourScorePrefix" data-lang-key="your_score_prefix">Sua pontuação: </span><span id="finalScore">0</span></p>
-<p><span data-lang-key="coins_earned_in_game_prefix">Moedas ganhas nesta partida: </span><span id="coinsEarnedGameOver">0</span> SC</p>
+<p><span data-lang-key="coins_earned_in_game_prefix">Moedas ganhas nesta partida: </span><span id="coinsEarnedGameOver">0</span>🪙</p>
 <button class="btn btn-primary restart-btn" onclick="restartGame()" data-lang-key="play_again_button">Jogar Novamente</button>
 </div>
 
@@ -811,6 +910,8 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    const skinPreviewCanvas = document.getElementById('skinPreviewCanvas');
+    const previewCtx = skinPreviewCanvas.getContext('2d');
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
@@ -857,11 +958,12 @@
         'default': { name_pt: 'Padrão', name_en: 'Default', name_es: 'Estándar', unlockScore: 0, bodyColor: '#00b894', headColor: '#008269' },
         'spider': { name_pt: 'Aranha', name_en: 'Spider', name_es: 'Araña', unlockScore: 2000, blueColor: '#005AFF', redColor: '#FF0000' },
         'coral': { name_pt: 'Coral', name_en: 'Coral', name_es: 'Coral', unlockScore: 1500, colors: ['#D90429', '#000000', '#FFFFFF'] }, // Vermelho, Preto, Branco
+        'pharaoh': { name_pt: 'Faraó', name_en: 'Pharaoh', name_es: 'Faraón', unlockScore: 2500, bodyColor1: '#FFD700', bodyColor2: '#DAA520', headColor: '#00008B', uraeusColor: '#FF0000' },
         // Novas skins baseadas em SC
         'galaxy': { name_pt: 'Galáxia', name_en: 'Galaxy', name_es: 'Galaxia', unlockCoins: 1500, colors: ['#4B0082', '#00008B', '#8A2BE2'], headColor: '#FFFFFF' },
         'circuit': { name_pt: 'Tecnologia', name_en: 'Circuit', name_es: 'Tecnología', unlockCoins: 1000, bodyColor: '#39FF14', headColor: '#00FFFF' },
         'camo': { name_pt: 'Camo', name_en: 'Camo', name_es: 'Camo', unlockCoins: 500, colors: ['#4B5320', '#8B4513', '#D2B48C'], headColor: '#228B22' },
-        'halloween': { name_pt: 'Halloween', name_en: 'Halloween', name_es: 'Halloween', unlockCoins: 1000, colors: ['#FF8C00', '#4B0082'], headColor: '#000000' },
+        'halloween': { name_pt: 'Halloween', name_en: 'Halloween', name_es: 'Halloween', unlockCoins: 1000, bodyColor1: '#000000', bodyColor2: '#4B0082', headColor: '#FF8C00', lineColor: '#FF8C00' },
         'christmas': { name_pt: 'Natal', name_en: 'Christmas', name_es: 'Navidad', unlockCoins: 500, colors: ['#006400', '#DC143C'], headColor: '#FFD700' }
     };
     let currentSkin = 'default';
@@ -877,10 +979,10 @@
         return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
     }
     const difficulties = {
-        easy: { speed: 200, name_pt: 'Fácil', name_en: 'Easy', name_es: 'Fácil', description_pt: 'Velocidade lenta - Ideal para relaxar!', description_en: 'Slow speed - Ideal for relaxing!', description_es: 'Velocidad lenta - ¡Ideal para relajarse!', emoji: '🐌', points: 5 },
-        normal: { speed: 150, name_pt: 'Normal', name_en: 'Normal', name_es: 'Normal', description_pt: 'Velocidade balanceada - A experiência clássica.', description_en: 'Balanced speed - The classic experience.', description_es: 'Velocidad equilibrada - La experiencia clásica.', emoji: '🐍', points: 10 },
-        hard: { speed: 100, name_pt: 'Difícil', name_en: 'Hard', name_es: 'Difícil', description_pt: 'Velocidade rápida - Um bom desafio!', description_en: 'Fast speed - A good challenge!', description_es: 'Velocidad rápida - ¡Un buen desafío!', emoji: '🚀', points: 20 },
-        insane: { speed: 70, name_pt: 'Insano', name_en: 'Insane', name_es: 'Insano', description_pt: 'Velocidade extrema - Para os mestres da cobrinha!', description_en: 'Extreme speed - For the snake masters!', description_es: 'Velocidad extrema - ¡Para los maestros de la serpiente!', emoji: '💀', points: 30 }
+        easy: { speed: 150, name_pt: 'Fácil', name_en: 'Easy', name_es: 'Fácil', description_pt: 'Velocidade lenta - Ideal para relaxar!', description_en: 'Slow speed - Ideal for relaxing!', description_es: 'Velocidad lenta - ¡Ideal para relajarse!', emoji: '🐌', points: 5 },
+        normal: { speed: 120, name_pt: 'Normal', name_en: 'Normal', name_es: 'Normal', description_pt: 'Velocidade balanceada - A experiência clássica.', description_en: 'Balanced speed - The classic experience.', description_es: 'Velocidad equilibrada - La experiencia clásica.', emoji: '🐍', points: 10 },
+        hard: { speed: 90, name_pt: 'Difícil', name_en: 'Hard', name_es: 'Difícil', description_pt: 'Velocidade rápida - Um bom desafio!', description_en: 'Fast speed - A good challenge!', description_es: 'Velocidad rápida - ¡Un buen desafío!', emoji: '🚀', points: 20 },
+        insane: { speed: 70, name_pt: 'Insano', name_en: 'Insane', name_es: 'Insano', description_pt: 'Velocidade extrema - Para os mestres da cobrinha!', description_en: 'Extreme speed - For the snake masters!', description_es: 'Velocidad extrema - ¡Para los maestros de la serpiente!', emoji: '💀', points: 32 }
     };
     let currentDifficulty = 'normal';
     let gameInterval;
@@ -889,7 +991,7 @@
         'no-walls': { name_pt: 'Sem Paredes', name_en: 'No Walls', name_es: 'Sin Paredes', description_pt: 'Atravesse as paredes e reapareça do outro lado!', description_en: 'Pass through walls and reappear on the other side!', description_es: '¡Atraviesa las paredes y reaparece del otro lado!', wrapAround: true }
     };
     let currentMap = 'normal';
-    const gridSize = 17;
+    const gridSize = 16;
     const tileCount = Math.floor(canvas.width / gridSize);
     let snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}];
     let food = {};
@@ -902,31 +1004,73 @@
     let inputQueue = [];
     const translations = {
         'pt': {
-            'label_skin': 'Visual da Cobrinha:', 'label_snake_color': 'Cor Personalizada:', 'skin_custom': 'Personalizada', 'skin_default': 'Padrão', 'skin_spider': 'Aranha', 'skin_coral': 'Coral', 'skin_galaxy': 'Galáxia', 'skin_circuit': 'Tecnologia', 'skin_camo': 'Camo', 'skin_halloween': 'Halloween', 'skin_christmas': 'Natal', 'congrats_title': '🎉 Parabéns! Novo Recorde! 🎉', 'title_snake_emoji': '', 'title_j': 'J', 'title_o': 'o', 'title_g': 'g', 'title_o2': 'o', 'title_d': ' d', 'title_a': 'a', 'title_c': ' C', 'title_o3': 'o', 'title_b': 'b', 'title_r': 'r', 'title_i': 'i', 'title_n': 'n', 'title_h': 'h', 'title_a2': 'a', 'welcome_title': 'Bem-vindo', 'login_button': 'Entrar', 'no_account_text': 'Ainda não tem conta?', 'register_link': 'Cadastre-se', 'developed_by': 'Desenvolvido por: John Costa', 'register_title': '📝 Cadastro', 'register_button': 'Cadastrar', 'already_have_account_link': 'Já tem conta? Entrar', 'game_title': 'Jogo da Cobrinha', 'player_name_prefix': 'Jogador:', 'score_prefix': 'Pontos:', 'difficulty_prefix': 'Dificuldade:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Configurações', 'tab_general': 'Geral', 'tab_controls': 'Controles', 'tab_account': 'Conta', 'label_screen_background_color': 'Cor da Tela:', 'label_button_sensitivity': 'Sensibilidade dos Botões:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clássico', 'option_floating': 'Flutuante', 'label_joystick_position': 'Posição do Joystick Flutuante:', 'option_right': 'Direita', 'option_left': 'Esquerda', 'option_center': 'Centro', 'change_username_title': 'Mudar Nome de Usuário', 'change_email_title': 'Mudar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Mudar Senha', 'close_button': 'Fechar', 'start_game_button': 'Iniciar Jogo', 'choose_difficulty_title': 'Escolha a Dificuldade:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Escolha o Mapa:', 'map_default_button': '🧱<br>Padrão', 'map_no_walls_button': '🌌<br>Sem Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Sair', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Sua pontuação:', 'play_again_button': 'Jogar Novamente', 'instructions_controls': 'Use os botões para controlar a cobra', 'instructions_food': 'Colete a comida vermelha para crescer!', 'alert_fill_all_fields': 'Preencha todos os campos', 'alert_user_exists': 'Este email já está cadastrado', 'alert_registration_success': 'Cadastro realizado com sucesso!', 'alert_invalid_credentials': 'Email ou senha inválidos', 'alert_confirm_quit': 'Tem certeza que deseja sair da partida atual?', 'alert_no_user_logged_in': 'Nenhum usuário logado.', 'alert_new_email_empty': 'O novo email não pode ser vazio.', 'alert_email_taken': 'Este email já está em uso.', 'alert_incorrect_current_password': 'Senha atual incorreta.', 'alert_email_changed_success': 'Email alterado com sucesso!', 'alert_new_email_same_as_current': 'O novo email é o mesmo que o atual.', 'alert_fill_all_password_fields': 'Preencha todos os campos de senha.', 'alert_old_password_incorrect': 'Senha antiga incorreta.', 'alert_new_passwords_dont_match': 'A nova senha e a confirmação não coincidem.', 'alert_password_changed_success': 'Senha alterada com sucesso!', 'alert_new_password_same_as_old': 'A nova senha não pode ser igual à antiga.', 'password_min_length': 'A senha deve ter no mínimo {minLength} caracteres.', 'password_needs_number': 'A senha deve conter pelo menos um número.', 'password_needs_letter': 'A senha deve conter pelo menos uma letra.', 'alert_invalid_email': 'Por favor, insira um endereço de e-mail válido.', 'choose_username_title': 'Escolha seu nome de usuário', 'choose_username_subtitle': 'Este nome será exibido no jogo e no ranking.', 'alert_username_taken': 'Este nome de usuário já está em uso.', 'alert_username_empty': 'O nome de usuário não pode ser vazio.', 'alert_username_changed_success': 'Nome de usuário alterado com sucesso!', 'alert_new_username_same_as_current': 'O novo nome de usuário é o mesmo que o atual.', 'forgot_password_link': 'Esqueci a senha?', 'alert_enter_email_for_reset': 'Por favor, insira seu email no campo correspondente para redefinir a senha.', 'alert_password_reset_success': 'Email de redefinição de senha enviado! Verifique sua caixa de entrada.',
+            'label_screen_orientation': 'Modo Paisagem (Virar Tela):',
+            'label_skin': 'Visual da Cobrinha:', 'label_snake_color': 'Cor Personalizada:', 'skin_custom': 'Personalizada', 'skin_default': 'Padrão', 'skin_spider': 'Aranha', 'skin_coral': 'Coral', 'skin_pharaoh': 'Faraó', 'skin_galaxy': 'Galáxia', 'skin_circuit': 'Tecnologia', 'skin_camo': 'Camuflado', 'skin_halloween': 'Halloween', 'skin_christmas': 'Natal', 'congrats_title': '🎉 Parabéns! Novo Recorde! 🎉', 'title_snake_emoji': '', 'title_j': 'J', 'title_o': 'o', 'title_g': 'g', 'title_o2': 'o', 'title_d': ' d', 'title_a': 'a', 'title_c': ' C', 'title_o3': 'o', 'title_b': 'b', 'title_r': 'r', 'title_i': 'i', 'title_n': 'n', 'title_h': 'h', 'title_a2': 'a', 'welcome_title': 'Bem-vindo', 'login_button': 'Entrar', 'no_account_text': 'Ainda não tem conta?', 'register_link': 'Cadastre-se', 'developed_by': 'Desenvolvido por: John Costa', 'register_title': '📝 Cadastro', 'register_button': 'Cadastrar', 'already_have_account_link': 'Já tem conta? Entrar', 'game_title': 'Jogo da Cobrinha', 'player_name_prefix': 'Jogador:', 'score_prefix': 'Pontos:', 'difficulty_prefix': 'Dificuldade:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Configurações', 'tab_general': 'Geral', 'tab_controls': 'Controles', 'tab_account': 'Conta', 'label_screen_background_color': 'Cor da Tela:', 'label_button_sensitivity': 'Sensibilidade dos Botões:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clássico', 'option_floating': 'Flutuante', 'label_joystick_position': 'Posição do Joystick Flutuante:', 'option_right': 'Direita', 'option_left': 'Esquerda', 'option_center': 'Centro', 'change_username_title': 'Mudar Nome de Usuário', 'change_email_title': 'Mudar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Mudar Senha', 'close_button': 'Fechar', 'start_game_button': 'Iniciar Jogo', 'choose_difficulty_title': 'Escolha a Dificuldade:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Escolha o Mapa:', 'map_default_button': '🧱<br>Padrão', 'map_no_walls_button': '🌌<br>Sem Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Sair', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Sua pontuação:', 'play_again_button': 'Jogar Novamente', 'instructions_controls': 'Use os botões para controlar a cobra', 'instructions_food': 'Colete a comida vermelha para crescer!', 'alert_fill_all_fields': 'Preencha todos os campos', 'alert_user_exists': 'Este email já está cadastrado', 'alert_registration_success': 'Cadastro realizado com sucesso!', 'alert_invalid_credentials': 'Email ou senha inválidos', 'alert_confirm_quit': 'Tem certeza que deseja sair da partida atual?', 'alert_no_user_logged_in': 'Nenhum usuário logado.', 'alert_new_email_empty': 'O novo email não pode ser vazio.', 'alert_email_taken': 'Este email já está em uso.', 'alert_incorrect_current_password': 'Senha atual incorreta.', 'alert_email_changed_success': 'Email alterado com sucesso!', 'alert_new_email_same_as_current': 'O novo email é o mesmo que o atual.', 'alert_fill_all_password_fields': 'Preencha todos os campos de senha.', 'alert_old_password_incorrect': 'Senha antiga incorreta.', 'alert_new_passwords_dont_match': 'A nova senha e a confirmação não coincidem.', 'alert_password_changed_success': 'Senha alterada com sucesso!', 'alert_new_password_same_as_old': 'A nova senha não pode ser igual à antiga.', 'password_min_length': 'A senha deve ter no mínimo {minLength} caracteres.', 'password_needs_number': 'A senha deve conter pelo menos um número.', 'password_needs_letter': 'A senha deve conter pelo menos uma letra.', 'alert_invalid_email': 'Por favor, insira um endereço de e-mail válido.', 'choose_username_title': 'Escolha seu nome de usuário', 'choose_username_subtitle': 'Este nome será exibido no jogo e no ranking.', 'alert_username_taken': 'Este nome de usuário já está em uso.', 'alert_username_empty': 'O nome de usuário não pode ser vazio.', 'alert_username_changed_success': 'Nome de usuário alterado com sucesso!', 'alert_new_username_same_as_current': 'O novo nome de usuário é o mesmo que o atual.', 'forgot_password_link': 'Esqueci a senha?', 'alert_enter_email_for_reset': 'Por favor, insira seu email no campo correspondente para redefinir a senha.', 'alert_password_reset_success': 'Email de redefinição de senha enviado! Verifique sua caixa de entrada.',
             'coins_earned_in_game_prefix': 'Moedas ganhas nesta partida:',
             'total_coins_display': 'SC',
             'confirm_buy_skin': 'Tem certeza que deseja comprar esta skin por',
             'not_enough_coins': 'Você não tem Snake Coins suficientes para comprar esta skin!',
             'skin_unlocked_success': 'Skin desbloqueada com sucesso!',
-            'your_high_score_prefix': 'Seu Recorde:'
+            'your_high_score_prefix': 'Seu Recorde:',
+            // Novas traduções de Suporte
+            'tab_support': 'Suporte',
+            'support_title': 'Contatar Suporte',
+            'support_description': 'Encontrou um problema ou tem alguma sugestão? Nos envie uma mensagem!',
+            'label_support_type': 'Tópico:',
+            'option_bug': 'Reportar Bug',
+            'option_player': 'Reportar Jogador',
+            'option_feedback': 'Feedback/Sugestão',
+            'option_other': 'Outro',
+            'label_support_message': 'Sua Mensagem:',
+            'send_button': 'Enviar',
+            'alert_support_message_empty': 'A mensagem não pode estar vazia.',
+            'alert_support_success': 'Mensagem enviada com sucesso! Agradecemos o contato.'
         },
         'en': {
-            'label_skin': 'Snake Skin:', 'label_snake_color': 'Custom Color:', 'skin_custom': 'Custom', 'skin_default': 'Default', 'skin_spider': 'Spider', 'skin_coral': 'Coral', 'skin_galaxy': 'Galaxy', 'skin_circuit': 'Circuit', 'skin_camo': 'Camo', 'skin_halloween': 'Halloween', 'skin_christmas': 'Christmas', 'congrats_title': '🎉 Congratulations! New Record! 🎉', 'title_snake_emoji': '', 'title_j': 'S', 'title_o': 'n', 'title_g': 'a', 'title_o2': 'k', 'title_d': 'e', 'title_a': ' G', 'title_c': 'a', 'title_o3': 'm', 'title_b': 'e', 'title_r': '', 'title_i': '', 'title_n': '', 'title_h': '', 'title_a2': '', 'welcome_title': 'Welcome', 'login_button': 'Login', 'no_account_text': 'Don\'t have an account?', 'register_link': 'Sign Up', 'developed_by': 'John Costa', 'register_title': '📝 Sign Up', 'register_button': 'Sign Up', 'already_have_account_link': 'Already have an account? Login', 'game_title': ' Snake Game', 'player_name_prefix': 'Player:', 'score_prefix': 'Score:', 'difficulty_prefix': 'Difficulty:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Settings', 'tab_general': 'General', 'tab_controls': 'Controls', 'tab_account': 'Account', 'label_screen_background_color': 'Screen Color:', 'label_button_sensitivity': 'Button Sensitivity:', 'label_joystick_model': 'Joystick Model:', 'option_classic': 'Classic', 'option_floating': 'Floating', 'label_joystick_position': 'Floating Joystick Position:', 'option_right': 'Right', 'option_left': 'Left', 'option_center': 'Center', 'change_username_title': 'Change Username', 'change_email_title': 'Change Email', 'confirm_button': 'Confirm', 'confirm_button_2': 'Confirm', 'confirm_button_3': 'Confirm', 'change_password_title': 'Change Password', 'close_button': 'Close', 'start_game_button': 'Start Game', 'choose_difficulty_title': 'Choose Difficulty:', 'difficulty_easy_button': '🐌<br>Easy', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Hard', 'difficulty_insane_button': '💀<br>Insane', 'choose_map_title': 'Choose Map:', 'map_default_button': '🧱<br>Standard', 'map_no_walls_button': '🌌<br>No Walls', 'pause_button': 'Pause', 'continue_button': 'Continue', 'quit_game_button': '🚫 Quit', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Your Score:', 'play_again_button': 'Play Again', 'instructions_controls': 'Use the buttons to control the snake', 'instructions_food': 'Collect red food to grow!', 'alert_fill_all_fields': 'Please fill in all fields', 'alert_user_exists': 'This email is already registered', 'alert_registration_success': 'Registration successful!', 'alert_invalid_credentials': 'Invalid email or password', 'alert_confirm_quit': 'Are you sure you want to quit the current game?', 'alert_no_user_logged_in': 'No user logged in.', 'alert_new_email_empty': 'New email cannot be empty.', 'alert_email_taken': 'This email is already in use.', 'alert_incorrect_current_password': 'Incorrect current password.', 'alert_email_changed_success': 'Email changed successfully!', 'alert_new_email_same_as_current': 'The new email is the same as the current one.', 'alert_fill_all_password_fields': 'Please fill in all password fields.', 'alert_old_password_incorrect': 'Incorrect old password.', 'alert_new_passwords_dont_match': 'New password and confirmation do not match.', 'alert_password_changed_success': 'Password changed successfully!', 'alert_new_password_same_as_old': 'New password cannot be the same as the old one.', 'password_min_length': 'Password must be at least {minLength} characters long.', 'password_needs_number': 'Password must contain at least one number.', 'password_needs_letter': 'Password must contain at least one letter.', 'alert_invalid_email': 'Please enter a valid email address.', 'choose_username_title': 'Choose your username', 'choose_username_subtitle': 'This name will be displayed in-game and on the leaderboard.', 'alert_username_taken': 'This username is already taken.', 'alert_username_empty': 'Username cannot be empty.', 'alert_username_changed_success': 'Username changed successfully!', 'alert_new_username_same_as_current': 'The new username is the same as the current one.', 'forgot_password_link': 'Forgot password?', 'alert_enter_email_for_reset': 'Please enter your email in the field to reset your password.', 'alert_password_reset_success': 'Password reset email sent! Check your inbox.',
+            'label_screen_orientation': 'Landscape Mode (Rotate Screen):',
+            'label_skin': 'Snake Skin:', 'label_snake_color': 'Custom Color:', 'skin_custom': 'Custom', 'skin_default': 'Default', 'skin_spider': 'Spider', 'skin_coral': 'Coral', 'skin_pharaoh': 'Pharaoh', 'skin_galaxy': 'Galaxy', 'skin_circuit': 'Circuit', 'skin_camo': 'Camouflaged', 'skin_halloween': 'Halloween', 'skin_christmas': 'Christmas', 'congrats_title': '🎉 Congratulations! New Record! 🎉', 'title_snake_emoji': '', 'title_j': 'S', 'title_o': 'n', 'title_g': 'a', 'title_o2': 'k', 'title_d': 'e', 'title_a': ' G', 'title_c': 'a', 'title_o3': 'm', 'title_b': 'e', 'title_r': '', 'title_i': '', 'title_n': '', 'title_h': '', 'title_a2': '', 'welcome_title': 'Welcome', 'login_button': 'Login', 'no_account_text': 'Don\'t have an account?', 'register_link': 'Sign Up', 'developed_by': 'John Costa', 'register_title': '📝 Sign Up', 'register_button': 'Sign Up', 'already_have_account_link': 'Already have an account? Login', 'game_title': ' Snake Game', 'player_name_prefix': 'Player:', 'score_prefix': 'Score:', 'difficulty_prefix': 'Difficulty:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Settings', 'tab_general': 'General', 'tab_controls': 'Controls', 'tab_account': 'Account', 'label_screen_background_color': 'Screen Color:', 'label_button_sensitivity': 'Button Sensitivity:', 'label_joystick_model': 'Joystick Model:', 'option_classic': 'Classic', 'option_floating': 'Floating', 'label_joystick_position': 'Floating Joystick Position:', 'option_right': 'Right', 'option_left': 'Left', 'option_center': 'Center', 'change_username_title': 'Change Username', 'change_email_title': 'Change Email', 'confirm_button': 'Confirm', 'confirm_button_2': 'Confirm', 'confirm_button_3': 'Confirm', 'change_password_title': 'Change Password', 'close_button': 'Close', 'start_game_button': 'Start Game', 'choose_difficulty_title': 'Choose Difficulty:', 'difficulty_easy_button': '🐌<br>Easy', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Hard', 'difficulty_insane_button': '💀<br>Insane', 'choose_map_title': 'Choose Map:', 'map_default_button': '🧱<br>Standard', 'map_no_walls_button': '🌌<br>No Walls', 'pause_button': 'Pause', 'continue_button': 'Continue', 'quit_game_button': '🚫 Quit', 'game_over_title': 'Game Over!', 'your_score_prefix': 'Your Score:', 'play_again_button': 'Play Again', 'instructions_controls': 'Use the buttons to control the snake', 'instructions_food': 'Collect red food to grow!', 'alert_fill_all_fields': 'Please fill in all fields', 'alert_user_exists': 'This email is already registered', 'alert_registration_success': 'Registration successful!', 'alert_invalid_credentials': 'Invalid email or password', 'alert_confirm_quit': 'Are you sure you want to quit the current game?', 'alert_no_user_logged_in': 'No user logged in.', 'alert_new_email_empty': 'New email cannot be empty.', 'alert_email_taken': 'This email is already in use.', 'alert_incorrect_current_password': 'Incorrect current password.', 'alert_email_changed_success': 'Email changed successfully!', 'alert_new_email_same_as_current': 'The new email is the same as the current one.', 'alert_fill_all_password_fields': 'Please fill in all password fields.', 'alert_old_password_incorrect': 'Incorrect old password.', 'alert_new_passwords_dont_match': 'New password and confirmation do not match.', 'alert_password_changed_success': 'Password changed successfully!', 'alert_new_password_same_as_old': 'New password cannot be the same as the old one.', 'password_min_length': 'Password must be at least {minLength} characters long.', 'password_needs_number': 'Password must contain at least one number.', 'password_needs_letter': 'Password must contain at least one letter.', 'alert_invalid_email': 'Please enter a valid email address.', 'choose_username_title': 'Choose your username', 'choose_username_subtitle': 'This name will be displayed in-game and on the leaderboard.', 'alert_username_taken': 'This username is already taken.', 'alert_username_empty': 'Username cannot be empty.', 'alert_username_changed_success': 'Username changed successfully!', 'alert_new_username_same_as_current': 'The new username is the same as the current one.', 'forgot_password_link': 'Forgot password?', 'alert_enter_email_for_reset': 'Please enter your email in the field to reset your password.', 'alert_password_reset_success': 'Password reset email sent! Check your inbox.',
             'coins_earned_in_game_prefix': 'Coins earned this game:',
             'total_coins_display': 'SC',
             'confirm_buy_skin': 'Are you sure you want to buy this skin for',
             'not_enough_coins': 'You do not have enough Snake Coins to buy this skin!',
             'skin_unlocked_success': 'Skin unlocked successfully!',
-            'your_high_score_prefix': 'Your High Score:'
+            'your_high_score_prefix': 'Your High Score:',
+            // Novas traduções de Suporte
+            'tab_support': 'Support',
+            'support_title': 'Contact Support',
+            'support_description': 'Found an issue or have a suggestion? Send us a message!',
+            'label_support_type': 'Topic:',
+            'option_bug': 'Report a Bug',
+            'option_player': 'Report a Player',
+            'option_feedback': 'Feedback/Suggestion',
+            'option_other': 'Other',
+            'label_support_message': 'Your Message:',
+            'send_button': 'Send',
+            'alert_support_message_empty': 'The message cannot be empty.',
+            'alert_support_success': 'Message sent successfully! Thank you for contacting us.'
         },
         'es': {
-            'label_skin': 'Aspecto de Serpiente:', 'label_snake_color': 'Color Personalizado:', 'skin_custom': 'Personalizado', 'skin_default': 'Estándar', 'skin_spider': 'Araña', 'skin_coral': 'Coral', 'skin_galaxy': 'Galaxia', 'skin_circuit': 'Tecnología', 'skin_camo': 'Camo', 'skin_halloween': 'Halloween', 'skin_christmas': 'Navidad', 'congrats_title': '🎉 ¡Felicidades! ¡Nuevo Récord! 🎉', 'title_snake_emoji': '', 'title_j': 'J', 'title_o': 'u', 'title_g': 'e', 'title_o2': 'g', 'title_d': 'o', 'title_a': ' d', 'title_c': 'e', 'title_o3': ' l', 'title_b': 'a', 'title_r': ' S', 'title_i': 'e', 'title_n': 'r', 'title_h': 'p', 'title_a2': 'iente', 'welcome_title': 'Bienvenido', 'login_button': 'Iniciar Sesión', 'no_account_text': '¿No tienes cuenta?', 'register_link': 'Regístrate', 'developed_by': 'Desarrollado por: John Costa', 'register_title': '📝 Registro', 'register_button': 'Registrar', 'already_have_account_link': '¿Ya tienes cuenta? Iniciar Sesión', 'game_title': ' Juego de la Serpiente', 'player_name_prefix': 'Jugador:', 'score_prefix': 'Puntos:', 'difficulty_prefix': 'Dificultad:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Ajustes', 'tab_general': 'General', 'tab_controls': 'Controles', 'tab_account': 'Cuenta', 'label_screen_background_color': 'Color de la Pantalla:', 'label_button_sensitivity': 'Sensibilidad de los Botones:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clásico', 'option_floating': 'Flotante', 'label_joystick_position': 'Posición del Joystick Flotante:', 'option_right': 'Derecha', 'option_left': 'Izquierda', 'option_center': 'Centro', 'change_username_title': 'Cambiar Nombre de Usuario', 'change_email_title': 'Cambiar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Cambiar Contraseña', 'close_button': 'Cerrar', 'start_game_button': 'Iniciar Juego', 'choose_difficulty_title': 'Elige la Dificultad:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Elige el Mapa:', 'map_default_button': '🧱<br>Estándar', 'map_no_walls_button': '🌌<br>Sin Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Salir', 'game_over_title': '¡Fin del Juego!', 'your_score_prefix': 'Tu puntuación:', 'play_again_button': 'Jugar de Nuevo', 'instructions_controls': 'Usa los botones para controlar la serpiente', 'instructions_food': '¡Recoge la comida roja para crecer!', 'alert_fill_all_fields': 'Por favor, rellene todos los campos', 'alert_user_exists': 'Este correo electrónico ya está registrado', 'alert_registration_success': '¡Registro exitoso!', 'alert_invalid_credentials': 'Correo electrónico o contraseña no válidos', 'alert_confirm_quit': '¿Estás seguro de que quieres salir del juego actual?', 'alert_no_user_logged_in': 'Ningún usuario ha iniciado sesión.', 'alert_new_email_empty': 'El nuevo correo electrónico no puede estar vacío.', 'alert_email_taken': 'Este correo electrónico ya está en uso.', 'alert_incorrect_current_password': 'Contraseña actual incorrecta.', 'alert_email_changed_success': '¡Correo electrónico cambiado con éxito!', 'alert_new_email_same_as_current': 'El nuevo correo electrónico es el mismo que el actual.', 'alert_fill_all_password_fields': 'Por favor, rellene todos los campos de contraseña.', 'alert_old_password_incorrect': 'Contraseña antigua incorrecta.', 'alert_new_passwords_dont_match': 'La nueva contraseña y la confirmación no coinciden.', 'alert_password_changed_success': '¡Contraseña cambiada con éxito!', 'alert_new_password_same_as_old': 'La nueva contraseña no puede ser igual a la antigua.', 'password_min_length': 'La contraseña debe tener al menos {minLength} caracteres.', 'password_needs_number': 'La contraseña debe contener al menos un número.', 'password_needs_letter': 'La contraseña debe contener al menos una letra.', 'alert_invalid_email': 'Por favor, introduce una dirección de correo electrónico válida.', 'choose_username_title': 'Elige tu nombre de usuario', 'choose_username_subtitle': 'Este nombre se mostrará en el juego y en la clasificación.', 'alert_username_taken': 'Este nombre de usuario ya está en uso.', 'alert_username_empty': 'El nombre de usuario no puede estar vacío.', 'alert_username_changed_success': '¡Nombre de usuario cambiado con éxito!', 'alert_new_username_same_as_current': 'El nuevo nombre de usuario es el mismo que el actual.', 'forgot_password_link': '¿Olvidaste la contraseña?', 'alert_enter_email_for_reset': 'Por favor, introduce tu correo electrónico en el campo para restablecer la contraseña.', 'alert_password_reset_success': '¡Correo de restablecimiento de contraseña enviado! Revisa tu bandeja de entrada.',
+            'label_screen_orientation': 'Modo Horizontal (Girar Pantalla):',
+            'label_skin': 'Aspecto de Serpiente:', 'label_snake_color': 'Color Personalizado:', 'skin_custom': 'Personalizado', 'skin_default': 'Estándar', 'skin_spider': 'Araña', 'skin_coral': 'Coral', 'skin_pharaoh': 'Faraón', 'skin_galaxy': 'Galaxia', 'skin_circuit': 'Tecnología', 'skin_camo': 'Camuflado', 'skin_halloween': 'Halloween', 'skin_christmas': 'Navidad', 'congrats_title': '🎉 ¡Felicidades! ¡Nuevo Récord! 🎉', 'title_snake_emoji': '', 'title_j': 'J', 'title_o': 'u', 'title_g': 'e', 'title_o2': 'g', 'title_d': 'o', 'title_a': ' d', 'title_c': 'e', 'title_o3': ' l', 'title_b': 'a', 'title_r': ' S', 'title_i': 'e', 'title_n': 'r', 'title_h': 'p', 'title_a2': 'iente', 'welcome_title': 'Bienvenido', 'login_button': 'Iniciar Sesión', 'no_account_text': '¿No tienes cuenta?', 'register_link': 'Regístrate', 'developed_by': 'Desarrollado por: John Costa', 'register_title': '📝 Registro', 'register_button': 'Registrar', 'already_have_account_link': '¿Ya tienes cuenta? Iniciar Sesión', 'game_title': ' Juego de la Serpiente', 'player_name_prefix': 'Jugador:', 'score_prefix': 'Puntos:', 'difficulty_prefix': 'Dificultad:', 'top3_title': '🏆 TOP 3', 'logout_button': '🚪', 'settings_title': '⚙️ Ajustes', 'tab_general': 'General', 'tab_controls': 'Controles', 'tab_account': 'Cuenta', 'label_screen_background_color': 'Color de la Pantalla:', 'label_button_sensitivity': 'Sensibilidad de los Botones:', 'label_joystick_model': 'Modelo de Joystick:', 'option_classic': 'Clásico', 'option_floating': 'Flotante', 'label_joystick_position': 'Posición del Joystick Flotante:', 'option_right': 'Derecha', 'option_left': 'Izquierda', 'option_center': 'Centro', 'change_username_title': 'Cambiar Nombre de Usuario', 'change_email_title': 'Cambiar Email', 'confirm_button': 'Confirmar', 'confirm_button_2': 'Confirmar', 'confirm_button_3': 'Confirmar', 'change_password_title': 'Cambiar Contraseña', 'close_button': 'Cerrar', 'start_game_button': 'Iniciar Juego', 'choose_difficulty_title': 'Elige la Dificultad:', 'difficulty_easy_button': '🐌<br>Fácil', 'difficulty_normal_button': '🐍<br>Normal', 'difficulty_hard_button': '🚀<br>Difícil', 'difficulty_insane_button': '💀<br>Insano', 'choose_map_title': 'Elige el Mapa:', 'map_default_button': '🧱<br>Estándar', 'map_no_walls_button': '🌌<br>Sin Paredes', 'pause_button': 'Pausar', 'continue_button': 'Continuar', 'quit_game_button': '🚫 Salir', 'game_over_title': '¡Fin del Juego!', 'your_score_prefix': 'Tu puntuación:', 'play_again_button': 'Jugar de Nuevo', 'instructions_controls': 'Usa los botones para controlar la serpiente', 'instructions_food': '¡Recoge la comida roja para crecer!', 'alert_fill_all_fields': 'Por favor, rellene todos los campos', 'alert_user_exists': 'Este correo electrónico ya está registrado', 'alert_registration_success': '¡Registro exitoso!', 'alert_invalid_credentials': 'Correo electrónico o contraseña no válidos', 'alert_confirm_quit': '¿Estás seguro de que quieres salir del juego actual?', 'alert_no_user_logged_in': 'Ningún usuario ha iniciado sesión.', 'alert_new_email_empty': 'El nuevo correo electrónico no puede estar vacío.', 'alert_email_taken': 'Este correo electrónico ya está en uso.', 'alert_incorrect_current_password': 'Contraseña actual incorrecta.', 'alert_email_changed_success': '¡Correo electrónico cambiado con éxito!', 'alert_new_email_same_as_current': 'El nuevo correo electrónico es el mismo que el actual.', 'alert_fill_all_password_fields': 'Por favor, rellene todos los campos de contraseña.', 'alert_old_password_incorrect': 'Contraseña antigua incorrecta.', 'alert_new_passwords_dont_match': 'La nueva contraseña y la confirmación no coinciden.', 'alert_password_changed_success': '¡Contraseña cambiada con éxito!', 'alert_new_password_same_as_old': 'La nueva contraseña no puede ser igual a la antigua.', 'password_min_length': 'La contraseña debe tener al menos {minLength} caracteres.', 'password_needs_number': 'La contraseña debe contener al menos un número.', 'password_needs_letter': 'La contraseña debe contener al menos uma letra.', 'alert_invalid_email': 'Por favor, introduce una dirección de correo electrónico válida.', 'choose_username_title': 'Elige tu nombre de usuario', 'choose_username_subtitle': 'Este nombre se mostrará en el juego y en la clasificación.', 'alert_username_taken': 'Este nombre de usuario ya está en uso.', 'alert_username_empty': 'El nombre de usuario no puede estar vacío.', 'alert_username_changed_success': '¡Nombre de usuario cambiado con éxito!', 'alert_new_username_same_as_current': 'El nuevo nombre de usuario es el mismo que el actual.', 'forgot_password_link': '¿Olvidaste la contraseña?', 'alert_enter_email_for_reset': 'Por favor, introduce tu correo electrónico en el campo para restablecer la contraseña.', 'alert_password_reset_success': '¡Correo de restablecimiento de contraseña enviado! Revisa tu bandeja de entrada.',
             'coins_earned_in_game_prefix': 'Monedas ganadas en esta partida:',
             'total_coins_display': 'SC',
             'confirm_buy_skin': '¿Estás seguro de que quieres comprar esta skin por',
             'not_enough_coins': '¡No tienes suficientes Snake Coins para comprar esta skin!',
             'skin_unlocked_success': '¡Skin desbloqueada con éxito!',
-            'your_high_score_prefix': 'Tu Record:'
+            'your_high_score_prefix': 'Tu Record:',
+            // Novas traduções de Suporte
+            'tab_support': 'Soporte',
+            'support_title': 'Contactar a Soporte',
+            'support_description': '¿Encontraste un problema o tienes una sugerencia? ¡Envíanos un mensaje!',
+            'label_support_type': 'Asunto:',
+            'option_bug': 'Reportar un Bug',
+            'option_player': 'Reportar un Jugador',
+            'option_feedback': 'Comentarios/Sugerencia',
+            'option_other': 'Otro',
+            'label_support_message': 'Tu Mensaje:',
+            'send_button': 'Enviar',
+            'alert_support_message_empty': 'El mensaje no puede estar vacío.',
+            'alert_support_success': '¡Mensaje enviado con éxito! Gracias por contactarnos.'
         }
     };
     let currentLanguage = localStorage.getItem('snakeGameLanguage') || 'pt';
@@ -936,7 +1080,6 @@
         document.querySelectorAll('[data-lang-key]').forEach(element => {
             const key = element.getAttribute('data-lang-key');
             const text = lang[key];
-            // Se a chave for uma skin, o tratamento é diferente para o populateSkinSelector
             if (key.startsWith('skin_')) return; 
 
             if (key.startsWith('title_') && element.closest('.main-title')) {
@@ -951,8 +1094,8 @@
                 } else {
                     element.textContent = text;
                 }
-            } else if (key === 'your_high_score_prefix') { // Adicionado para o recorde pessoal
-                element.textContent = text; // Define apenas o prefixo aqui, o valor será no userHighScoreDisplay
+            } else if (key === 'your_high_score_prefix') {
+                element.textContent = text;
             } else if (element.placeholder && key) {
                 element.placeholder = text;
             } else if (key === 'no_account_text') {
@@ -972,13 +1115,17 @@
                 if (text) element.textContent = text;
             }
         });
-        // Atualiza o texto do total de moedas com o emoji e a sigla
         totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
-        // userHighScoreDisplay.textContent = userHighScore; // Comentado, será atualizado por updateLeaderboardDisplay
         
+        // Atualiza placeholder do campo de mensagem de suporte
+        const supportMessageTextarea = document.getElementById('supportMessage');
+        if (supportMessageTextarea) {
+            supportMessageTextarea.placeholder = translations[currentLanguage]['placeholder_support_message'] || 'Descreva seu problema ou sugestão detalhadamente aqui...';
+        }
+
         populateSkinSelector();
         selectDifficulty(currentDifficulty);
-        selectMap(currentMap); // Chama para garantir que o recorde pessoal seja atualizado
+        selectMap(currentMap);
     }
     function toggleLanguageDropdown() { document.getElementById('languageDropdown').classList.toggle('show'); }
     function selectLanguage(lang) {
@@ -997,36 +1144,26 @@
         difficultyInfo.textContent = difficulties[difficulty]['description_' + currentLanguage];
     }
 
-    // MODIFICADO: Função selectMap para atualizar o recorde pessoal e o leaderboard
     function selectMap(map) {
         currentMap = map; 
         document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => btn.classList.remove('selected'));
         document.querySelector(`.map-selection .difficulty-btn[onclick*="'${map}'"]`).classList.add('selected');
         mapInfo.textContent = maps[map]['description_' + currentLanguage];
-
-        // Atualiza o display do recorde pessoal ao mudar o mapa
         userHighScoreDisplay.textContent = userHighScoresPerMap[currentMap] || 0;
-
-        updateLeaderboardDisplay(); // Chama para recarregar o leaderboard com o novo mapa
+        updateLeaderboardDisplay();
     }
     function randomTile() { return Math.floor(Math.random() * tileCount); }
     function generateFood() { food = { x: randomTile(), y: randomTile() }; for (let segment of snake) { if (segment.x === food.x && segment.y === food.y) { generateFood(); return; } } }
     
     function queueDirection(newDx, newDy) {
         if (!gameRunning || !gameStarted) return;
-
-        // Determine the last direction of movement (either from the queue or the snake itself)
         let lastDirection = { dx: dx, dy: dy };
         if (inputQueue.length > 0) {
             lastDirection = inputQueue[inputQueue.length - 1];
         }
-
-        // Prevent queuing an immediate 180-degree turn
         if ((newDx !== 0 && newDx === -lastDirection.dx) || (newDy !== 0 && newDy === -lastDirection.dy)) {
             return;
         }
-
-        // Limit queue size to 2 to prevent buffering too many moves
         if (inputQueue.length < 2) {
             inputQueue.push({ dx: newDx, dy: newDy });
         }
@@ -1036,14 +1173,10 @@
         if (gamePaused || !gameRunning || inputQueue.length === 0) {
             return;
         }
-        
         const nextMove = inputQueue.shift();
-
-        // A final check against the snake's *actual* current direction.
         if ((nextMove.dx !== 0 && nextMove.dx === -dx) || (nextMove.dy !== 0 && nextMove.dy === -dy)) {
             return;
         }
-        
         dx = nextMove.dx;
         dy = nextMove.dy;
     }
@@ -1053,28 +1186,313 @@
             return;
         }
         e.preventDefault();
-
         if (dx === 0 && dy === 0) return;
-
         const rect = canvas.getBoundingClientRect();
         const touch = e.type === 'touchstart' ? e.touches[0] : e;
-
         const tapX = touch.clientX - rect.left;
         const tapY = touch.clientY - rect.top;
-
         const headCanvasX = snake[0].x * gridSize + (gridSize / 2);
         const headCanvasY = snake[0].y * gridSize + (gridSize / 2);
-
         const deltaX = tapX - headCanvasX;
         const deltaY = tapY - headCanvasY;
-
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            queueDirection(deltaX > 0 ? 1 : -1, 0); // Right or Left
+            queueDirection(deltaX > 0 ? 1 : -1, 0);
         } else {
-            queueDirection(0, deltaY > 0 ? 1 : -1); // Down or Up
+            queueDirection(0, deltaY > 0 ? 1 : -1);
         }
     }
     
+    // ==================================================================
+    // FUNÇÃO PARA VIRAR A TELA (MODO PAISAGEM)
+    // ==================================================================
+    async function toggleScreenOrientation(isLandscape) {
+        try {
+            if (isLandscape) {
+                // Tenta travar a tela em modo paisagem
+                await screen.orientation.lock('landscape-primary');
+                document.body.classList.add('landscape-mode');
+            } else {
+                // Tenta travar a tela em modo retrato
+                await screen.orientation.lock('portrait-primary');
+                document.body.classList.remove('landscape-mode');
+            }
+        } catch (error) {
+            // Navegadores de desktop não suportam isso, o erro é esperado.
+            console.warn("Screen orientation lock is not supported on this device/browser.", error);
+            // Simula a mudança de layout no desktop para fins de teste
+            if (isLandscape) {
+                document.body.classList.add('landscape-mode');
+            } else {
+                document.body.classList.remove('landscape-mode');
+            }
+        }
+    }
+
+    // ==================================================================
+    // FUNÇÃO DO VISUALIZADOR DE SKINS
+    // ==================================================================
+    function drawSkinPreview(skinKey) {
+    if (!previewCtx) return;
+
+    const previewGridSize = 20;
+    const previewCanvasWidth = skinPreviewCanvas.width;
+    const previewCanvasHeight = skinPreviewCanvas.height;
+
+    previewCtx.clearRect(0, 0, previewCanvasWidth, previewCanvasHeight);
+    previewCtx.fillStyle = '#11131e';
+    previewCtx.fillRect(0, 0, previewCanvasWidth, previewCanvasHeight);
+
+    const previewSnake = [
+        { x: 4, y: 1 }, { x: 3, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }
+    ];
+    const offsetX = 10;
+    const skinOptions = skins[skinKey] || skins['default'];
+    
+    // Helper da teia da aranha
+    const drawPreviewWebPattern = (x, y) => {
+        previewCtx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        previewCtx.lineWidth = 1;
+        previewCtx.beginPath();
+        previewCtx.moveTo(x + previewGridSize / 3, y);
+        previewCtx.lineTo(x + previewGridSize / 3, y + previewGridSize);
+        previewCtx.moveTo(x + (previewGridSize / 3) * 2, y);
+        previewCtx.lineTo(x + (previewGridSize / 3) * 2, y + previewGridSize);
+        previewCtx.moveTo(x, y + previewGridSize / 3);
+        previewCtx.lineTo(x + previewGridSize, y + previewGridSize / 3);
+        previewCtx.moveTo(x, y + (previewGridSize / 3) * 2);
+        previewCtx.lineTo(x + previewGridSize, y + (previewGridSize / 3) * 2);
+        previewCtx.stroke();
+    };
+
+    // --- DESENHO DE CADA SEGMENTO, SKIN POR SKIN ---
+    // Loop de trás para frente para facilitar a lógica de alguns desenhos
+    for (let i = previewSnake.length - 1; i >= 0; i--) {
+        const segment = previewSnake[i];
+        const segmentX = segment.x * previewGridSize + offsetX;
+        const segmentY = segment.y * previewGridSize;
+        const isHead = (i === 0);
+
+        if (skinKey === 'default' || skinKey === 'custom') {
+            let color;
+            if (isHead) {
+                color = (skinKey === 'custom') ? shadeColor(document.getElementById('snakeColorPicker').value, -20) : skinOptions.headColor;
+            } else {
+                color = (skinKey === 'custom') ? document.getElementById('snakeColorPicker').value : skinOptions.bodyColor;
+            }
+            previewCtx.fillStyle = color;
+            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+        
+        } else if (skinKey === 'pharaoh') {
+            const goldColor = '#FFD700', blueColor = '#00008B';
+            if (isHead) {
+                const eyeWhiteColor = '#FFFFFF', eyePupilColor = '#000000';
+                previewCtx.save();
+                previewCtx.translate(segmentX + previewGridSize / 2, segmentY + previewGridSize / 2);
+                previewCtx.rotate(Math.PI / 2);
+                const halfGrid = previewGridSize / 2;
+                previewCtx.fillStyle = blueColor; previewCtx.fillRect(-halfGrid, -halfGrid, previewGridSize, previewGridSize);
+                previewCtx.fillStyle = goldColor; previewCtx.fillRect(-halfGrid, -halfGrid, previewGridSize, halfGrid * 0.2);
+                previewCtx.fillRect(-halfGrid, -halfGrid * 0.2, previewGridSize, halfGrid * 0.2);
+                previewCtx.fillRect(-halfGrid, halfGrid * 0.6, previewGridSize, halfGrid * 0.2);
+                previewCtx.fillStyle = goldColor; previewCtx.fillRect(-halfGrid * 0.6, -halfGrid * 0.8, halfGrid * 1.2, halfGrid * 0.8);
+                const eyeY = -halfGrid * 0.5, eyeX = -halfGrid * 0.2;
+                previewCtx.fillStyle = eyeWhiteColor; previewCtx.fillRect(eyeX - (previewGridSize * 0.2), eyeY, previewGridSize * 0.4, previewGridSize * 0.2);
+                previewCtx.fillRect(-eyeX - (previewGridSize * 0.2), eyeY, previewGridSize * 0.4, previewGridSize * 0.2);
+                previewCtx.fillStyle = eyePupilColor; previewCtx.fillRect(eyeX - (previewGridSize * 0.05), eyeY, previewGridSize * 0.1, previewGridSize * 0.2);
+                previewCtx.fillRect(-eyeX - (previewGridSize * 0.05), eyeY, previewGridSize * 0.1, previewGridSize * 0.2);
+                const beardYStart = halfGrid * 0.1; const beardHeight = halfGrid * 0.8;
+                previewCtx.fillStyle = blueColor; previewCtx.fillRect(-previewGridSize * 0.15, beardYStart, previewGridSize * 0.3, beardHeight);
+                previewCtx.fillStyle = goldColor;
+                for (let j = 0; j < 3; j++) { previewCtx.fillRect(-previewGridSize * 0.15, beardYStart + (j * 0.3) * beardHeight, previewGridSize * 0.3, beardHeight * 0.15); }
+                previewCtx.restore();
+            } else {
+                const prevSegment = previewSnake[i - 1];
+                const segmentDx = segment.x - prevSegment.x;
+                const halfGridSize = previewGridSize / 2;
+                if (segmentDx === 1) { // Lógica para corpo movendo para a direita
+                    previewCtx.fillStyle = goldColor; previewCtx.fillRect(segmentX, segmentY, previewGridSize, halfGridSize);
+                    previewCtx.fillStyle = blueColor; previewCtx.fillRect(segmentX, segmentY + halfGridSize, previewGridSize, halfGridSize);
+                } else { // Lógica para corpo movendo para a esquerda (preview)
+                    previewCtx.fillStyle = blueColor; previewCtx.fillRect(segmentX, segmentY, previewGridSize, halfGridSize);
+                    previewCtx.fillStyle = goldColor; previewCtx.fillRect(segmentX, segmentY + halfGridSize, previewGridSize, halfGridSize);
+                }
+                if (i % 2 === 0) {
+                    const dotSize = 1;
+                    previewCtx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                    previewCtx.fillRect(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.2, dotSize, dotSize);
+                    previewCtx.fillRect(segmentX + previewGridSize * 0.7, segmentY + previewGridSize * 0.8, dotSize, dotSize);
+                    previewCtx.fillStyle = 'rgba(0, 0, 139, 0.8)';
+                    previewCtx.fillRect(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.3, dotSize, dotSize);
+                    previewCtx.fillRect(segmentX + previewGridSize * 0.3, segmentY + previewGridSize * 0.7, dotSize, dotSize);
+                }
+            }
+        } else if (skinKey === 'spider') {
+            if (isHead) {
+                previewCtx.fillStyle = skinOptions.redColor;
+                previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                drawPreviewWebPattern(segmentX, segmentY);
+                const eyeXOffset = previewGridSize * 0.2, eyeYOffset = previewGridSize * 0.2;
+                const eyeWidth = previewGridSize * 0.25, eyeHeight = previewGridSize * 0.5;
+                previewCtx.fillStyle = 'white';
+                previewCtx.fillRect(segmentX + eyeXOffset, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                previewCtx.fillRect(segmentX + previewGridSize - 2 - eyeXOffset - eyeWidth, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                previewCtx.strokeStyle = 'black';
+                previewCtx.lineWidth = 1.5;
+                previewCtx.strokeRect(segmentX + eyeXOffset, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                previewCtx.strokeRect(segmentX + previewGridSize - 2 - eyeXOffset - eyeWidth, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+            } else {
+                const isRedSegment = i % 2 === 0;
+                previewCtx.fillStyle = isRedSegment ? skinOptions.redColor : skinOptions.blueColor;
+                previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                if (isRedSegment) drawPreviewWebPattern(segmentX, segmentY);
+            }
+        } else if (skinKey === 'coral') {
+            const coralColors = skinOptions.colors;
+            if (isHead) {
+                previewCtx.fillStyle = coralColors[1]; // Preto
+                previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
+                previewCtx.fillStyle = coralColors[2]; // Branco
+                previewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
+            } else {
+                const patternIndex = (i - 1) % 4;
+                const halfSize = (previewGridSize - 2) / 2;
+                switch (patternIndex) {
+                    case 0: previewCtx.fillStyle = coralColors[0]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
+                    case 1: case 2: // Para o preview horizontal, a cobra "desce" visualmente
+                        previewCtx.fillStyle = coralColors[2]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, halfSize);
+                        previewCtx.fillStyle = coralColors[1]; previewCtx.fillRect(segmentX, segmentY + halfSize, previewGridSize - 2, halfSize);
+                        break;
+                    case 3: previewCtx.fillStyle = coralColors[1]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
+                }
+            }
+        } else if (skinKey === 'circuit') {
+            previewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.bodyColor;
+            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            if (!isHead) {
+                previewCtx.strokeStyle = '#000000'; previewCtx.lineWidth = 1;
+                previewCtx.beginPath();
+                previewCtx.moveTo(segmentX + 2, segmentY + previewGridSize / 2);
+                previewCtx.lineTo(segmentX + previewGridSize - 4, segmentY + previewGridSize / 2);
+                previewCtx.moveTo(segmentX + previewGridSize / 2, segmentY + 2);
+                previewCtx.lineTo(segmentX + previewGridSize / 2, segmentY + previewGridSize - 4);
+                previewCtx.stroke();
+            }
+        } else if (skinKey === 'galaxy') {
+            previewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.colors[i % skinOptions.colors.length];
+            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            previewCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            previewCtx.fillRect(segmentX + Math.random() * (previewGridSize-2), segmentY + Math.random() * (previewGridSize-2), isHead ? 1.5 : 1, isHead ? 1.5 : 1);
+        } else if (skinKey === 'camo' || skinKey === 'christmas') {
+            if (isHead) {
+                previewCtx.fillStyle = skinOptions.headColor;
+            } else {
+                previewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
+            }
+            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            
+            if (!isHead && skinKey === 'christmas' && i % 2 === 0) {
+                 previewCtx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                 previewCtx.fillRect(segmentX, segmentY + previewGridSize / 3, previewGridSize - 2, previewGridSize / 3);
+            }
+        } else if (skinKey === 'halloween') {
+            const pumpkinColor = skinOptions.headColor;
+            const bodyBlack = skinOptions.bodyColor1;
+            const bodyPurple = skinOptions.bodyColor2;
+            const lineOrange = skinOptions.lineColor;
+
+            if (isHead) {
+                // Cabeça de abóbora
+                previewCtx.fillStyle = pumpkinColor;
+                previewCtx.fillRect(segmentX, segmentY, previewGridSize, previewGridSize);
+
+                // Rosto entalhado (preto)
+                previewCtx.fillStyle = '#000000';
+                const pg_half = previewGridSize / 2;
+                
+                // Olho esquerdo (triângulo)
+                previewCtx.beginPath();
+                previewCtx.moveTo(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.2);
+                previewCtx.lineTo(segmentX + previewGridSize * 0.4, segmentY + previewGridSize * 0.4);
+                previewCtx.lineTo(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.4);
+                previewCtx.closePath();
+                previewCtx.fill();
+                
+                // Olho direito (triângulo)
+                previewCtx.beginPath();
+                previewCtx.moveTo(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.2);
+                previewCtx.lineTo(segmentX + previewGridSize * 0.6, segmentY + previewGridSize * 0.4);
+                previewCtx.lineTo(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.4);
+                previewCtx.closePath();
+                previewCtx.fill();
+                
+                // Nariz (triângulo)
+                previewCtx.beginPath();
+                previewCtx.moveTo(segmentX + pg_half, segmentY + pg_half - (pg_half * 0.1));
+                previewCtx.lineTo(segmentX + pg_half - (pg_half * 0.2), segmentY + pg_half + (pg_half * 0.2));
+                previewCtx.lineTo(segmentX + pg_half + (pg_half * 0.2), segmentY + pg_half + (pg_half * 0.2));
+                previewCtx.closePath();
+                previewCtx.fill();
+
+                // Boca Sorridente
+                const mouthY_abs = segmentY + pg_half + (pg_half * 0.4);
+                previewCtx.fillRect(segmentX + pg_half - (pg_half * 0.8), mouthY_abs, pg_half * 1.6, pg_half * 0.2); // Linha principal
+                previewCtx.fillRect(segmentX + pg_half - (pg_half * 0.5), mouthY_abs - (pg_half * 0.2), pg_half * 0.2, pg_half * 0.2); // Dente 1
+                previewCtx.fillRect(segmentX + pg_half + (pg_half * 0.3), mouthY_abs - (pg_half * 0.2), pg_half * 0.2, pg_half * 0.2); // Dente 2
+            } else {
+                // Desenha a borda interna primeiro
+                previewCtx.fillStyle = bodyPurple; // Borda superior/esquerda
+                previewCtx.fillRect(segmentX, segmentY, previewGridSize, previewGridSize);
+                previewCtx.fillStyle = bodyBlack; // Borda inferior/direita
+                previewCtx.fillRect(segmentX + 0, segmentY + 1, previewGridSize + 3, previewGridSize + 3);
+
+                // Corpo: Metade preto, metade roxo com linha laranja (desenhado dentro da borda)
+                const fillSize = previewGridSize - 2;
+                const fillX = segmentX + 1;
+                const fillY = segmentY + 1;
+                const halfFillSize = fillSize / 2;
+                const lineSize = 2;
+
+                // Metade preta (superior)
+                previewCtx.fillStyle = bodyBlack;
+                previewCtx.fillRect(fillX, fillY, fillSize, halfFillSize - (lineSize/2));
+
+                // Metade roxa (inferior)
+                previewCtx.fillStyle = bodyPurple;
+                previewCtx.fillRect(fillX, fillY + halfFillSize + (lineSize/2), fillSize, halfFillSize - (lineSize/2));
+
+                // Linha laranja no meio
+                previewCtx.fillStyle = lineOrange;
+                previewCtx.fillRect(fillX, fillY + halfFillSize - (lineSize/2), fillSize, lineSize);
+            }
+        }
+    }
+    // PASS 2 for preview: Draw connectors
+    if (skinKey === 'halloween') {
+        const lineOrange = skins.halloween.lineColor;
+        const bodyBlack = skins.halloween.bodyColor1;
+        const bodyPurple = skins.halloween.bodyColor2;
+        const lineSize = 2;
+
+        for (let i = 1; i < previewSnake.length; i++) {
+             // Preview é sempre horizontal, então o conector é sempre vertical
+            const curr = previewSnake[i];
+            const connX = (curr.x * previewGridSize) + offsetX - 1;
+            const connY = curr.y * previewGridSize + 1;
+            const connW = 2;
+            const connH = previewGridSize - 2;
+            
+            const halfSize = connH / 2;
+            previewCtx.fillStyle = bodyBlack;
+            previewCtx.fillRect(connX, connY, connW, halfSize - lineSize / 2);
+            previewCtx.fillStyle = bodyPurple;
+            previewCtx.fillRect(connX, connY + halfSize + lineSize / 2, connW, halfSize - lineSize / 2);
+            previewCtx.fillStyle = lineOrange;
+            previewCtx.fillRect(connX, connY + halfSize - lineSize / 2, connW, lineSize);
+        }
+    }
+}
+
     function drawGame() {
         ctx.fillStyle = '#11131e';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1082,7 +1500,7 @@
         const skinOptions = skins[currentSkin] || skins['default'];
 
         const drawWebPattern = (x, y) => {
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'; // Teia preta sutil
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(x + gridSize / 3, y);
@@ -1137,7 +1555,7 @@
         } else if (currentSkin === 'coral') {
             const coralColors = skinOptions.colors;
             
-            for (let i = 1; i < snake.length; i--) { 
+            for (let i = snake.length - 1; i > 0; i--) { 
                 const segment = snake[i];
                 const prevSegment = snake[i - 1];
                 const segmentX = segment.x * gridSize;
@@ -1145,7 +1563,7 @@
                 const patternIndex = (i - 1) % 4;
 
                 switch (patternIndex) {
-                    case 0: // Vermelho
+                    case 0:
                         ctx.fillStyle = coralColors[0];
                         ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
                         break;
@@ -1155,22 +1573,22 @@
                         const segmentDx = prevSegment.x - segment.x;
                         const segmentDy = prevSegment.y - segment.y;
 
-                        if (segmentDy === -1) { // CIMA
+                        if (segmentDy === -1) {
                             ctx.fillStyle = coralColors[1];
                             ctx.fillRect(segmentX, segmentY, gridSize - 2, halfSize);
                             ctx.fillStyle = coralColors[2];
                             ctx.fillRect(segmentX, segmentY + halfSize, gridSize - 2, halfSize);
-                        } else if (segmentDy === 1) { // BAIXO
+                        } else if (segmentDy === 1) {
                             ctx.fillStyle = coralColors[2];
                             ctx.fillRect(segmentX, segmentY, gridSize - 2, halfSize);
                             ctx.fillStyle = coralColors[1];
                             ctx.fillRect(segmentX, segmentY + halfSize, gridSize - 2, halfSize);
-                        } else if (segmentDx === -1) { // ESQUERDA
+                        } else if (segmentDx === -1) {
                             ctx.fillStyle = coralColors[1];
                             ctx.fillRect(segmentX, segmentY, halfSize, gridSize - 2);
                             ctx.fillStyle = coralColors[2];
                             ctx.fillRect(segmentX + halfSize, segmentY, halfSize, gridSize - 2);
-                        } else if (segmentDx === 1) { // DIREITA
+                        } else if (segmentDx === 1) {
                             ctx.fillStyle = coralColors[2];
                             ctx.fillRect(segmentX, segmentY, halfSize, gridSize - 2);
                             ctx.fillStyle = coralColors[1];
@@ -1182,7 +1600,7 @@
                             ctx.fillRect(segmentX + halfSize, segmentY, halfSize, gridSize - 2);
                         }
                         break;
-                    case 3: // Preto
+                    case 3:
                         ctx.fillStyle = coralColors[1];
                         ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
                         break;
@@ -1208,23 +1626,116 @@
             } else {
                 ctx.fillRect(headX + gridSize - 2 - mouthSize, headY + mouthSize, mouthSize, gridSize - 2 - (2 * mouthSize));
             }
+        } else if (currentSkin === 'pharaoh') {
+            const goldColor = '#FFD700';
+            const blueColor = '#00008B';
+            const eyeWhiteColor = '#FFFFFF';
+            const eyePupilColor = '#000000';
+
+            for (let i = 1; i < snake.length; i++) {
+                const segment = snake[i];
+                const prevSegment = snake[i-1];
+                const segmentX = segment.x * gridSize;
+                const segmentY = segment.y * gridSize;
+                const segmentDx = segment.x - prevSegment.x;
+                const segmentDy = segment.y - prevSegment.y;
+                const halfGridSize = gridSize / 2;
+
+                if (segmentDy === 1) {
+                    ctx.fillStyle = blueColor;
+                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
+                    ctx.fillStyle = goldColor;
+                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
+                } else if (segmentDy === -1) {
+                    ctx.fillStyle = goldColor;
+                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
+                    ctx.fillStyle = blueColor;
+                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
+                } else if (segmentDx === 1) {
+                    ctx.fillStyle = goldColor;
+                    ctx.fillRect(segmentX, segmentY, gridSize, halfGridSize);
+                    ctx.fillStyle = blueColor;
+                    ctx.fillRect(segmentX, segmentY + halfGridSize, gridSize, halfGridSize);
+                } else if (segmentDx === -1) {
+                    ctx.fillStyle = blueColor;
+                    ctx.fillRect(segmentX, segmentY, gridSize, halfGridSize);
+                    ctx.fillStyle = goldColor;
+                    ctx.fillRect(segmentX, segmentY + halfGridSize, gridSize, halfGridSize);
+                } else {
+                    ctx.fillStyle = blueColor;
+                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
+                    ctx.fillStyle = goldColor;
+                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
+                }
+
+                if (i % 2 === 0) {
+                    const dotSize = 1;
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                    ctx.fillRect(segmentX + gridSize * 0.2, segmentY + gridSize * 0.2, dotSize, dotSize);
+                    ctx.fillRect(segmentX + gridSize * 0.7, segmentY + gridSize * 0.8, dotSize, dotSize);
+                    ctx.fillStyle = 'rgba(0, 0, 139, 0.8)';
+                    ctx.fillRect(segmentX + gridSize * 0.8, segmentY + gridSize * 0.3, dotSize, dotSize);
+                    ctx.fillRect(segmentX + gridSize * 0.3, segmentY + gridSize * 0.7, dotSize, dotSize);
+                }
+            }
+
+            const head = snake[0];
+            const headX = head.x * gridSize;
+            const headY = head.y * gridSize;
+            ctx.save();
+            ctx.translate(headX + gridSize / 2, headY + gridSize / 2);
+
+            let rotation = 0;
+            if (dx === 1) {
+                rotation = Math.PI / 2;
+            } else if (dx === -1) {
+                rotation = -Math.PI / 2;
+            } else if (dy === 1) {
+                rotation = Math.PI;
+            }
+
+            ctx.rotate(rotation);
+            const halfGrid = gridSize / 2;
+            ctx.fillStyle = blueColor;
+            ctx.fillRect(-halfGrid, -halfGrid, gridSize, gridSize);
+            ctx.fillStyle = goldColor;
+            ctx.fillRect(-halfGrid, -halfGrid, gridSize, gridSize * 0.2);
+            ctx.fillRect(-halfGrid, -halfGrid * 0.2, gridSize, gridSize * 0.2);
+            ctx.fillRect(-halfGrid, halfGrid * 0.6, gridSize, gridSize * 0.2);
+            ctx.fillStyle = goldColor;
+            ctx.fillRect(-halfGrid * 0.6, -halfGrid * 0.8, gridSize * 0.6, gridSize * 0.8);
+            const eyeY = -halfGrid * 0.5;
+            const eyeX = -halfGrid * 0.2;
+            ctx.fillStyle = eyeWhiteColor;
+            ctx.fillRect(eyeX - (gridSize * 0.2), eyeY, gridSize * 0.4, gridSize * 0.2);
+            ctx.fillRect(-eyeX - (gridSize * 0.2), eyeY, gridSize * 0.4, gridSize * 0.2);
+            ctx.fillStyle = eyePupilColor;
+            ctx.fillRect(eyeX - (gridSize * 0.05), eyeY, gridSize * 0.1, gridSize * 0.2);
+            ctx.fillRect(-eyeX - (gridSize * 0.05), eyeY, gridSize * 0.1, gridSize * 0.2);
+            const beardYStart = halfGrid * 0.1;
+            const beardHeight = halfGrid * 0.8;
+            ctx.fillStyle = blueColor;
+            ctx.fillRect(-gridSize * 0.15, beardYStart, gridSize * 0.3, beardHeight);
+            ctx.fillStyle = goldColor;
+            for (let i = 0; i < 3; i++) {
+                ctx.fillRect(-gridSize * 0.15, beardYStart + (i * 0.3) * beardHeight, gridSize * 0.3, beardHeight * 0.15);
+            }
+            ctx.restore();
         } else if (currentSkin === 'galaxy') {
             const galaxyColors = skinOptions.colors;
             const headColor = skinOptions.headColor;
 
             for (let i = 1; i < snake.length; i++) {
                 const segment = snake[i];
-                ctx.fillStyle = galaxyColors[i % galaxyColors.length]; // Alterna as cores da galáxia
+                ctx.fillStyle = galaxyColors[i % galaxyColors.length];
                 ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
                 
-                // Opcional: Adicionar "estrelas" nos segmentos do corpo
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Cor das estrelas
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.fillRect(segment.x * gridSize + Math.random() * gridSize, segment.y * gridSize + Math.random() * gridSize, 1, 1);
                 ctx.fillRect(segment.x * gridSize + Math.random() * gridSize, segment.y * gridSize + Math.random() * gridSize, 1, 1);
             }
             ctx.fillStyle = headColor;
             ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-             // Opcional: Adicionar "estrelas" na cabeça também
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.fillRect(snake[0].x * gridSize + Math.random() * gridSize, snake[0].y * gridSize + Math.random() * gridSize, 1.5, 1.5);
 
@@ -1236,8 +1747,7 @@
                 ctx.fillStyle = bodyColor;
                 ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
                 
-                // Desenha as "trilhas" do circuito
-                ctx.strokeStyle = '#000000'; // Cor das trilhas
+                ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(snake[i].x * gridSize + 2, snake[i].y * gridSize + gridSize / 2);
@@ -1255,45 +1765,153 @@
             
             for (let i = 1; i < snake.length; i++) {
                 const segment = snake[i];
-                ctx.fillStyle = camoColors[i % camoColors.length]; // Alterna as cores da camuflagem
+                ctx.fillStyle = camoColors[i % camoColors.length];
                 ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
             }
             ctx.fillStyle = headColor;
             ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
 
         } else if (currentSkin === 'halloween') {
-            const halloweenColors = skinOptions.colors;
-            const headColor = skinOptions.headColor;
-
+            const pumpkinColor = skinOptions.headColor;
+            const bodyBlack = skinOptions.bodyColor1;
+            const bodyPurple = skinOptions.bodyColor2;
+            const lineOrange = skinOptions.lineColor;
+            
+            // PASS 1: Desenha todos os segmentos do corpo com suas bordas
             for (let i = 1; i < snake.length; i++) {
                 const segment = snake[i];
-                ctx.fillStyle = halloweenColors[i % halloweenColors.length];
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
+                const segX = segment.x * gridSize;
+                const segY = segment.y * gridSize;
 
-            // Olhos triangulares para a cabeça do Halloween
+                // Desenha o fundo do segmento que servirá de borda
+                ctx.fillStyle = bodyPurple;
+                ctx.fillRect(segX, segY, gridSize, gridSize);
+                ctx.fillStyle = bodyBlack;
+                ctx.fillRect(segX + 1, segY + 1, gridSize - 2, gridSize - 2);
+
+                // Define a área de preenchimento interna
+                const fillX = segX + 1;
+                const fillY = segY + 1;
+                const fillSize = gridSize - 2;
+                const halfFillSize = fillSize / 2;
+                const lineSize = 2;
+                
+                const prevSegment = snake[i-1];
+                const segmentDx = segment.x - prevSegment.x;
+
+                // Desenha o conteúdo dentro da borda
+                if (segmentDx === 0) { // Movimento vertical
+                    ctx.fillStyle = bodyBlack;
+                    ctx.fillRect(fillX, fillY, halfFillSize - lineSize / 2, fillSize);
+                    ctx.fillStyle = bodyPurple;
+                    ctx.fillRect(fillX + halfFillSize + lineSize / 2, fillY, halfFillSize - lineSize / 2, fillSize);
+                    ctx.fillStyle = lineOrange;
+                    ctx.fillRect(fillX + halfFillSize - lineSize / 2, fillY, lineSize, fillSize);
+                } else { // Movimento horizontal
+                    ctx.fillStyle = bodyBlack;
+                    ctx.fillRect(fillX, fillY, fillSize, halfFillSize - lineSize / 2);
+                    ctx.fillStyle = bodyPurple;
+                    ctx.fillRect(fillX, fillY + halfFillSize + lineSize / 2, fillSize, halfFillSize - lineSize / 2);
+                    ctx.fillStyle = lineOrange;
+                    ctx.fillRect(fillX, fillY + halfFillSize - lineSize / 2, fillSize, lineSize);
+                }
+            }
+            
+            // PASS 2: Desenha os conectores para criar a fluidez
+            for (let i = 1; i < snake.length; i++) {
+                 const curr = snake[i];
+                 const prev = snake[i-1];
+                 
+                 const lineSize = 2;
+                 let connX, connY, connW, connH, isHorizontal;
+                 
+                 if (curr.x === prev.x) { // Movimento Vertical
+                    isHorizontal = false;
+                    connW = gridSize - 2;
+                    connH = 2;
+                    connX = curr.x * gridSize + 1;
+                    connY = (curr.y > prev.y) ? curr.y * gridSize - 1 : prev.y * gridSize -1;
+                 } else { // Movimento Horizontal
+                    isHorizontal = true;
+                    connW = 2;
+                    connH = gridSize - 2;
+                    connY = curr.y * gridSize + 1;
+                    connX = (curr.x > prev.x) ? curr.x * gridSize - 1 : prev.x * gridSize - 1;
+                 }
+                 
+                if (isHorizontal) {
+                    const halfSize = connH / 2;
+                    ctx.fillStyle = bodyBlack;
+                    ctx.fillRect(connX, connY, connW, halfSize - lineSize / 2);
+                    ctx.fillStyle = bodyPurple;
+                    ctx.fillRect(connX, connY + halfSize + lineSize / 2, connW, halfSize - lineSize / 2);
+                    ctx.fillStyle = lineOrange;
+                    ctx.fillRect(connX, connY + halfSize - lineSize / 2, connW, lineSize);
+                } else {
+                    const halfSize = connW / 2;
+                    ctx.fillStyle = bodyBlack;
+                    ctx.fillRect(connX, connY, halfSize - lineSize / 2, connH);
+                    ctx.fillStyle = bodyPurple;
+                    ctx.fillRect(connX + halfSize + lineSize / 2, connY, halfSize - lineSize / 2, connH);
+                    ctx.fillStyle = lineOrange;
+                    ctx.fillRect(connX + halfSize - lineSize / 2, connY, lineSize, connH);
+                }
+            }
+
+
+            // Desenha a cabeça por último para ficar por cima de tudo
             const head = snake[0];
             const headX = head.x * gridSize;
             const headY = head.y * gridSize;
-            ctx.fillStyle = 'white'; // Cor dos olhos
+            
+            ctx.fillStyle = pumpkinColor;
+            ctx.fillRect(headX, headY, gridSize, gridSize);
 
-            // Olho esquerdo
+            // Usa save/restore e rotate para orientar o rosto corretamente
+            ctx.save();
+            ctx.translate(headX + gridSize / 2, headY + gridSize / 2);
+
+            let rotation = 0;
+            if (dx === 1) { rotation = Math.PI / 2; }      // Direita
+            else if (dx === -1) { rotation = -Math.PI / 2; }// Esquerda
+            else if (dy === 1) { rotation = Math.PI; }     // Baixo
+            ctx.rotate(rotation);
+
+            // Desenha o rosto relativo ao centro da cabeça
+            const halfGrid = gridSize / 2;
+            ctx.fillStyle = '#000000';
+            
+            // Olho 1 (triângulo)
             ctx.beginPath();
-            ctx.moveTo(headX + gridSize * 0.2, headY + gridSize * 0.3);
-            ctx.lineTo(headX + gridSize * 0.4, headY + gridSize * 0.3);
-            ctx.lineTo(headX + gridSize * 0.3, headY + gridSize * 0.5);
+            ctx.moveTo(-halfGrid * 0.6, -halfGrid * 0.6);
+            ctx.lineTo(-halfGrid * 0.2, -halfGrid * 0.2);
+            ctx.lineTo(-halfGrid * 0.6, -halfGrid * 0.2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Olho 2 (triângulo)
+            ctx.beginPath();
+            ctx.moveTo(halfGrid * 0.6, -halfGrid * 0.6);
+            ctx.lineTo(halfGrid * 0.2, -halfGrid * 0.2);
+            ctx.lineTo(halfGrid * 0.6, -halfGrid * 0.2);
             ctx.closePath();
             ctx.fill();
 
-            // Olho direito
+            // Nariz (triângulo)
             ctx.beginPath();
-            ctx.moveTo(headX + gridSize * 0.6, headY + gridSize * 0.3);
-            ctx.lineTo(headX + gridSize * 0.8, headY + gridSize * 0.3);
-            ctx.lineTo(headX + gridSize * 0.7, headY + gridSize * 0.5);
+            ctx.moveTo(0, -halfGrid * 0.1); // Ponto de cima
+            ctx.lineTo(-halfGrid * 0.2, halfGrid * 0.2); // Ponto de baixo-esquerda
+            ctx.lineTo(halfGrid * 0.2, halfGrid * 0.2); // Ponto de baixo-direita
             ctx.closePath();
             ctx.fill();
+
+            // Boca Sorridente
+            const mouthY = halfGrid * 0.4;
+            ctx.fillRect(-halfGrid * 0.8, mouthY, halfGrid * 1.6, halfGrid * 0.2); // Linha principal do sorriso
+            ctx.fillRect(-halfGrid * 0.5, mouthY - halfGrid * 0.2, halfGrid * 0.2, halfGrid * 0.2); // Dente 1
+            ctx.fillRect(halfGrid * 0.3, mouthY - halfGrid * 0.2, halfGrid * 0.2, halfGrid * 0.2); // Dente 2
+            
+            ctx.restore(); // Restaura o contexto do canvas
 
         } else if (currentSkin === 'christmas') {
             const christmasColors = skinOptions.colors;
@@ -1304,9 +1922,8 @@
                 ctx.fillStyle = christmasColors[i % christmasColors.length];
                 ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
                 
-                // Opcional: Adicionar pequenas listras douradas
-                if (i % 2 === 0) { // Em alguns segmentos
-                    ctx.fillStyle = 'rgba(255, 215, 0, 0.5)'; // Gold com transparência
+                if (i % 2 === 0) {
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
                     ctx.fillRect(segment.x * gridSize, segment.y * gridSize + gridSize / 3, gridSize - 2, gridSize / 3);
                 }
             }
@@ -1351,17 +1968,14 @@
             let foodPoints = difficulties[currentDifficulty].points;
             score += foodPoints;
             scoreElement.textContent = score;
-            // Calcula moedas ganhas a cada 100 pontos
-            const newCoins = Math.floor(score / 100) - coinsEarnedThisGame;
+            const newCoins = Math.floor(score / 75) - coinsEarnedThisGame;
             if (newCoins > 0) {
                 coinsEarnedThisGame += newCoins;
-                // Não atualiza coinsEarnedElement em tempo real
             }
             generateFood();
         } else { snake.pop(); }
     }
 
-    // MODIFICADO: updateLeaderboardDisplay para atualizar o recorde pessoal do mapa atual
     async function updateLeaderboardDisplay() {
         try {
             const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
@@ -1391,7 +2005,6 @@
                 if (user && topScores[2].userId === user.uid) { document.getElementById('leaderboard-item-3').style.backgroundColor = '#d68910'; }
             }
             
-            // Atualiza o recorde pessoal para o mapa atual
             userHighScoreDisplay.textContent = userHighScoresPerMap[currentMap] || 0;
 
         } catch (error) {
@@ -1400,7 +2013,39 @@
         }
     }
 
+    async function handlePurchase() {
+        const buyBtn = document.getElementById('buySkinBtn');
+        const skinKey = buyBtn.dataset.skinToBuy;
+        if (!skinKey) return;
 
+        const skin = skins[skinKey];
+        if (!skin || !skin.unlockCoins) return;
+
+        // 1. Verifica se tem moedas suficientes
+        if (snakeCoins < skin.unlockCoins) {
+            alert(translations[currentLanguage]['not_enough_coins']);
+            return;
+        }
+
+        // 2. Pede confirmação para a compra
+        if (confirm(`${translations[currentLanguage]['confirm_buy_skin']} ${skin.unlockCoins} SC?`)) {
+            // 3. Executa a lógica de compra
+            snakeCoins -= skin.unlockCoins;
+            unlockedSkins.push(skinKey);
+            currentSkin = skinKey; // Equipa a skin recém-comprada
+            
+            await updateUserCoins(snakeCoins);
+            await updateUserUnlockedSkins(unlockedSkins);
+            
+            populateSkinSelector(); // Atualiza a lista para remover o cadeado
+            document.getElementById('skinSelector').value = currentSkin; // Garante que a nova skin fique selecionada
+
+            totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
+            alert(translations[currentLanguage]['skin_unlocked_success']);
+
+            buyBtn.style.display = 'none'; // Esconde o botão após a compra
+        }
+    }
     async function isNewRecord(score) {
         try {
             if (!currentUsername) return false;
@@ -1448,7 +2093,7 @@
         enterFullScreen(document.documentElement);
         inputQueue = [];
         snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}]; dx = 0; dy = 0; score = 0; scoreElement.textContent = score;
-        coinsEarnedThisGame = 0; // Reinicia as moedas ganhas na partida
+        coinsEarnedThisGame = 0;
         gameRunning = true; gameStarted = true; gamePaused = false;
         startScreen.style.display = 'none'; toggleJoystick();
         pauseBtn.style.display = 'inline-block'; quitGameBtn.style.display = 'inline-block'; gameInstructions.style.display = 'block'; difficultyDisplay.style.display = 'block';
@@ -1465,32 +2110,29 @@
     }
     function quitGame() { if (confirm(translations[currentLanguage]['alert_confirm_quit'])) { restartGame(); } }
     
-    // MODIFICADO: Função gameOver para atualizar o recorde pessoal do mapa atual
     async function gameOver() {
         gameRunning = false; gameStarted = false;
         if (gameInterval) { clearInterval(gameInterval); }
         quitGameBtn.style.display = 'none'; reenterPrompt.style.display = 'none';
         
-        // Adiciona as moedas ganhas nesta partida ao total de Snake Coins do usuário
         snakeCoins += coinsEarnedThisGame;
-        await updateUserCoins(snakeCoins); // Função para atualizar as moedas no Firebase
-        totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`; // Atualiza o display de moedas totais
+        await updateUserCoins(snakeCoins);
+        totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
 
-        // Verifica e atualiza o recorde pessoal para o mapa atual
         const currentMapHighScore = userHighScoresPerMap[currentMap] || 0;
         if (score > currentMapHighScore) {
-            await updateUserHighScore(score, currentMap); // Salva o novo recorde para este mapa
-            userHighScoreDisplay.textContent = score; // Atualiza o display do recorde pessoal
+            await updateUserHighScore(score, currentMap);
+            userHighScoreDisplay.textContent = score;
         }
 
         if (await isNewRecord(score) && score > 0) {
             await saveScore();
             finalScoreCongrats.textContent = score;
-            coinsEarnedCongratsElement.textContent = coinsEarnedThisGame; // Exibe moedas na tela de parabéns
+            coinsEarnedCongratsElement.textContent = coinsEarnedThisGame;
             triggerFireworks();
         } else {
             finalScoreElement.textContent = score;
-            coinsEarnedGameOverElement.textContent = coinsEarnedThisGame; // Exibe moedas na tela de game over
+            coinsEarnedGameOverElement.textContent = coinsEarnedThisGame;
             gameOverElement.style.display = 'flex';
         }
     }
@@ -1509,6 +2151,7 @@
         ctx.fillStyle = '#2d3436'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         updateLeaderboardDisplay();
     }
+    
     function gameLoop() {
         processInput();
         updateGame();
@@ -1519,10 +2162,8 @@
     document.getElementById('leftBtn').addEventListener('touchstart', (e) => { e.preventDefault(); queueDirection(-1, 0); });
     document.getElementById('rightBtn').addEventListener('touchstart', (e) => { e.preventDefault(); queueDirection(1, 0); });
     
-    // --- NOVO: LÓGICA DO TOQUE INTELIGENTE ---
     const gameControlsContainer = document.getElementById('gameControls');
     gameControlsContainer.addEventListener('touchstart', (e) => {
-        // Apenas aciona se o toque for no container, e não nos próprios botões
         if (e.target !== gameControlsContainer) {
             return;
         }
@@ -1542,13 +2183,10 @@
         let nearestButton = null;
         let minDistance = Infinity;
 
-        // Itera sobre os botões para encontrar o mais próximo
         for (const [direction, buttonElement] of Object.entries(buttons)) {
             const rect = buttonElement.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-
-            // Usa a distância ao quadrado para evitar o cálculo da raiz quadrada (mais eficiente)
             const distanceSq = Math.pow(touchX - centerX, 2) + Math.pow(touchY - centerY, 2);
 
             if (distanceSq < minDistance) {
@@ -1557,7 +2195,6 @@
             }
         }
 
-        // Enfileira a direção do botão mais próximo
         if (nearestButton) {
             switch(nearestButton) {
                 case 'up': queueDirection(0, -1); break;
@@ -1567,7 +2204,6 @@
             }
         }
     }, { passive: false });
-    // --- FIM DA LÓGICA DO TOQUE INTELIGENTE ---
 
     canvas.addEventListener('click', handleCanvasInteraction);
     canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
@@ -1594,7 +2230,7 @@
     };
     let touchStartY = 0; window.addEventListener('touchstart', function(e) { if (e.touches.length !== 1) return; touchStartY = e.touches[0].clientY; }, { passive: false });
     window.addEventListener('touchmove', function(e) { const touchY = e.touches[0].clientY; const touchDiff = touchY - touchStartY; if (touchStartY < 10 && touchDiff > 10) { e.preventDefault(); } }, { passive: false });
-    selectDifficulty('normal'); selectMap('normal'); // A chamada para selectMap agora também atualiza o recorde pessoal
+    selectDifficulty('normal'); selectMap('normal');
     
     let joystickType = 'classic'; let joystickPosition = 'right';
 
@@ -1632,8 +2268,17 @@
         }
     }, { passive: false });
     document.getElementById('floatingJoystick').addEventListener('touchend', e => { origin = null; document.getElementById('joystickThumb').style.left = '40px'; document.getElementById('joystickThumb').style.top = '40px'; });
-    function toggleSettings() { document.getElementById('settingsMenu').style.display = 'block'; showSettingsTab('general'); }
-    function closeSettings() { document.getElementById('settingsMenu').style.display = 'none'; saveUserSettings(); showSettingsTab('general'); }
+    
+    function toggleSettings() { 
+        document.getElementById('settingsMenu').style.display = 'block'; 
+        showSettingsTab('general');
+        drawSkinPreview(currentSkin);
+    }
+    function closeSettings() { 
+        document.getElementById('settingsMenu').style.display = 'none'; 
+        saveUserSettings(); 
+        showSettingsTab('general'); 
+    }
     
     const loginScreen = document.getElementById('loginScreen');
     const registerScreen = document.getElementById('registerScreen');
@@ -1641,62 +2286,45 @@
     const loggedUser = document.getElementById('loggedUser');
     let currentUsername = null; 
     let userSettings = {};
-    
+    let isAdmin = false;
+
     document.getElementById('loginPass').addEventListener('keydown', function(event) { if (event.key === 'Enter') { event.preventDefault(); handleLogin(); } });
 
     async function selectSkin(skinKey) {
-        const skin = skins[skinKey];
-        if (!skin) return;
+    const skin = skins[skinKey];
+    if (!skin) return;
 
-        if (unlockedSkins.includes(skinKey) || skinKey === 'custom') {
-            currentSkin = skinKey;
-        } else if (skin.unlockCoins) {
-            // Tentativa de comprar a skin com SC
-            if (snakeCoins >= skin.unlockCoins) {
-                if (confirm(`${translations[currentLanguage]['confirm_buy_skin']} ${skin.unlockCoins} SC?`)) {
-                    snakeCoins -= skin.unlockCoins;
-                    unlockedSkins.push(skinKey);
-                    currentSkin = skinKey;
-                    await updateUserCoins(snakeCoins); // Salva as moedas atualizadas no Firebase
-                    await updateUserUnlockedSkins(unlockedSkins); // Salva as skins desbloqueadas
-                    populateSkinSelector(); // Atualiza o seletor para refletir o desbloqueio
-                    totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
-                    alert(translations[currentLanguage]['skin_unlocked_success']);
-                } else {
-                    // Se o usuário cancelar a compra, volta para a skin atual
-                    document.getElementById('skinSelector').value = currentSkin;
-                    return;
-                }
-            } else {
-                alert(translations[currentLanguage]['not_enough_coins']);
-                document.getElementById('skinSelector').value = currentSkin; // Volta para a skin atual
-                return;
-            }
-        } else if (skin.unlockScore && (userHighScoresPerMap[currentMap] || 0) >= skin.unlockScore) { // Usa o high score do mapa atual
-            // Desbloqueio por pontos (já deve estar sendo tratado)
-            if (!unlockedSkins.includes(skinKey)) {
-                unlockedSkins.push(skinKey);
-                await updateUserUnlockedSkins(unlockedSkins);
-                populateSkinSelector();
-            }
-            currentSkin = skinKey;
-        } else {
-            // Se a skin não está desbloqueada e não pode ser comprada (por falta de pontos ou SC)
-            currentSkin = 'default';
-            document.getElementById('skinSelector').value = 'default';
-        }
+    // Sempre atualiza o visualizador com a skin que foi clicada
+    drawSkinPreview(skinKey);
 
-        const colorPickerContainer = document.getElementById('colorPickerContainer');
-        colorPickerContainer.style.display = currentSkin === 'custom' ? 'block' : 'none';
+    const buyBtn = document.getElementById('buySkinBtn');
+    const isLocked = !unlockedSkins.includes(skinKey);
+
+    // Mostra ou esconde o botão de compra
+    if (isLocked && skin.unlockCoins) {
+        buyBtn.style.display = 'block';
+        // Adiciona um texto traduzível (vou usar 'Comprar por' como padrão)
+        const buyText = translations[currentLanguage]['buy_for'] || 'Comprar por';
+        buyBtn.textContent = `${buyText} ${skin.unlockCoins} SC 🪙`;
+        buyBtn.dataset.skinToBuy = skinKey; // Armazena qual skin comprar
+    } else {
+        buyBtn.style.display = 'none';
     }
 
+    // Se a skin selecionada já estiver desbloqueada, equipa ela
+    if (!isLocked) {
+        currentSkin = skinKey;
+    }
+    
+    // Se a skin estiver bloqueada, a função agora só mostra o preview e o botão,
+    // sem fazer mais nada, esperando o clique no botão "Comprar".
+    const colorPickerContainer = document.getElementById('colorPickerContainer');
+    colorPickerContainer.style.display = skinKey === 'custom' ? 'block' : 'none';
+}
+
     function checkSkinUnlocks() {
-        // Esta função agora é menos crucial, pois skins são adicionadas a unlockedSkins diretamente
-        // seja por compra ou ao carregar do DB. Ela pode ser útil se houver skins
-        // desbloqueadas automaticamente por score alto sem custo de SC.
         for (const key in skins) {
             const skin = skins[key];
-            // Se for uma skin por pontos e o usuário atingiu o score (do mapa atual) e ainda não a tem
             if (skin.unlockScore && (userHighScoresPerMap[currentMap] || 0) >= skin.unlockScore && !unlockedSkins.includes(key)) {
                 unlockedSkins.push(key);
             }
@@ -1712,39 +2340,33 @@
             const option = document.createElement('option');
             option.value = key;
 
-            let displayName = translations[currentLanguage][`skin_${key}`] || skin.name_pt; // Pega o nome traduzido
-            let isDisabled = false;
+            let displayName = translations[currentLanguage][`skin_${key}`] || skin.name_pt;
+            let isLocked = !unlockedSkins.includes(key);
 
-            if (!unlockedSkins.includes(key)) {
-                if (skin.unlockScore) { // Skins por pontos
-                    displayName = `${displayName} (${skin.unlockScore} ${translations[currentLanguage]['score_prefix'].replace(':', '')})`;
-                    isDisabled = (userHighScoresPerMap[currentMap] || 0) < skin.unlockScore; // Verifica o high score do mapa atual
-                } else if (skin.unlockCoins) { // Skins por SC
-                    displayName = `${displayName} (${skin.unlockCoins} SC)`;
-                    isDisabled = snakeCoins < skin.unlockCoins; // Desabilitar se não tiver SC suficiente
+            if (isLocked) {
+                if (skin.unlockScore) {
+                    displayName = `🔒 ${displayName} (${skin.unlockScore} Pts)`;
+                } else if (skin.unlockCoins) {
+                    displayName = `🔒 ${displayName} (${skin.unlockCoins} SC)`;
                 }
-                if (isDisabled) {
-                    option.style.color = '#777'; // Deixa o texto cinza para skins bloqueadas
-                }
+                option.style.color = '#aaa'; // Cor cinza para indicar que está bloqueada
             }
             
             option.textContent = displayName;
-            option.disabled = isDisabled; // Desabilita a opção no select
+            // A linha abaixo é comentada para permitir a seleção e visualização
+            // option.disabled = isLocked;
             selector.appendChild(option);
         }
-        selector.value = currentSkin; // Garante que a skin atual esteja selecionada
+        selector.value = currentSkin;
     }
 
-    // MODIFICADO: updateUserHighScore para salvar recordes por mapa
     async function updateUserHighScore(newScore, map) {
         const user = auth.currentUser;
         if (user) {
             try {
-                // Atualiza o objeto highScoresPerMap no Firestore
                 const updateData = {};
                 updateData[`highScoresPerMap.${map}`] = newScore;
                 await db.collection('users').doc(user.uid).update(updateData);
-                // Também atualiza a variável local
                 userHighScoresPerMap[map] = newScore;
             } catch (error) {
                 console.error("Erro ao atualizar high score por mapa:", error);
@@ -1752,7 +2374,6 @@
         }
     }
 
-    // Nova função para atualizar as moedas do usuário no Firebase
     async function updateUserCoins(coins) {
         const user = auth.currentUser;
         if (user) {
@@ -1764,7 +2385,6 @@
         }
     }
 
-    // Nova função para atualizar skins desbloqueadas
     async function updateUserUnlockedSkins(skinsList) {
         const user = auth.currentUser;
         if (user) {
@@ -1787,29 +2407,32 @@
                 joystickModel: document.getElementById('joystickModel').value,
                 screenBackgroundColor: document.getElementById('screenBackgroundColor').value,
                 joystickPosition: document.getElementById('joystickPosition').value,
-                language: currentLanguage
+                language: currentLanguage,
+                screenOrientation: document.getElementById('screenOrientationToggle').checked
             };
             try { 
-                // Salva também os highScoresPerMap
                 await db.collection('users').doc(user.uid).set({ 
                     settings: settingsToSave, 
                     unlockedSkins: unlockedSkins,
-                    highScoresPerMap: userHighScoresPerMap // Salva o objeto completo
+                    highScoresPerMap: userHighScoresPerMap
                 }, { merge: true }); 
             } catch (error) { console.error("Erro ao salvar configurações do usuário:", error); }
         }
     }
 
-    // MODIFICADO: loadUserSettings para carregar recordes por mapa
+    // FUNÇÃO CORRIGIDA
     async function loadUserSettings(uid) {
         try {
             const userDoc = await db.collection('users').doc(uid).get();
+            let isAdmin = false; // Começa como falso por padrão
+
             if (userDoc.exists) {
                 const userData = userDoc.data();
+                isAdmin = userData.isAdmin || false; // Pega o valor do DB, ou define como false se não existir
                 currentUsername = userData.username;
-                userHighScoresPerMap = userData.highScoresPerMap || {}; // Carrega o objeto de recordes por mapa
+                userHighScoresPerMap = userData.highScoresPerMap || {};
                 snakeCoins = userData.snakeCoins || 0;
-                unlockedSkins = userData.unlockedSkins || ['default', 'custom']; // Carrega skins desbloqueadas, adiciona padrão se vazia
+                unlockedSkins = userData.unlockedSkins || ['default', 'custom'];
                 userSettings = userData.settings || {};
 
                 currentSkin = userSettings.skin || 'default';
@@ -1819,24 +2442,58 @@
                 document.getElementById('screenBackgroundColor').value = userSettings.screenBackgroundColor || '#1a1a1a';
                 document.getElementById('joystickPosition').value = userSettings.joystickPosition || 'right';
                 
-                checkSkinUnlocks(); // Isso ainda pode ser útil para skins baseadas em score
+                // LÓGICA ADICIONADA PARA ORIENTAÇÃO
+                const orientationToggle = document.getElementById('screenOrientationToggle');
+                const wantsLandscape = userSettings.screenOrientation || false;
+                if (orientationToggle.checked !== wantsLandscape) {
+                    orientationToggle.checked = wantsLandscape;
+                }
+                toggleScreenOrientation(wantsLandscape); // Aplica a orientação salva
+
+                checkSkinUnlocks();
                 populateSkinSelector();
-                selectSkin(currentSkin); // Garante que a UI do seletor de cor seja atualizada
+                selectSkin(currentSkin);
                 
                 selectLanguage(userSettings.language || 'pt');
             } else {
                 userSettings = { skin: 'default', customSnakeColor: '#00b894', sensitivity: '5', joystickModel: 'classic', screenBackgroundColor: '#1a1a1a', joystickPosition: 'right', language: 'pt' };
                 snakeCoins = 0;
-                unlockedSkins = ['default', 'custom']; // Define as skins padrão para novos usuários
-                userHighScoresPerMap = {}; // Inicializa vazio para novos usuários
+                unlockedSkins = ['default', 'custom'];
+                userHighScoresPerMap = {};
                 selectLanguage('pt');
             }
+
+            // LÓGICA DO BOTÃO MOVIDA PARA CÁ
+            // Garante que a verificação só aconteça DEPOIS de saber o status de admin
+            const existingAdminBtn = document.getElementById('adminPanelBtn');
+            if (isAdmin) {
+                console.log("Usuário Administrador Logado!");
+                if (!existingAdminBtn) { 
+                    const adminButton = document.createElement('button');
+                    adminButton.id = 'adminPanelBtn';
+                    adminButton.textContent = 'Painel Admin';
+                    adminButton.className = 'btn btn-danger';
+                    adminButton.style.marginTop = '10px';
+                    adminButton.style.width = '100%';
+                    adminButton.onclick = () => { 
+                        alert('Acesso de Administrador Concedido!'); 
+                    };
+                    const startScreenDiv = document.getElementById('startScreen');
+                    startScreenDiv.appendChild(adminButton);
+                }
+            } else {
+                // Se o usuário não for admin e o botão existir, remove
+                if(existingAdminBtn) {
+                    existingAdminBtn.remove();
+                }
+            }
+
 
             screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
             document.getElementById('mainGame').style.background = screenBackgroundColor;
             loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
             totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
-            userHighScoreDisplay.textContent = userHighScoresPerMap[currentMap] || 0; // Atualiza o display do recorde pessoal com o valor do mapa atual
+            userHighScoreDisplay.textContent = userHighScoresPerMap[currentMap] || 0;
             toggleJoystick();
             updateJoystickPosition();
 
@@ -1845,18 +2502,31 @@
         }
     }
 
+    // CÓDIGO UNIFICADO E CORRIGIDO
     auth.onAuthStateChanged(async (user) => {
         if (user) {
+            // Apenas carrega os dados. A lógica do botão agora está dentro de loadUserSettings.
             await loadUserSettings(user.uid);
-            loginScreen.style.display = 'none'; registerScreen.style.display = 'none'; gameUI.style.display = 'block';
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none';
+            gameUI.style.display = 'block';
             await updateLeaderboardDisplay();
         } else {
+            // Limpa a tela no logout
             currentUsername = null;
-            loginScreen.style.display = 'block'; registerScreen.style.display = 'none'; gameUI.style.display = 'none';
+            loginScreen.style.display = 'block';
+            registerScreen.style.display = 'none';
+            gameUI.style.display = 'none';
+            
+            // Remove o botão de admin se ele existir
+            const adminButton = document.getElementById('adminPanelBtn');
+            if (adminButton) {
+                adminButton.remove();
+            }
         }
         updateContent();
     });
-
+    
     window.onload = () => { updateContent(); };
     function showRegister() { loginScreen.style.display = 'none'; registerScreen.style.display = 'block'; }
     function showLogin() { registerScreen.style.display = 'none'; loginScreen.style.display = 'block'; }
@@ -1886,9 +2556,9 @@
             
             await db.collection('users').doc(user.uid).set({
                 username, username_lowercase: username.toLowerCase(), email, 
-                snakeCoins: 0, // Inicializa snakeCoins para novos usuários
-                unlockedSkins: ['default', 'custom'], // Skins iniciais para novos usuários
-                highScoresPerMap: { // NOVO: Inicializa highScoresPerMap para novos usuários
+                snakeCoins: 0,
+                unlockedSkins: ['default', 'custom'],
+                highScoresPerMap: {
                     "normal": 0,
                     "no-walls": 0 
                 },
@@ -1919,7 +2589,18 @@
     }
 
     function handleLogout() {
-        saveUserSettings(); auth.signOut().catch(error => console.error("Erro ao sair:", error));
+        // LÓGICA ADICIONADA PARA DESTRAVAR A TELA
+        try {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+            document.body.classList.remove('landscape-mode');
+        } catch(e) {
+            console.warn("Could not unlock screen orientation.", e);
+        }
+        
+        saveUserSettings(); 
+        auth.signOut().catch(error => console.error("Erro ao sair:", error));
     }
 
     function showSettingsTab(tabId) { document.querySelectorAll('.settings-tab-content').forEach(tab => { tab.style.display = 'none'; }); document.querySelectorAll('.tab-button').forEach(btn => { btn.classList.remove('selected'); }); document.getElementById(tabId + 'Settings').style.display = 'block'; document.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected'); }
@@ -1998,8 +2679,59 @@
             passwordChangeError.textContent = error.code === 'auth/wrong-password' ? translations[currentLanguage]['alert_old_password_incorrect'] : 'Erro: ' + error.message;
         }
     }
+    
+    // NOVO: Função para enviar o ticket de suporte
+    async function handleSupportRequest() {
+        const supportType = document.getElementById('supportType').value;
+        const supportMessage = document.getElementById('supportMessage').value.trim();
+        const successMessageElement = document.getElementById('supportSuccessMessage');
+        const user = auth.currentUser;
+
+        successMessageElement.textContent = '';
+
+        if (!user) {
+            alert(translations[currentLanguage]['alert_no_user_logged_in']);
+            return;
+        }
+        if (supportMessage === '') {
+            alert(translations[currentLanguage]['alert_support_message_empty']);
+            return;
+        }
+
+        try {
+            await db.collection('support_tickets').add({
+                userId: user.uid,
+                username: currentUsername,
+                email: user.email,
+                type: supportType,
+                message: supportMessage,
+                status: 'new', // Status inicial do ticket
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            successMessageElement.textContent = translations[currentLanguage]['alert_support_success'];
+            document.getElementById('supportMessage').value = ''; // Limpa o campo após o envio
+            
+            // Esconde a mensagem de sucesso após alguns segundos
+            setTimeout(() => {
+                successMessageElement.textContent = '';
+            }, 5000);
+
+        } catch (error) {
+            console.error("Erro ao enviar ticket de suporte:", error);
+            alert('Ocorreu um erro ao enviar sua mensagem. Tente novamente.');
+        }
+    }
+
     document.getElementById('snakeColorPicker').addEventListener('change', saveUserSettings); document.getElementById('sensitivityRange').addEventListener('change', saveUserSettings); document.getElementById('joystickModel').addEventListener('change', saveUserSettings); document.getElementById('screenBackgroundColor').addEventListener('change', saveUserSettings); document.getElementById('joystickPosition').addEventListener('change', saveUserSettings);
+    
+    document.getElementById('snakeColorPicker').addEventListener('input', () => {
+        if (currentSkin === 'custom') {
+            drawSkinPreview('custom');
+        }
+    });
+
     showSettingsTab('general');
-</script>
+</script> 
 </body>
 </html>
