@@ -2898,45 +2898,73 @@
     function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
     function validatePassword(password) { const minLength = 6; const hasNumber = /[0-9]/.test(password); const hasLetter = /[a-zA-Z]/.test(password); if (password.length < minLength) { return translations[currentLanguage]['password_min_length'].replace('{minLength}', minLength); } if (!hasNumber) { return translations[currentLanguage]['password_needs_number']; } if (!hasLetter) { return translations[currentLanguage]['password_needs_letter']; } return null; }
     
-    async function isUsernameTaken(username) {
-        if (!username) return false;
-        try { const snapshot = await db.collection('users').where('username_lowercase', '==', username.toLowerCase()).limit(1).get(); return !snapshot.empty; }
-        catch (error) { console.error("Erro ao verificar nome de usuário:", error); return true; }
+    // CÓDIGO CORRIGIDO para a função isUsernameTaken
+async function isUsernameTaken(username) {
+    if (!username) return false;
+    try {
+        const usernameDoc = await db.collection('usernames').doc(username.toLowerCase()).get();
+        return usernameDoc.exists; // Retorna true se o documento existir, false caso contrário
+    } catch (error) {
+        console.error("Erro ao verificar nome de usuário:", error);
+        // Em caso de erro, é mais seguro assumir que o nome está indisponível.
+        return true;
     }
+}
 
-    async function handleRegister() {
-        const email = document.getElementById('registerEmail').value.trim();
-        const pass = document.getElementById('registerPass').value.trim();
-        const username = document.getElementById('registerUsername').value.trim();
+    // CÓDIGO CORRIGIDO para a função handleRegister
+async function handleRegister() {
+    const email = document.getElementById('registerEmail').value.trim();
+    const pass = document.getElementById('registerPass').value.trim();
+    const username = document.getElementById('registerUsername').value.trim();
+    const usernameLowercase = username.toLowerCase();
 
-        if (email === '' || pass === '' || username === '') { alert(translations[currentLanguage]['alert_fill_all_fields']); return; }
-        if (!validateEmail(email)) { alert(translations[currentLanguage]['alert_invalid_email']); return; }
-        const passwordError = validatePassword(pass); if (passwordError) { alert(passwordError); return; }
-        if (await isUsernameTaken(username)) { alert(translations[currentLanguage]['alert_username_taken']); return; }
+    // ... (suas validações existentes) ...
+    if (email === '' || pass === '' || username === '') { alert(translations[currentLanguage]['alert_fill_all_fields']); return; }
+    if (!validateEmail(email)) { alert(translations[currentLanguage]['alert_invalid_email']); return; }
+    const passwordError = validatePassword(pass); if (passwordError) { alert(passwordError); return; }
+
+    // A verificação agora usa a nova função e vai funcionar corretamente
+    if (await isUsernameTaken(username)) {
+        alert(translations[currentLanguage]['alert_username_taken']);
+        return;
+    }
+    
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+        const user = userCredential.user;
         
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-            const user = userCredential.user;
-            
-            await db.collection('users').doc(user.uid).set({
-                username, username_lowercase: username.toLowerCase(), email, 
-                snakeCoins: 0,
-                isBanned: false, // Campo de banimento
-                unlockedSkins: ['default', 'custom'],
-                highScoresPerMap: {
-                    "normal": 0,
-                    "no-walls": 0 
-                },
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                settings: { skin: 'default', customSnakeColor: '#00b894' }
-            });
-            
-            alert(translations[currentLanguage]['alert_registration_success']);
-        } catch (error) {
-            console.error("Erro no cadastro:", error);
-            alert(error.code === 'auth/email-already-in-use' ? translations[currentLanguage]['alert_user_exists'] : error.message);
-        }
+        // Criar o documento do usuário
+        const userRef = db.collection('users').doc(user.uid);
+        // Criar o documento de referência do nome de usuário
+        const usernameRef = db.collection('usernames').doc(usernameLowercase);
+
+        // Usar um batch para garantir que ambas as operações ocorram juntas
+        const batch = db.batch();
+
+        batch.set(userRef, {
+            username,
+            username_lowercase: usernameLowercase,
+            email, 
+            snakeCoins: 0,
+            isBanned: false,
+            unlockedSkins: ['default', 'custom'],
+            highScoresPerMap: { "normal": 0, "no-walls": 0 },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            settings: { skin: 'default', customSnakeColor: '#00b894' }
+        });
+
+        batch.set(usernameRef, {
+            userId: user.uid // Armazena o UID do dono do nome de usuário
+        });
+
+        await batch.commit(); // Executa ambas as operações
+        
+        alert(translations[currentLanguage]['alert_registration_success']);
+    } catch (error) {
+        console.error("Erro no cadastro:", error);
+        alert(error.code === 'auth/email-already-in-use' ? translations[currentLanguage]['alert_user_exists'] : error.message);
     }
+}
     
     async function handleLogin() {
         const email = document.getElementById('loginEmail').value.trim();
@@ -2962,29 +2990,63 @@
     
     async function reauthenticate(currentPassword) { const user = auth.currentUser; const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword); return user.reauthenticateWithCredential(cred); }
     
-    async function handleChangeUsername() {
-        const newUsername = document.getElementById('newUsername').value.trim();
-        const currentPass = document.getElementById('currentPassForUsername').value.trim();
-        const usernameChangeError = document.getElementById('usernameChangeError');
-        usernameChangeError.textContent = '';
-        const user = auth.currentUser;
+   // CÓDIGO CORRIGIDO para a função handleChangeUsername
+async function handleChangeUsername() {
+    const newUsername = document.getElementById('newUsername').value.trim();
+    const currentPass = document.getElementById('currentPassForUsername').value.trim();
+    const usernameChangeError = document.getElementById('usernameChangeError');
+    usernameChangeError.textContent = '';
+    const user = auth.currentUser;
 
-        if (!user) { usernameChangeError.textContent = translations[currentLanguage]['alert_no_user_logged_in']; return; }
-        if (newUsername === '') { usernameChangeError.textContent = translations[currentLanguage]['alert_username_empty']; return; }
-        if (newUsername.toLowerCase() === currentUsername.toLowerCase()){ usernameChangeError.textContent = translations[currentLanguage]['alert_new_username_same_as_current']; return; }
-        if (await isUsernameTaken(newUsername)) { usernameChangeError.textContent = translations[currentLanguage]['alert_username_taken']; return; }
-        
-        try {
-            await reauthenticate(currentPass);
-            await db.collection('users').doc(user.uid).update({ username: newUsername, username_lowercase: newUsername.toLowerCase() });
-            currentUsername = newUsername; loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
-            alert(translations[currentLanguage]['alert_username_changed_success']);
-            document.getElementById('newUsername').value = ''; document.getElementById('currentPassForUsername').value = '';
-        } catch (error) {
-            console.error("Erro ao mudar nome de usuário:", error);
-            passwordChangeError.textContent = error.code === 'auth/wrong-password' ? translations[currentLanguage]['alert_incorrect_current_password'] : 'Erro: ' + error.message;
-        }
+    // ... (suas validações existentes) ...
+    if (!user) { usernameChangeError.textContent = translations[currentLanguage]['alert_no_user_logged_in']; return; }
+    if (newUsername === '') { usernameChangeError.textContent = translations[currentLanguage]['alert_username_empty']; return; }
+    if (newUsername.toLowerCase() === currentUsername.toLowerCase()){ usernameChangeError.textContent = translations[currentLanguage]['alert_new_username_same_as_current']; return; }
+    
+    // A verificação agora usa a nova função e vai funcionar corretamente
+    if (await isUsernameTaken(newUsername)) {
+        usernameChangeError.textContent = translations[currentLanguage]['alert_username_taken'];
+        return;
     }
+    
+    try {
+        // Reautenticação do usuário continua sendo necessária
+        await reauthenticate(currentPass);
+
+        // Iniciar uma transação para garantir a consistência dos dados
+        await db.runTransaction(async (transaction) => {
+            const oldUsernameLowercase = currentUsername.toLowerCase();
+            const newUsernameLowercase = newUsername.toLowerCase();
+
+            const userRef = db.collection('users').doc(user.uid);
+            const oldUsernameRef = db.collection('usernames').doc(oldUsernameLowercase);
+            const newUsernameRef = db.collection('usernames').doc(newUsernameLowercase);
+            
+            // 1. Deleta o documento do nome de usuário antigo
+            transaction.delete(oldUsernameRef);
+            // 2. Cria o documento para o novo nome de usuário
+            transaction.set(newUsernameRef, { userId: user.uid });
+            // 3. Atualiza o nome de usuário no perfil do usuário
+            transaction.update(userRef, {
+                username: newUsername,
+                username_lowercase: newUsernameLowercase
+            });
+        });
+
+        // Se a transação for bem-sucedida, atualize o estado local
+        currentUsername = newUsername;
+        loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
+        alert(translations[currentLanguage]['alert_username_changed_success']);
+        document.getElementById('newUsername').value = '';
+        document.getElementById('currentPassForUsername').value = '';
+
+    } catch (error) {
+        console.error("Erro ao mudar nome de usuário:", error);
+        usernameChangeError.textContent = error.code === 'auth/wrong-password' 
+            ? translations[currentLanguage]['alert_incorrect_current_password'] 
+            : 'Erro: ' + error.message;
+    }
+}
 
     async function handleChangeEmail() {
         const newEmail = document.getElementById('newEmail').value.trim();
