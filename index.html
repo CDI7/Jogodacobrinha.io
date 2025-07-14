@@ -51,7 +51,35 @@
         .game-container::-webkit-scrollbar-track {
             background: transparent;
         }
+/* Botão de configurações do painel PvP */
+.settings-btn-pvp {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 2650; /* Garante que fique acima do conteúdo pvp, mas abaixo do modal */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
 
+.settings-btn-pvp:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(45deg);
+}
+
+/* Garante que o painel de configurações pvp fique escondido por padrão */
+#pvpSettingsPanel {
+    display: none;
+}
 
         /* --- TIPOGRAFIA --- */
         .main-title {
@@ -853,6 +881,173 @@
             width: 100%;
         }
 
+        /* --- ESTILOS DO PAINEL PVP (ATUALIZADO) --- */
+        #pvpPanel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 29, 45, 0.98); /* Fundo mais opaco */
+            backdrop-filter: blur(10px);
+            z-index: 2600;
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+.pvp-content {
+    width: 100%;
+    max-width: 380px; /* Reduz a largura máxima para dar mais espaço nas laterais */
+    max-height: 100%;
+    overflow-y: hidden; /* Remove a rolagem vertical */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    align-items: center;
+    gap: 5px; /* Reduz drasticamente o espaço entre os elementos */
+    padding: 5px 0; /* Adiciona um pequeno preenchimento vertical */
+}
+
+        .pvp-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .pvp-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .pvp-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .opponent-view, .local-player-view {
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            position: relative; /* Necessário para posicionar elementos filhos */
+        }
+
+        #opponentCanvas, #localPlayerPvPCanvas {
+    border-radius: 12px; /* Diminui o raio da borda */
+    background: #11131e;
+    width: 90%; /* Define uma largura um pouco menor que o contêiner */
+    max-width: 300px; /* Define um tamanho máximo menor para o canvas */
+    height: auto;
+    margin: 0 auto; /* Centraliza o canvas */
+}
+
+        #opponentCanvas {
+            border: 3px solid #d63031; /* Borda vermelha */
+            background: #000;
+        }
+
+        #localPlayerPvPCanvas {
+            border: 3px solid #4a72ff; /* Borda azul */
+        }
+
+        .opponent-overlay {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    
+    /* Adicione estas 4 linhas */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+}
+
+.wait-time-display {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+        #searchMatchBtn {
+            width: 80%;
+            max-width: 250px;
+        }
+        
+        .close-pvp-btn {
+            position: absolute;
+            top: 0px;  /* Ajusta a posição */
+            right: 5px; /* Ajusta a posição */
+            width: 30px;
+            height: 30px;
+            background: #d63031;
+            color: white;
+            border: 2px solid #1a1d2d;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1;
+            padding: 0;
+            z-index: 10;
+        }
+        .close-pvp-btn:hover {
+            background: #e17055;
+        }
+
+        #pvpGameControls {
+   margin-top: 5px; /* Diminui a margem superior */
+   flex-shrink: 0;
+}
+/* Estilos para a área de informação da partida PvP */
+.pvp-match-info {
+    position: relative;
+    width: 100%;
+    margin: 5px 0;
+    text-align: center;
+}
+
+/* Estilo para o cronômetro principal do jogo (03:00) */
+#pvpGameTimer {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFD700; /* Cor dourada para destaque */
+    background: rgba(0,0,0,0.3);
+    padding: 5px 15px;
+    border-radius: 8px;
+    display: inline-block;
+    visibility: hidden; /* Começa escondido e se torna visível com JS */
+}
+
+/* Estilo para a contagem regressiva (5, 4, 3...) */
+#pvpCountdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 20px rgba(0,0,0,0.7);
+    z-index: 50;
+    display: none; /* Começa escondido e é ativado via JS */
+    animation: countdown-pulse 1s infinite;
+}
+
+/* Animação de pulsar para a contagem regressiva */
+@keyframes countdown-pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
 </style>
 </head>
 <body>
@@ -901,6 +1096,9 @@
                 <p>Dificuldade Mais Usada: <strong id="mostUsedDifficultyStat">Calculando...</strong></p>
             </div>
 
+        <button class="btn btn-secondary" onclick="closePvPSettings()" style="margin-top: 20px; width:100%;">Fechar</button>
+    </div>
+</div>
             <div class="analytics-card stat-card" style="margin-top: 15px;">
                 <h4>Uso de Skins</h4>
                 <div style="overflow-x: auto;">
@@ -992,6 +1190,86 @@
             <button class="btn btn-primary" onclick="sendCollectiveReward()" style="width:100%; margin-top: 20px;">Enviar para Todos os Jogadores</button>
         </div>
         </div>
+</div>
+<div id="pvpSettingsPanel" class="modal-overlay" style="z-index: 2700;">
+    <div class="modal-content">
+        <h3 style="margin-top: 0; text-align: center;">⚔️ Configurações PvP ⚔️</h3>
+        <div class="settings-tabs">
+            <button class="tab-button selected" onclick="showPvPSettingsTab('pvpGeneral')">Geral</button>
+            <button class="tab-button" onclick="showPvPSettingsTab('pvpControls')">Controles</button>
+            <button class="tab-button" onclick="showPvPSettingsTab('pvpMatch')">Partida</button>
+        </div>
+
+        <div id="pvpGeneralSettings" class="settings-tab-content">
+            <label for="skinSelectorPvp" data-lang-key="label_skin">Visual da Cobrinha:</label>
+            <select id="skinSelectorPvp" onchange="selectPvpSkin(this.value)"></select>
+            <canvas id="skinPreviewCanvasPvp" width="120" height="40" style="display: block; margin: 15px auto; background: #11131e; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;"></canvas>
+            <button id="buySkinBtnPvp" onclick="handlePurchase(true)" class="btn btn-primary" style="display: none; width: 100%; margin-top: 5px;"></button>
+            <div id="colorPickerContainerPvp" style="display: none; margin-top: 10px;">
+                <label for="snakeColorPickerPvp" data-lang-key="label_snake_color">Cor Personalizada:</label>
+                <input id="snakeColorPickerPvp" type="color" value="#00b894" oninput="selectPvpSkin('custom')"/>
+            </div>
+        </div>
+
+        <div id="pvpControlsSettings" class="settings-tab-content" style="display:none;">
+            <label for="sensitivityRangePvp">Sensibilidade dos Botões:</label>
+            <input id="sensitivityRangePvp" max="10" min="1" type="range" value="5"/>
+        </div>
+        
+        <div id="pvpMatchSettings" class="settings-tab-content" style="display:none;">
+            <h4 class="selection-title" style="margin-top: 5px;">Dificuldade da Partida:</h4>
+            <div id="pvpDifficultySelection" class="difficulty-selection">
+                <button class="difficulty-btn easy" onclick="selectPvpDifficulty('easy')">🐌<br>Fácil</button>
+                <button class="difficulty-btn normal selected" onclick="selectPvpDifficulty('normal')">🐍<br>Normal</button>
+                <button class="difficulty-btn hard" onclick="selectPvpDifficulty('hard')">🚀<br>Difícil</button>
+                <button class="difficulty-btn insane" onclick="selectPvpDifficulty('insane')">💀<br>Insano</button>
+            </div>
+
+            <h4 class="selection-title">Mapa da Partida:</h4>
+            <div id="pvpMapSelection" class="map-selection">
+                <button class="difficulty-btn selected" onclick="selectPvpMap('normal')">🧱<br>Padrão</button>
+                <button class="difficulty-btn" onclick="selectPvpMap('no-walls')">🌌<br>Sem Paredes</button>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="closePvPSettings()" style="margin-top: 20px; width:100%;">Fechar</button>
+    </div>
+</div>
+
+<div id="pvpPanel">
+    <button id="pvpSettingsBtn" class="settings-btn-pvp" onclick="openPvPSettings()">⚙️</button>
+    
+    <button class="close-pvp-btn" onclick="closePvPPanel()">×</button>
+
+    <div class="pvp-content">
+        <div class="opponent-view">
+    <canvas id="opponentCanvas" width="320" height="320"></canvas>
+    <div class="opponent-overlay">
+        <div id="waitTimeDisplay" class="wait-time-display">
+            Tempo de Espera: --
+        </div>
+        <button id="searchMatchBtn" class="btn btn-primary" onclick="handleSearchMatch()">Procurar Partida</button>
+    </div>
+</div>
+<!-- ================================= -->
+        <!--  NOVO CÓDIGO PARA OS CRONÔMETROS  -->
+        <!-- ================================= -->
+        <div id="pvpMatchInfo" class="pvp-match-info">
+            <div id="pvpGameTimer">03:00</div>
+            <div id="pvpCountdown" class="pvp-countdown"></div>
+        </div>
+        <!-- ================================= -->
+        <div class="local-player-view">
+            <canvas id="localPlayerPvPCanvas" width="320" height="320"></canvas>
+        </div>
+
+        <div class="controls" id="pvpGameControls">
+            <button class="control-btn up">↑</button>
+            <button class="control-btn left">←</button>
+            <button class="control-btn right">→</button>
+            <button class="control-btn down">↓</button>
+        </div>
+    </div>
 </div>
 
 <div id="editUserModal" class="edit-user-modal">
@@ -1154,6 +1432,10 @@
         
         <label for="screenBackgroundColor" data-lang-key="label_screen_background_color">Cor da Tela:</label>
         <input type="color" id="screenBackgroundColor" value="#1a1a1a" /><br /><br />
+
+        <br/><br/>
+        <label for="gameBackgroundColor" data-lang-key="label_game_background_color">Cor do Fundo do Jogo:</label>
+        <input type="color" id="gameBackgroundColor" value="#11131e" />
     </div>
     <div id="controlsSettings" class="settings-tab-content" style="display:none;">
         <label for="sensitivityRange" data-lang-key="label_button_sensitivity">Sensibilidade dos Botões:</label>
@@ -1228,6 +1510,7 @@
     <div class="map-selection">
         <button class="difficulty-btn selected" onclick="selectMap('normal')" data-lang-key="map_default_button">🧱<br>Padrão</button>
         <button class="difficulty-btn" onclick="selectMap('no-walls')" data-lang-key="map_no_walls_button">🌌<br>Sem Paredes</button>
+        <button class="difficulty-btn" onclick="openPvPPanel()">⚔️<br>PvP</button>
     </div>
     <div class="difficulty-info" id="mapInfo">Paredes normais.</div>
 </div>
@@ -1517,15 +1800,27 @@
     document.querySelectorAll('.language-selector-option').forEach(option => { option.addEventListener('click', function() { selectLanguage(this.dataset.lang); }); });
     
     function selectDifficulty(difficulty) {
-        currentDifficulty = difficulty; document.querySelectorAll('.difficulty-selection .difficulty-btn').forEach(btn => btn.classList.remove('selected'));
-        document.querySelector(`.difficulty-selection .difficulty-btn.${difficulty}`).classList.add('selected');
+        currentDifficulty = difficulty;
+        // Limita a busca para remover a classe 'selected' apenas dos botões na tela inicial
+        document.querySelectorAll('#startScreen .difficulty-selection .difficulty-btn').forEach(btn => btn.classList.remove('selected'));
+        // Limita a busca para adicionar a classe 'selected' ao botão correto na tela inicial
+        document.querySelector(`#startScreen .difficulty-selection .difficulty-btn.${difficulty}`).classList.add('selected');
         difficultyInfo.textContent = difficulties[difficulty]['description_' + currentLanguage];
     }
 
     function selectMap(map) {
         currentMap = map; 
         document.querySelectorAll('.map-selection .difficulty-btn').forEach(btn => btn.classList.remove('selected'));
-        document.querySelector(`.map-selection .difficulty-btn[onclick*="'${map}'"]`).classList.add('selected');
+        
+        // Desseleciona todos e seleciona o correto.
+        const mapButtons = document.querySelectorAll('.map-selection .difficulty-btn');
+        mapButtons.forEach(btn => {
+            btn.classList.remove('selected');
+            if (btn.getAttribute('onclick').includes(`'${map}'`)) {
+                 btn.classList.add('selected');
+            }
+        });
+
         mapInfo.textContent = maps[map]['description_' + currentLanguage];
         userHighScoreDisplay.textContent = userHighScoresPerMap[currentMap] || 0;
         updateLeaderboardDisplay();
@@ -1845,467 +2140,21 @@
     }
 }
 
-    function drawGame() {
-        ctx.fillStyle = '#11131e';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // SUBSTITUA a sua função drawGame por esta:
+function drawGame() {
+    // 1. Limpa e desenha o fundo do jogo com a cor escolhida
+    ctx.fillStyle = document.getElementById('gameBackgroundColor').value || '#11131e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const skinOptions = skins[currentSkin] || skins['default'];
+    // 2. Chama a função unificada para desenhar a cobra
+    drawSnakeOnCanvas(ctx, snake, currentSkin, { dx, dy }, document.getElementById('snakeColorPicker').value);
 
-        const drawWebPattern = (x, y) => {
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x + gridSize / 3, y);
-            ctx.lineTo(x + gridSize / 3, y + gridSize);
-            ctx.moveTo(x + (gridSize / 3) * 2, y);
-            ctx.lineTo(x + (gridSize / 3) * 2, y + gridSize);
-            ctx.moveTo(x, y + gridSize / 3);
-            ctx.lineTo(x + gridSize, y + gridSize / 3);
-            ctx.moveTo(x, y + (gridSize / 3) * 2);
-            ctx.lineTo(x + gridSize, y + (gridSize / 3) * 2);
-            ctx.stroke();
-        };
-
-        if (currentSkin === 'spider') {
-            const redColor = skinOptions.redColor;
-            const blueColor = skinOptions.blueColor;
-
-            for (let i = snake.length - 1; i > 0; i--) {
-                const segment = snake[i];
-                const segmentX = segment.x * gridSize;
-                const segmentY = segment.y * gridSize;
-                
-                const isRedSegment = i % 2 === 0;
-                ctx.fillStyle = isRedSegment ? redColor : blueColor;
-                ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
-
-                if (isRedSegment) {
-                    drawWebPattern(segmentX, segmentY);
-                }
-            }
-
-            const head = snake[0];
-            const headX = head.x * gridSize;
-            const headY = head.y * gridSize;
-            ctx.fillStyle = redColor;
-            ctx.fillRect(headX, headY, gridSize - 2, gridSize - 2);
-            drawWebPattern(headX, headY);
-
-            const eyeXOffset = gridSize * 0.2;
-            const eyeYOffset = gridSize * 0.2;
-            const eyeWidth = gridSize * 0.25;
-            const eyeHeight = gridSize * 0.5;
-            
-            ctx.fillStyle = 'white';
-            ctx.fillRect(headX + eyeXOffset, headY + eyeYOffset, eyeWidth, eyeHeight);
-            ctx.fillRect(headX + gridSize - eyeXOffset - eyeWidth - 2, headY + eyeYOffset, eyeWidth, eyeHeight);
-
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(headX + eyeXOffset, headY + eyeYOffset, eyeWidth, eyeHeight);
-            ctx.strokeRect(headX + gridSize - eyeXOffset - eyeWidth - 2, headY + eyeYOffset, eyeWidth, eyeHeight);
-        } else if (currentSkin === 'coral') {
-            const coralColors = skinOptions.colors;
-            
-            for (let i = snake.length - 1; i > 0; i--) { 
-                const segment = snake[i];
-                const prevSegment = snake[i - 1];
-                const segmentX = segment.x * gridSize;
-                const segmentY = segment.y * gridSize;
-                const patternIndex = (i - 1) % 4;
-
-                switch (patternIndex) {
-                    case 0:
-                        ctx.fillStyle = coralColors[0];
-                        ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
-                        break;
-                    case 1:
-                    case 2:
-                        const halfSize = (gridSize - 2) / 2;
-                        const segmentDx = prevSegment.x - segment.x;
-                        const segmentDy = prevSegment.y - segment.y;
-
-                        if (segmentDy === -1) {
-                            ctx.fillStyle = coralColors[1];
-                            ctx.fillRect(segmentX, segmentY, gridSize - 2, halfSize);
-                            ctx.fillStyle = coralColors[2];
-                            ctx.fillRect(segmentX, segmentY + halfSize, gridSize - 2, halfSize);
-                        } else if (segmentDy === 1) {
-                            ctx.fillStyle = coralColors[2];
-                            ctx.fillRect(segmentX, segmentY, gridSize - 2, halfSize);
-                            ctx.fillStyle = coralColors[1];
-                            ctx.fillRect(segmentX, segmentY + halfSize, gridSize - 2, halfSize);
-                        } else if (segmentDx === -1) {
-                            ctx.fillStyle = coralColors[1];
-                            ctx.fillRect(segmentX, segmentY, halfSize, gridSize - 2);
-                            ctx.fillStyle = coralColors[2];
-                            ctx.fillRect(segmentX + halfSize, segmentY, halfSize, gridSize - 2);
-                        } else if (segmentDx === 1) {
-                            ctx.fillStyle = coralColors[2];
-                            ctx.fillRect(segmentX, segmentY, halfSize, gridSize - 2);
-                            ctx.fillStyle = coralColors[1];
-                            ctx.fillRect(segmentX + halfSize, segmentY, halfSize, gridSize - 2);
-                        } else {
-                            ctx.fillStyle = coralColors[1];
-                            ctx.fillRect(segmentX, segmentY, halfSize, gridSize - 2);
-                            ctx.fillStyle = coralColors[2];
-                            ctx.fillRect(segmentX + halfSize, segmentY, halfSize, gridSize - 2);
-                        }
-                        break;
-                    case 3:
-                        ctx.fillStyle = coralColors[1];
-                        ctx.fillRect(segmentX, segmentY, gridSize - 2, gridSize - 2);
-                        break;
-                }
-            }
-
-            const head = snake[0];
-            const headX = head.x * gridSize;
-            const headY = head.y * gridSize;
-            
-            ctx.fillStyle = coralColors[1];
-            ctx.fillRect(headX, headY, gridSize - 2, gridSize - 2);
-
-            ctx.fillStyle = coralColors[2];
-            const mouthSize = Math.max(2, Math.floor(gridSize / 6));
-
-            if (dy === -1) {
-                ctx.fillRect(headX + mouthSize, headY, gridSize - 2 - (2 * mouthSize), mouthSize);
-            } else if (dy === 1) {
-                ctx.fillRect(headX + mouthSize, headY + gridSize - 2 - mouthSize, gridSize - 2 - (2 * mouthSize), mouthSize);
-            } else if (dx === -1) {
-                ctx.fillRect(headX, headY + mouthSize, mouthSize, gridSize - 2 - (2 * mouthSize));
-            } else {
-                ctx.fillRect(headX + gridSize - 2 - mouthSize, headY + mouthSize, mouthSize, gridSize - 2 - (2 * mouthSize));
-            }
-        } else if (currentSkin === 'pharaoh') {
-            const goldColor = '#FFD700';
-            const blueColor = '#00008B';
-            const eyeWhiteColor = '#FFFFFF';
-            const eyePupilColor = '#000000';
-
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                const prevSegment = snake[i-1];
-                const segmentX = segment.x * gridSize;
-                const segmentY = segment.y * gridSize;
-                const segmentDx = segment.x - prevSegment.x;
-                const segmentDy = segment.y - prevSegment.y;
-                const halfGridSize = gridSize / 2;
-
-                if (segmentDy === 1) {
-                    ctx.fillStyle = blueColor;
-                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
-                    ctx.fillStyle = goldColor;
-                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
-                } else if (segmentDy === -1) {
-                    ctx.fillStyle = goldColor;
-                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
-                    ctx.fillStyle = blueColor;
-                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
-                } else if (segmentDx === 1) {
-                    ctx.fillStyle = goldColor;
-                    ctx.fillRect(segmentX, segmentY, gridSize, halfGridSize);
-                    ctx.fillStyle = blueColor;
-                    ctx.fillRect(segmentX, segmentY + halfGridSize, gridSize, halfGridSize);
-                } else if (segmentDx === -1) {
-                    ctx.fillStyle = blueColor;
-                    ctx.fillRect(segmentX, segmentY, gridSize, halfGridSize);
-                    ctx.fillStyle = goldColor;
-                    ctx.fillRect(segmentX, segmentY + halfGridSize, gridSize, halfGridSize);
-                } else {
-                    ctx.fillStyle = blueColor;
-                    ctx.fillRect(segmentX, segmentY, halfGridSize, gridSize);
-                    ctx.fillStyle = goldColor;
-                    ctx.fillRect(segmentX + halfGridSize, segmentY, halfGridSize, gridSize);
-                }
-
-                if (i % 2 === 0) {
-                    const dotSize = 1;
-                    ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
-                    ctx.fillRect(segmentX + gridSize * 0.2, segmentY + gridSize * 0.2, dotSize, dotSize);
-                    ctx.fillRect(segmentX + gridSize * 0.7, segmentY + gridSize * 0.8, dotSize, dotSize);
-                    ctx.fillStyle = 'rgba(0, 0, 139, 0.8)';
-                    ctx.fillRect(segmentX + gridSize * 0.8, segmentY + gridSize * 0.3, dotSize, dotSize);
-                    ctx.fillRect(segmentX + gridSize * 0.3, segmentY + gridSize * 0.7, dotSize, dotSize);
-                }
-            }
-
-            const head = snake[0];
-            const headX = head.x * gridSize;
-            const headY = head.y * gridSize;
-            ctx.save();
-            ctx.translate(headX + gridSize / 2, headY + gridSize / 2);
-
-            let rotation = 0;
-            if (dx === 1) {
-                rotation = Math.PI / 2;
-            } else if (dx === -1) {
-                rotation = -Math.PI / 2;
-            } else if (dy === 1) {
-                rotation = Math.PI;
-            }
-
-            ctx.rotate(rotation);
-            const halfGrid = gridSize / 2;
-            ctx.fillStyle = blueColor;
-            ctx.fillRect(-halfGrid, -halfGrid, gridSize, gridSize);
-            ctx.fillStyle = goldColor;
-            ctx.fillRect(-halfGrid, -halfGrid, gridSize, gridSize * 0.2);
-            ctx.fillRect(-halfGrid, -halfGrid * 0.2, gridSize, gridSize * 0.2);
-            ctx.fillRect(-halfGrid, halfGrid * 0.6, gridSize, gridSize * 0.2);
-            ctx.fillStyle = goldColor;
-            ctx.fillRect(-halfGrid * 0.6, -halfGrid * 0.8, gridSize * 0.6, gridSize * 0.8);
-            const eyeY = -halfGrid * 0.5;
-            const eyeX = -halfGrid * 0.2;
-            ctx.fillStyle = eyeWhiteColor;
-            ctx.fillRect(eyeX - (gridSize * 0.2), eyeY, gridSize * 0.4, gridSize * 0.2);
-            ctx.fillRect(-eyeX - (gridSize * 0.2), eyeY, gridSize * 0.4, gridSize * 0.2);
-            ctx.fillStyle = eyePupilColor;
-            ctx.fillRect(eyeX - (gridSize * 0.05), eyeY, gridSize * 0.1, gridSize * 0.2);
-            ctx.fillRect(-eyeX - (gridSize * 0.05), eyeY, gridSize * 0.1, gridSize * 0.2);
-            const beardYStart = halfGrid * 0.1;
-            const beardHeight = halfGrid * 0.8;
-            ctx.fillStyle = blueColor;
-            ctx.fillRect(-gridSize * 0.15, beardYStart, gridSize * 0.3, beardHeight);
-            ctx.fillStyle = goldColor;
-            for (let i = 0; i < 3; i++) {
-                ctx.fillRect(-gridSize * 0.15, beardYStart + (i * 0.3) * beardHeight, gridSize * 0.3, beardHeight * 0.15);
-            }
-            ctx.restore();
-        } else if (currentSkin === 'galaxy') {
-            const galaxyColors = skinOptions.colors;
-            const headColor = skinOptions.headColor;
-
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                ctx.fillStyle = galaxyColors[i % galaxyColors.length];
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-                
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.fillRect(segment.x * gridSize + Math.random() * gridSize, segment.y * gridSize + Math.random() * gridSize, 1, 1);
-                ctx.fillRect(segment.x * gridSize + Math.random() * gridSize, segment.y * gridSize + Math.random() * gridSize, 1, 1);
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.fillRect(snake[0].x * gridSize + Math.random() * gridSize, snake[0].y * gridSize + Math.random() * gridSize, 1.5, 1.5);
-
-        } else if (currentSkin === 'circuit') {
-            const bodyColor = skinOptions.bodyColor;
-            const headColor = skinOptions.headColor;
-            
-            for (let i = 1; i < snake.length; i++) {
-                ctx.fillStyle = bodyColor;
-                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
-                
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(snake[i].x * gridSize + 2, snake[i].y * gridSize + gridSize / 2);
-                ctx.lineTo(snake[i].x * gridSize + gridSize - 4, snake[i].y * gridSize + gridSize / 2);
-                ctx.moveTo(snake[i].x * gridSize + gridSize / 2, snake[i].y * gridSize + 2);
-                ctx.lineTo(snake[i].x * gridSize + gridSize / 2, snake[i].y * gridSize + gridSize - 4);
-                ctx.stroke();
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-
-        } else if (currentSkin === 'camo') {
-            const camoColors = skinOptions.colors;
-            const headColor = skinOptions.headColor;
-            
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                ctx.fillStyle = camoColors[i % camoColors.length];
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-
-        } else if (currentSkin === 'halloween') {
-            const pumpkinColor = skinOptions.headColor;
-            const bodyBlack = skinOptions.bodyColor1;
-            const bodyPurple = skinOptions.bodyColor2;
-            const lineOrange = skinOptions.lineColor;
-            
-            // PASS 1: Desenha todos os segmentos do corpo com suas bordas
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                const segX = segment.x * gridSize;
-                const segY = segment.y * gridSize;
-
-                // Desenha o fundo do segmento que servirá de borda
-                ctx.fillStyle = bodyPurple;
-                ctx.fillRect(segX, segY, gridSize, gridSize);
-                ctx.fillStyle = bodyBlack;
-                ctx.fillRect(segX + 1, segY + 1, gridSize - 2, gridSize - 2);
-
-                // Define a área de preenchimento interna
-                const fillX = segX + 1;
-                const fillY = segY + 1;
-                const fillSize = gridSize - 2;
-                const halfFillSize = fillSize / 2;
-                const lineSize = 2;
-                
-                const prevSegment = snake[i-1];
-                const segmentDx = segment.x - prevSegment.x;
-
-                // Desenha o conteúdo dentro da borda
-                if (segmentDx === 0) { // Movimento vertical
-                    ctx.fillStyle = bodyBlack;
-                    ctx.fillRect(fillX, fillY, halfFillSize - lineSize / 2, fillSize);
-                    ctx.fillStyle = bodyPurple;
-                    ctx.fillRect(fillX + halfFillSize + lineSize / 2, fillY, halfFillSize - lineSize / 2, fillSize);
-                    ctx.fillStyle = lineOrange;
-                    ctx.fillRect(fillX + halfFillSize - lineSize / 2, fillY, lineSize, fillSize);
-                } else { // Movimento horizontal
-                    ctx.fillStyle = bodyBlack;
-                    ctx.fillRect(fillX, fillY, fillSize, halfFillSize - lineSize / 2);
-                    ctx.fillStyle = bodyPurple;
-                    ctx.fillRect(fillX, fillY + halfFillSize + lineSize / 2, fillSize, halfFillSize - lineSize / 2);
-                    ctx.fillStyle = lineOrange;
-                    ctx.fillRect(fillX, fillY + halfFillSize - lineSize / 2, fillSize, lineSize);
-                }
-            }
-            
-            // PASS 2: Desenha os conectores para criar a fluidez
-            for (let i = 1; i < snake.length; i++) {
-                 const curr = snake[i];
-                 const prev = snake[i-1];
-                 
-                 const lineSize = 2;
-                 let connX, connY, connW, connH, isHorizontal;
-                 
-                 if (curr.x === prev.x) { // Movimento Vertical
-                    isHorizontal = false;
-                    connW = gridSize - 2;
-                    connH = 2;
-                    connX = curr.x * gridSize + 1;
-                    connY = (curr.y > prev.y) ? curr.y * gridSize - 1 : prev.y * gridSize -1;
-                 } else { // Movimento Horizontal
-                    isHorizontal = true;
-                    connW = 2;
-                    connH = gridSize - 2;
-                    connY = curr.y * gridSize + 1;
-                    connX = (curr.x > prev.x) ? curr.x * gridSize - 1 : prev.x * gridSize - 1;
-                 }
-                 
-                if (isHorizontal) {
-                    const halfSize = connH / 2;
-                    ctx.fillStyle = bodyBlack;
-                    ctx.fillRect(connX, connY, connW, halfSize - lineSize / 2);
-                    ctx.fillStyle = bodyPurple;
-                    ctx.fillRect(connX, connY + halfSize + lineSize / 2, connW, halfSize - lineSize / 2);
-                    ctx.fillStyle = lineOrange;
-                    ctx.fillRect(connX, connY + halfSize - lineSize / 2, connW, lineSize);
-                } else {
-                    const halfSize = connW / 2;
-                    ctx.fillStyle = bodyBlack;
-                    ctx.fillRect(connX, connY, halfSize - lineSize / 2, connH);
-                    ctx.fillStyle = bodyPurple;
-                    ctx.fillRect(connX + halfSize + lineSize / 2, connY, halfSize - lineSize / 2, connH);
-                    ctx.fillStyle = lineOrange;
-                    ctx.fillRect(connX + halfSize - lineSize / 2, connY, lineSize, connH);
-                }
-            }
-
-
-            // Desenha a cabeça por último para ficar por cima de tudo
-            const head = snake[0];
-            const headX = head.x * gridSize;
-            const headY = head.y * gridSize;
-            
-            ctx.fillStyle = pumpkinColor;
-            ctx.fillRect(headX, headY, gridSize, gridSize);
-
-            // Usa save/restore e rotate para orientar o rosto corretamente
-            ctx.save();
-            ctx.translate(headX + gridSize / 2, headY + gridSize / 2);
-
-            let rotation = 0;
-            if (dx === 1) { rotation = Math.PI / 2; }      // Direita
-            else if (dx === -1) { rotation = -Math.PI / 2; }// Esquerda
-            else if (dy === 1) { rotation = Math.PI; }     // Baixo
-            ctx.rotate(rotation);
-
-            // Desenha o rosto relativo ao centro da cabeça
-            const halfGrid = gridSize / 2;
-            ctx.fillStyle = '#000000';
-            
-            // Olho 1 (triângulo)
-            ctx.beginPath();
-            ctx.moveTo(-halfGrid * 0.6, -halfGrid * 0.6);
-            ctx.lineTo(-halfGrid * 0.2, -halfGrid * 0.2);
-            ctx.lineTo(-halfGrid * 0.6, -halfGrid * 0.2);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Olho 2 (triângulo)
-            ctx.beginPath();
-            ctx.moveTo(halfGrid * 0.6, -halfGrid * 0.6);
-            ctx.lineTo(halfGrid * 0.2, -halfGrid * 0.2);
-            ctx.lineTo(halfGrid * 0.6, -halfGrid * 0.2);
-            ctx.closePath();
-            ctx.fill();
-
-            // Nariz (triângulo)
-            ctx.beginPath();
-            ctx.moveTo(0, -halfGrid * 0.1); // Ponto de cima
-            ctx.lineTo(-halfGrid * 0.2, halfGrid * 0.2); // Ponto de baixo-esquerda
-            ctx.lineTo(halfGrid * 0.2, halfGrid * 0.2); // Ponto de baixo-direita
-            ctx.closePath();
-            ctx.fill();
-
-            // Boca Sorridente
-            const mouthY = halfGrid * 0.4;
-            ctx.fillRect(-halfGrid * 0.8, mouthY, halfGrid * 1.6, halfGrid * 0.2); // Linha principal do sorriso
-            ctx.fillRect(-halfGrid * 0.5, mouthY - halfGrid * 0.2, halfGrid * 0.2, halfGrid * 0.2); // Dente 1
-            ctx.fillRect(halfGrid * 0.3, mouthY - halfGrid * 0.2, halfGrid * 0.2, halfGrid * 0.2); // Dente 2
-            
-            ctx.restore(); // Restaura o contexto do canvas
-
-        } else if (currentSkin === 'christmas') {
-            const christmasColors = skinOptions.colors;
-            const headColor = skinOptions.headColor;
-
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                ctx.fillStyle = christmasColors[i % christmasColors.length];
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-                
-                if (i % 2 === 0) {
-                    ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
-                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize + gridSize / 3, gridSize - 2, gridSize / 3);
-                }
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-
-        }
-        else { // Default ou Custom
-            let bodyColor, headColor;
-            if (currentSkin === 'custom') {
-                bodyColor = document.getElementById('snakeColorPicker').value;
-                headColor = shadeColor(bodyColor, -20);
-            } else {
-                bodyColor = skinOptions.bodyColor;
-                headColor = skinOptions.headColor;
-            }
-            
-            ctx.fillStyle = bodyColor;
-            for (let i = 1; i < snake.length; i++) {
-                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
-            }
-            ctx.fillStyle = headColor;
-            ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
-        }
-
-        ctx.fillStyle = '#e17055';
-        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-        ctx.fillStyle = '#fd79a8';
-        ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6);
-    }
+    // 3. Desenha a comida
+    ctx.fillStyle = '#e17055';
+    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    ctx.fillStyle = '#fd79a8';
+    ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 6, gridSize - 6);
+}
     
     function updateGame() {
         if (!gameRunning || gamePaused) return; if (dx === 0 && dy === 0) return;
@@ -2320,7 +2169,7 @@
             let foodPoints = difficulties[currentDifficulty].points;
             score += foodPoints;
             scoreElement.textContent = score;
-            const newCoins = Math.floor(score / 75) - coinsEarnedThisGame;
+            const newCoins = Math.floor(score / 40) - coinsEarnedThisGame;
             if (newCoins > 0) {
                 coinsEarnedThisGame += newCoins;
             }
@@ -2365,39 +2214,47 @@
         }
     }
 
-    async function handlePurchase() {
-        const buyBtn = document.getElementById('buySkinBtn');
-        const skinKey = buyBtn.dataset.skinToBuy;
-        if (!skinKey) return;
+    // FUNÇÃO DE COMPRA ATUALIZADA PARA FUNCIONAR EM AMBOS OS MENUS
+async function handlePurchase(isPvpMenu = false) {
+    // Determina qual botão de compra e seletor usar com base no menu
+    const buyBtnId = isPvpMenu ? 'buySkinBtnPvp' : 'buySkinBtn';
+    const selectorId = isPvpMenu ? 'skinSelectorPvp' : 'skinSelector';
 
-        const skin = skins[skinKey];
-        if (!skin || !skin.unlockCoins) return;
+    const buyBtn = document.getElementById(buyBtnId);
+    const skinKey = buyBtn.dataset.skinToBuy;
+    if (!skinKey) return;
 
-        // 1. Verifica se tem moedas suficientes
-        if (snakeCoins < skin.unlockCoins) {
-            alert(translations[currentLanguage]['not_enough_coins']);
-            return;
-        }
+    const skin = skins[skinKey];
+    if (!skin || !skin.unlockCoins) return;
 
-        // 2. Pede confirmação para a compra
-        if (confirm(`${translations[currentLanguage]['confirm_buy_skin']} ${skin.unlockCoins} SC?`)) {
-            // 3. Executa a lógica de compra
-            snakeCoins -= skin.unlockCoins;
-            unlockedSkins.push(skinKey);
-            currentSkin = skinKey; // Equipa a skin recém-comprada
-            
-            await updateUserCoins(snakeCoins);
-            await updateUserUnlockedSkins(unlockedSkins);
-            
-            populateSkinSelector(); // Atualiza a lista para remover o cadeado
-            document.getElementById('skinSelector').value = currentSkin; // Garante que a nova skin fique selecionada
+    if (snakeCoins < skin.unlockCoins) {
+        alert(translations[currentLanguage]['not_enough_coins']);
+        return;
+    }
 
-            totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
-            alert(translations[currentLanguage]['skin_unlocked_success']);
+    if (confirm(`${translations[currentLanguage]['confirm_buy_skin']} ${skin.unlockCoins} SC?`)) {
+        snakeCoins -= skin.unlockCoins;
+        unlockedSkins.push(skinKey);
+        currentSkin = skinKey; 
+        
+        await updateUserCoins(snakeCoins);
+        await updateUserUnlockedSkins(unlockedSkins);
+        
+        // Atualiza a UI
+        totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
+        alert(translations[currentLanguage]['skin_unlocked_success']);
+        buyBtn.style.display = 'none';
 
-            buyBtn.style.display = 'none'; // Esconde o botão após a compra
+        // Atualiza o seletor de skins correto após a compra
+        if (isPvpMenu) {
+            populatePvpSkinSelector();
+            document.getElementById(selectorId).value = currentSkin;
+        } else {
+            populateSkinSelector();
+            document.getElementById(selectorId).value = currentSkin;
         }
     }
+}
     async function isNewRecord(score) {
         try {
             if (!currentUsername) return false;
@@ -2560,17 +2417,29 @@
     canvas.addEventListener('click', handleCanvasInteraction);
     canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
 
-    document.addEventListener('keydown', (e) => {
-        if (!gameRunning || !gameStarted) return;
+    // Substitua o seu listener de keydown por este
+document.addEventListener('keydown', (e) => {
+    // Se o jogo PvP estiver rodando, o controle é dele
+    if (pvpGameRunning) {
         switch(e.key) {
-            case 'ArrowUp': queueDirection(0, -1); break;
-            case 'ArrowDown': queueDirection(0, 1); break;
-            case 'ArrowLeft': queueDirection(-1, 0); break;
-            case 'ArrowRight': queueDirection(1, 0); break;
-            case ' ': togglePause(); break;
+            case 'ArrowUp': queuePvpDirection(0, -1); break;
+            case 'ArrowDown': queuePvpDirection(0, 1); break;
+            case 'ArrowLeft': queuePvpDirection(-1, 0); break;
+            case 'ArrowRight': queuePvpDirection(1, 0); break;
         }
+        return; // Impede que o código continue para o controle single-player
+    }
 
-    });
+    // Controle do jogo single-player (como já estava)
+    if (!gameRunning || !gameStarted) return;
+    switch(e.key) {
+        case 'ArrowUp': queueDirection(0, -1); break;
+        case 'ArrowDown': queueDirection(0, 1); break;
+        case 'ArrowLeft': queueDirection(-1, 0); break;
+        case 'ArrowRight': queueDirection(1, 0); break;
+        case ' ': togglePause(); break;
+    }
+});
     document.addEventListener('fullscreenchange', () => {
         const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
         if (!isFullscreen && gameRunning) { if (!gamePaused) { togglePause(); } reenterPrompt.style.display = 'flex';
@@ -2759,6 +2628,7 @@
                 sensitivity: document.getElementById('sensitivityRange').value,
                 joystickModel: document.getElementById('joystickModel').value,
                 screenBackgroundColor: document.getElementById('screenBackgroundColor').value,
+                gameBackgroundColor: document.getElementById('gameBackgroundColor').value,
                 joystickPosition: document.getElementById('joystickPosition').value,
                 language: currentLanguage
             };
@@ -2798,6 +2668,7 @@
                 document.getElementById('sensitivityRange').value = userSettings.sensitivity || '5';
                 document.getElementById('joystickModel').value = userSettings.joystickModel || 'classic';
                 document.getElementById('screenBackgroundColor').value = userSettings.screenBackgroundColor || '#1a1a1a';
+                document.getElementById('gameBackgroundColor').value = userSettings.gameBackgroundColor || '#11131e';
                 document.getElementById('joystickPosition').value = userSettings.joystickPosition || 'right';
                 
                 checkSkinUnlocks();
@@ -2832,7 +2703,7 @@
                 }
             }
 
-
+            canvas.style.backgroundColor = document.getElementById('gameBackgroundColor').value;
             screenBackgroundColor = document.getElementById('screenBackgroundColor').value;
             document.getElementById('mainGame').style.background = screenBackgroundColor;
             loggedUser.textContent = `${translations[currentLanguage]['player_name_prefix']} ${currentUsername}`;
@@ -3670,8 +3541,1130 @@ async function handleChangeUsername() {
             alert("Não foi possível apagar a mensagem.");
         }
     }
+    
+    // ==================================================================
+    // FUNÇÕES DO PAINEL PVP
+    // ==================================================================
+    function openPvPPanel() {
+        document.getElementById('pvpPanel').style.display = 'flex';
+    }
+
+    // CORRIGIDO: Agora cancela a busca se o jogador fechar o painel
+function closePvPPanel() {
+    if (isSearching) {
+        cancelSearch();
+    }
+    document.getElementById('pvpPanel').style.display = 'none';
+}
+// ==================================================================
+// FUNÇÕES DAS NOVAS CONFIGURAÇÕES DO PVP
+// ==================================================================
+
+// --- Variáveis de estado e elementos ---
+let pvpDifficulty = 'normal';
+let pvpMap = 'normal';
+const pvpSettingsPanel = document.getElementById('pvpSettingsPanel');
+const pvpSkinPreviewCanvas = document.getElementById('skinPreviewCanvasPvp');
+const pvpPreviewCtx = pvpSkinPreviewCanvas.getContext('2d');
+
+// --- Funções do Modal e Abas ---
+
+function openPvPSettings() {
+    pvpSettingsPanel.style.display = 'flex';
+    showPvPSettingsTab('pvpGeneral'); 
+
+    populatePvpSkinSelector();
+    selectPvpSkin(currentSkin); 
+}
+
+function closePvPSettings() {
+    pvpSettingsPanel.style.display = 'none';
+    saveUserSettings(); 
+}
+
+function showPvPSettingsTab(tabId) {
+    pvpSettingsPanel.querySelectorAll('.settings-tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    pvpSettingsPanel.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    document.getElementById(tabId + 'Settings').style.display = 'block';
+    pvpSettingsPanel.querySelector(`.tab-button[onclick*="${tabId}"]`).classList.add('selected');
+}
+
+// --- Funções da Aba "Geral" (Skins e Cores) ---
+
+function populatePvpSkinSelector() {
+    const selector = document.getElementById('skinSelectorPvp');
+    selector.innerHTML = ''; 
+    
+    for (const key in skins) {
+        const skin = skins[key];
+        const option = document.createElement('option');
+        option.value = key;
+
+        let displayName = translations[currentLanguage][`skin_${key}`] || skin.name_pt;
+        let isLocked = !unlockedSkins.includes(key);
+
+        if (isLocked) {
+            let costText = '';
+            if (skin.unlockCoins) {
+                costText = `(${skin.unlockCoins} SC)`;
+            } else if (skin.unlockScore) {
+                costText = `(${skin.unlockScore} Pts)`;
+            }
+            displayName = `🔒 ${displayName} ${costText}`;
+            option.style.color = '#aaa';
+        }
+        
+        option.textContent = displayName;
+        selector.appendChild(option);
+    }
+    selector.value = currentSkin;
+}
+
+// ESTA É A VERSÃO COMPLETA E CORRETA DA FUNÇÃO DE DESENHO
+function drawPvpSkinPreview(skinKey) {
+    if (!pvpPreviewCtx) return;
+
+    const previewGridSize = 20;
+    const previewCanvasWidth = pvpSkinPreviewCanvas.width;
+    const previewCanvasHeight = pvpSkinPreviewCanvas.height;
+
+    pvpPreviewCtx.clearRect(0, 0, previewCanvasWidth, previewCanvasHeight);
+    pvpPreviewCtx.fillStyle = '#11131e';
+    pvpPreviewCtx.fillRect(0, 0, previewCanvasWidth, previewCanvasHeight);
+
+    const previewSnake = [
+        { x: 4, y: 1 }, { x: 3, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }
+    ];
+    const offsetX = 10;
+    const skinOptions = skins[skinKey] || skins['default'];
+    
+    const drawPreviewWebPattern = (x, y) => {
+        pvpPreviewCtx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        pvpPreviewCtx.lineWidth = 1;
+        pvpPreviewCtx.beginPath();
+        pvpPreviewCtx.moveTo(x + previewGridSize / 3, y);
+        pvpPreviewCtx.lineTo(x + previewGridSize / 3, y + previewGridSize);
+        pvpPreviewCtx.moveTo(x + (previewGridSize / 3) * 2, y);
+        pvpPreviewCtx.lineTo(x + (previewGridSize / 3) * 2, y + previewGridSize);
+        pvpPreviewCtx.moveTo(x, y + previewGridSize / 3);
+        pvpPreviewCtx.lineTo(x + previewGridSize, y + previewGridSize / 3);
+        pvpPreviewCtx.moveTo(x, y + (previewGridSize / 3) * 2);
+        pvpPreviewCtx.lineTo(x + previewGridSize, y + (previewGridSize / 3) * 2);
+        pvpPreviewCtx.stroke();
+    };
+
+    for (let i = previewSnake.length - 1; i >= 0; i--) {
+        const segment = previewSnake[i];
+        const segmentX = segment.x * previewGridSize + offsetX;
+        const segmentY = segment.y * previewGridSize;
+        const isHead = (i === 0);
+
+        if (skinKey === 'default' || skinKey === 'custom') {
+            let color;
+            if (isHead) {
+                color = (skinKey === 'custom') ? shadeColor(document.getElementById('snakeColorPickerPvp').value, -20) : skinOptions.headColor;
+            } else {
+                color = (skinKey === 'custom') ? document.getElementById('snakeColorPickerPvp').value : skinOptions.bodyColor;
+            }
+            pvpPreviewCtx.fillStyle = color;
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+        
+        } else if (skinKey === 'pharaoh') {
+            const goldColor = '#FFD700', blueColor = '#00008B';
+            if (isHead) {
+                const eyeWhiteColor = '#FFFFFF', eyePupilColor = '#000000';
+                pvpPreviewCtx.save();
+                pvpPreviewCtx.translate(segmentX + previewGridSize / 2, segmentY + previewGridSize / 2);
+                pvpPreviewCtx.rotate(Math.PI / 2);
+                const halfGrid = previewGridSize / 2;
+                pvpPreviewCtx.fillStyle = blueColor; pvpPreviewCtx.fillRect(-halfGrid, -halfGrid, previewGridSize, previewGridSize);
+                pvpPreviewCtx.fillStyle = goldColor; pvpPreviewCtx.fillRect(-halfGrid, -halfGrid, previewGridSize, halfGrid * 0.2);
+                pvpPreviewCtx.fillRect(-halfGrid, -halfGrid * 0.2, previewGridSize, halfGrid * 0.2);
+                pvpPreviewCtx.fillRect(-halfGrid, halfGrid * 0.6, previewGridSize, halfGrid * 0.2);
+                pvpPreviewCtx.fillStyle = goldColor; pvpPreviewCtx.fillRect(-halfGrid * 0.6, -halfGrid * 0.8, halfGrid * 1.2, halfGrid * 0.8);
+                const eyeY = -halfGrid * 0.5, eyeX = -halfGrid * 0.2;
+                pvpPreviewCtx.fillStyle = eyeWhiteColor; pvpPreviewCtx.fillRect(eyeX - (previewGridSize * 0.2), eyeY, previewGridSize * 0.4, previewGridSize * 0.2);
+                pvpPreviewCtx.fillRect(-eyeX - (previewGridSize * 0.2), eyeY, previewGridSize * 0.4, previewGridSize * 0.2);
+                pvpPreviewCtx.fillStyle = eyePupilColor; pvpPreviewCtx.fillRect(eyeX - (previewGridSize * 0.05), eyeY, previewGridSize * 0.1, previewGridSize * 0.2);
+                pvpPreviewCtx.fillRect(-eyeX - (previewGridSize * 0.05), eyeY, previewGridSize * 0.1, previewGridSize * 0.2);
+                const beardYStart = halfGrid * 0.1; const beardHeight = halfGrid * 0.8;
+                pvpPreviewCtx.fillStyle = blueColor; pvpPreviewCtx.fillRect(-previewGridSize * 0.15, beardYStart, previewGridSize * 0.3, beardHeight);
+                pvpPreviewCtx.fillStyle = goldColor;
+                for (let j = 0; j < 3; j++) { pvpPreviewCtx.fillRect(-previewGridSize * 0.15, beardYStart + (j * 0.3) * beardHeight, previewGridSize * 0.3, beardHeight * 0.15); }
+                pvpPreviewCtx.restore();
+            } else {
+                const prevSegment = previewSnake[i - 1];
+                const segmentDx = segment.x - prevSegment.x;
+                const halfGridSize = previewGridSize / 2;
+                if (segmentDx === 1) { 
+                    pvpPreviewCtx.fillStyle = goldColor; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize, halfGridSize);
+                    pvpPreviewCtx.fillStyle = blueColor; pvpPreviewCtx.fillRect(segmentX, segmentY + halfGridSize, previewGridSize, halfGridSize);
+                } else { 
+                    pvpPreviewCtx.fillStyle = blueColor; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize, halfGridSize);
+                    pvpPreviewCtx.fillStyle = goldColor; pvpPreviewCtx.fillRect(segmentX, segmentY + halfGridSize, previewGridSize, halfGridSize);
+                }
+                if (i % 2 === 0) {
+                    const dotSize = 1;
+                    pvpPreviewCtx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                    pvpPreviewCtx.fillRect(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.2, dotSize, dotSize);
+                    pvpPreviewCtx.fillRect(segmentX + previewGridSize * 0.7, segmentY + previewGridSize * 0.8, dotSize, dotSize);
+                    pvpPreviewCtx.fillStyle = 'rgba(0, 0, 139, 0.8)';
+                    pvpPreviewCtx.fillRect(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.3, dotSize, dotSize);
+                    pvpPreviewCtx.fillRect(segmentX + previewGridSize * 0.3, segmentY + previewGridSize * 0.7, dotSize, dotSize);
+                }
+            }
+        } else if (skinKey === 'spider') {
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = skinOptions.redColor;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                drawPreviewWebPattern(segmentX, segmentY);
+                const eyeXOffset = previewGridSize * 0.2, eyeYOffset = previewGridSize * 0.2;
+                const eyeWidth = previewGridSize * 0.25, eyeHeight = previewGridSize * 0.5;
+                pvpPreviewCtx.fillStyle = 'white';
+                pvpPreviewCtx.fillRect(segmentX + eyeXOffset, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                pvpPreviewCtx.fillRect(segmentX + previewGridSize - 2 - eyeXOffset - eyeWidth, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                pvpPreviewCtx.strokeStyle = 'black';
+                pvpPreviewCtx.lineWidth = 1.5;
+                pvpPreviewCtx.strokeRect(segmentX + eyeXOffset, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+                pvpPreviewCtx.strokeRect(segmentX + previewGridSize - 2 - eyeXOffset - eyeWidth, segmentY + eyeYOffset, eyeWidth, eyeHeight);
+            } else {
+                const isRedSegment = i % 2 === 0;
+                pvpPreviewCtx.fillStyle = isRedSegment ? skinOptions.redColor : skinOptions.blueColor;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                if (isRedSegment) drawPreviewWebPattern(segmentX, segmentY);
+            }
+        } else if (skinKey === 'coral') {
+            const coralColors = skinOptions.colors;
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = coralColors[1];
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
+                pvpPreviewCtx.fillStyle = coralColors[2];
+                pvpPreviewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
+            } else {
+                const patternIndex = (i - 1) % 4;
+                const halfSize = (previewGridSize - 2) / 2;
+                switch (patternIndex) {
+                    case 0: pvpPreviewCtx.fillStyle = coralColors[0]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
+                    case 1: case 2:
+                        pvpPreviewCtx.fillStyle = coralColors[2]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, halfSize);
+                        pvpPreviewCtx.fillStyle = coralColors[1]; pvpPreviewCtx.fillRect(segmentX, segmentY + halfSize, previewGridSize - 2, halfSize);
+                        break;
+                    case 3: pvpPreviewCtx.fillStyle = coralColors[1]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
+                }
+            }
+        } else if (skinKey === 'circuit') {
+            pvpPreviewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.bodyColor;
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            if (!isHead) {
+                pvpPreviewCtx.strokeStyle = '#000000'; pvpPreviewCtx.lineWidth = 1;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(segmentX + 2, segmentY + previewGridSize / 2);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize - 4, segmentY + previewGridSize / 2);
+                pvpPreviewCtx.moveTo(segmentX + previewGridSize / 2, segmentY + 2);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize / 2, segmentY + previewGridSize - 4);
+                pvpPreviewCtx.stroke();
+            }
+        } else if (skinKey === 'galaxy') {
+            pvpPreviewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.colors[i % skinOptions.colors.length];
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            pvpPreviewCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            pvpPreviewCtx.fillRect(segmentX + Math.random() * (previewGridSize-2), segmentY + Math.random() * (previewGridSize-2), isHead ? 1.5 : 1, isHead ? 1.5 : 1);
+        } else if (skinKey === 'camo' || skinKey === 'christmas') {
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = skinOptions.headColor;
+            } else {
+                pvpPreviewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
+            }
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            
+            if (!isHead && skinKey === 'christmas' && i % 2 === 0) {
+                 pvpPreviewCtx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                 pvpPreviewCtx.fillRect(segmentX, segmentY + previewGridSize / 3, previewGridSize - 2, previewGridSize / 3);
+            }
+        } else if (skinKey === 'halloween') {
+            const pumpkinColor = skinOptions.headColor;
+            const bodyBlack = skinOptions.bodyColor1;
+            const bodyPurple = skinOptions.bodyColor2;
+            const lineOrange = skinOptions.lineColor;
+
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = pumpkinColor;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize, previewGridSize);
+                pvpPreviewCtx.fillStyle = '#000000';
+                const pg_half = previewGridSize / 2;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.2);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize * 0.4, segmentY + previewGridSize * 0.4);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize * 0.2, segmentY + previewGridSize * 0.4);
+                pvpPreviewCtx.closePath(); pvpPreviewCtx.fill();
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.2);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize * 0.6, segmentY + previewGridSize * 0.4);
+                pvpPreviewCtx.lineTo(segmentX + previewGridSize * 0.8, segmentY + previewGridSize * 0.4);
+                pvpPreviewCtx.closePath(); pvpPreviewCtx.fill();
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(segmentX + pg_half, segmentY + pg_half - (pg_half * 0.1));
+                pvpPreviewCtx.lineTo(segmentX + pg_half - (pg_half * 0.2), segmentY + pg_half + (pg_half * 0.2));
+                pvpPreviewCtx.lineTo(segmentX + pg_half + (pg_half * 0.2), segmentY + pg_half + (pg_half * 0.2));
+                pvpPreviewCtx.closePath(); pvpPreviewCtx.fill();
+                const mouthY_abs = segmentY + pg_half + (pg_half * 0.4);
+                pvpPreviewCtx.fillRect(segmentX + pg_half - (pg_half * 0.8), mouthY_abs, pg_half * 1.6, pg_half * 0.2);
+                pvpPreviewCtx.fillRect(segmentX + pg_half - (pg_half * 0.5), mouthY_abs - (pg_half * 0.2), pg_half * 0.2, pg_half * 0.2);
+                pvpPreviewCtx.fillRect(segmentX + pg_half + (pg_half * 0.3), mouthY_abs - (pg_half * 0.2), pg_half * 0.2, pg_half * 0.2);
+            } else {
+                pvpPreviewCtx.fillStyle = bodyPurple;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize, previewGridSize);
+                pvpPreviewCtx.fillStyle = bodyBlack;
+                pvpPreviewCtx.fillRect(segmentX + 0, segmentY + 1, previewGridSize + 3, previewGridSize + 3);
+                const fillSize = previewGridSize - 2;
+                const fillX = segmentX + 1;
+                const fillY = segmentY + 1;
+                const halfFillSize = fillSize / 2;
+                const lineSize = 2;
+                pvpPreviewCtx.fillStyle = bodyBlack;
+                pvpPreviewCtx.fillRect(fillX, fillY, fillSize, halfFillSize - (lineSize/2));
+                pvpPreviewCtx.fillStyle = bodyPurple;
+                pvpPreviewCtx.fillRect(fillX, fillY + halfFillSize + (lineSize/2), fillSize, halfFillSize - (lineSize/2));
+                pvpPreviewCtx.fillStyle = lineOrange;
+                pvpPreviewCtx.fillRect(fillX, fillY + halfFillSize - (lineSize/2), fillSize, lineSize);
+            }
+        }
+    }
+    if (skinKey === 'halloween') {
+        const lineOrange = skins.halloween.lineColor;
+        const bodyBlack = skins.halloween.bodyColor1;
+        const bodyPurple = skins.halloween.bodyColor2;
+        const lineSize = 2;
+        for (let i = 1; i < previewSnake.length; i++) {
+            const curr = previewSnake[i];
+            const connX = (curr.x * previewGridSize) + offsetX - 1;
+            const connY = curr.y * previewGridSize + 1;
+            const connW = 2;
+            const connH = previewGridSize - 2;
+            const halfSize = connH / 2;
+            pvpPreviewCtx.fillStyle = bodyBlack;
+            pvpPreviewCtx.fillRect(connX, connY, connW, halfSize - lineSize / 2);
+            pvpPreviewCtx.fillStyle = bodyPurple;
+            pvpPreviewCtx.fillRect(connX, connY + halfSize + lineSize / 2, connW, halfSize - lineSize / 2);
+            pvpPreviewCtx.fillStyle = lineOrange;
+            pvpPreviewCtx.fillRect(connX, connY + halfSize - lineSize / 2, connW, lineSize);
+        }
+    }
+}
+
+function selectPvpSkin(skinKey) {
+    const skin = skins[skinKey];
+    if (!skin) return;
+
+    drawPvpSkinPreview(skinKey);
+
+    const buyBtn = document.getElementById('buySkinBtnPvp');
+    const isLocked = !unlockedSkins.includes(skinKey);
+
+    if (isLocked && skin.unlockCoins) {
+        buyBtn.style.display = 'block';
+        const buyText = translations[currentLanguage]['confirm_buy_skin'] || 'Comprar por';
+        buyBtn.textContent = `${buyText.split(' ')[0]} ${skin.unlockCoins} SC 🪙`;
+        buyBtn.dataset.skinToBuy = skinKey;
+    } else {
+        buyBtn.style.display = 'none';
+    }
+
+    if (!isLocked) {
+        currentSkin = skinKey;
+    }
+    
+    const colorPickerContainer = document.getElementById('colorPickerContainerPvp');
+    colorPickerContainer.style.display = skinKey === 'custom' ? 'block' : 'none';
+}
+
+// --- Funções da Aba "Partida" (Dificuldade e Mapa) ---
+
+function selectPvpDifficulty(difficulty) {
+    pvpDifficulty = difficulty;
+    const buttons = document.querySelectorAll('#pvpDifficultySelection .difficulty-btn');
+    buttons.forEach(btn => btn.classList.remove('selected'));
+    document.querySelector(`#pvpDifficultySelection .difficulty-btn.${difficulty}`).classList.add('selected');
+    console.log(`Dificuldade PvP selecionada: ${pvpDifficulty}`);
+}
+
+function selectPvpMap(map) {
+    pvpMap = map;
+    const buttons = document.querySelectorAll('#pvpMapSelection .difficulty-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.getAttribute('onclick').includes(`'${map}'`)) {
+            btn.classList.add('selected');
+        }
+    });
+    console.log(`Mapa PvP selecionado: ${pvpMap}`);
+}
+
+// ==================================================================
+// FASE 2: LÓGICA DE MATCHMAKING E INTERFACE PVP
+// ==================================================================
+
+// --- Variáveis de estado para o matchmaking ---
+let isSearching = false;
+let matchmakingListener = null; // Para "escutar" a fila
+let userQueueDocId = null; // Para saber qual documento apagar se o jogador cancelar
+let waitTimeInterval = null; // Para o cronômetro de tempo de espera
+
+const searchMatchBtn = document.getElementById('searchMatchBtn');
+const waitTimeDisplay = document.getElementById('waitTimeDisplay');
+
+// Função principal chamada pelo botão "Procurar Partida"
+async function handleSearchMatch() {
+    const user = auth.currentUser;
+    // VERIFICAÇÃO DE SEGURANÇA ADICIONADA AQUI
+    if (!user || !currentUsername) {
+        alert("Seus dados ainda estão carregando. Por favor, aguarde um momento e tente novamente.");
+        return;
+    }
+    if (isSearching) return; // Impede cliques duplos
+
+    isSearching = true;
+    updateSearchUI(true); // Atualiza a interface para o estado "procurando"
+
+    try {
+        // Adiciona o jogador à fila no Firebase
+        const queueRef = db.collection('matchmakingQueue').doc();
+        userQueueDocId = queueRef.id;
+
+        await queueRef.set({
+            userId: user.uid,
+            username: currentUsername,
+            difficulty: pvpDifficulty,
+            map: pvpMap,
+            status: 'waiting', // Status inicial
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Começa a procurar por um oponente
+        await findOpponent(user.uid);
+
+    } catch (error) {
+        console.error("Erro ao entrar na fila de matchmaking:", error);
+        alert("Ocorreu um erro ao procurar partida. Tente novamente.");
+        await cancelSearch(); // Limpa o estado se algo der errado
+    }
+}
+
+// Função que procura por um oponente compatível na fila
+async function findOpponent(currentUserId) {
+    matchmakingListener = db.collection('matchmakingQueue')
+        .where('status', '==', 'waiting')
+        .where('difficulty', '==', pvpDifficulty)
+        .where('map', '==', pvpMap)
+        .onSnapshot(async (snapshot) => {
+            const potentialOpponents = [];
+            snapshot.forEach(doc => {
+                if (doc.data().userId !== currentUserId) {
+                    potentialOpponents.push({ id: doc.id, ...doc.data() });
+                }
+            });
+
+            if (potentialOpponents.length > 0) {
+                if (matchmakingListener) {
+                    matchmakingListener();
+                    matchmakingListener = null;
+                }
+                await createGameRoom(currentUserId, potentialOpponents[0]);
+            }
+        }, (error) => {
+             console.error("Erro no listener do matchmaking:", error);
+             alert("Ocorreu um erro de conexão com a fila. Verifique se o índice do Firestore foi criado corretamente.");
+             cancelSearch();
+        });
+}
+
+// Função que cria a sala de jogo para os dois jogadores
+async function createGameRoom(player1Id, opponent) {
+    try {
+        const roomRef = db.collection('gameRooms').doc();
+        const roomId = roomRef.id;
+
+        await roomRef.set({
+            player1: { id: player1Id, username: currentUsername, score: 0 },
+            player2: { id: opponent.userId, username: opponent.username, score: 0 },
+            map: pvpMap,
+            difficulty: pvpDifficulty,
+            status: 'starting',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        const batch = db.batch();
+        batch.update(db.collection('matchmakingQueue').doc(userQueueDocId), { status: 'matched', roomId: roomId });
+        batch.update(db.collection('matchmakingQueue').doc(opponent.id), { status: 'matched', roomId: roomId });
+        await batch.commit();
+
+        console.log(`Sala ${roomId} criada para ${currentUsername} e ${opponent.username}`);
+        matchFound(roomId);
+
+    } catch (error) {
+        console.error("Erro ao criar a sala de jogo:", error);
+        await cancelSearch();
+        handleSearchMatch();
+    }
+}
+
+// Função para cancelar a busca
+async function cancelSearch() {
+    if (matchmakingListener) {
+        matchmakingListener();
+        matchmakingListener = null;
+    }
+    if (userQueueDocId) {
+        try {
+            await db.collection('matchmakingQueue').doc(userQueueDocId).delete();
+        } catch(e) { console.error("Falha ao remover da fila (pode já ter sido removido):", e)}
+        userQueueDocId = null;
+    }
+    isSearching = false;
+    updateSearchUI(false);
+}
+
+// Função para atualizar a UI durante a busca
+function updateSearchUI(isSearchingUpdate) {
+    if (isSearchingUpdate) {
+        searchMatchBtn.disabled = true;
+        searchMatchBtn.textContent = "Procurando...";
+        let seconds = 0;
+        waitTimeDisplay.textContent = "Procurando... 0s";
+        if (waitTimeInterval) clearInterval(waitTimeInterval);
+        waitTimeInterval = setInterval(() => {
+            seconds++;
+            waitTimeDisplay.textContent = `Procurando... ${seconds}s`;
+        }, 1000);
+    } else {
+        searchMatchBtn.disabled = false;
+        searchMatchBtn.textContent = "Procurar Partida";
+        if (waitTimeInterval) clearInterval(waitTimeInterval);
+        waitTimeDisplay.textContent = "Tempo de Espera: --";
+    }
+}
+
+// ==================================================================
+// FASE 2 & 3: LÓGICA PVP COMPLETA (VERSÃO FINAL COM SKINS E MOVIMENTO CORRIGIDOS)
+// ==================================================================
+
+// --- Variáveis de estado do Jogo PvP ---
+let activeRoomListener = null;
+let pvpGameLoopInterval = null;
+let pvpGameTimerInterval = null;
+let activeRoomId = null;
+let localPlayerKey = null;
+
+const pvpLocalCanvas = document.getElementById('localPlayerPvPCanvas');
+const pvpLocalCtx = pvpLocalCanvas.getContext('2d');
+const pvpOpponentCanvas = document.getElementById('opponentCanvas');
+const pvpOpponentCtx = pvpOpponentCanvas.getContext('2d');
+const opponentOverlay = document.querySelector('.opponent-overlay');
+
+// Estado do jogo local
+let pvpLocalSnake = [];
+let pvpLocalDirection = { dx: 0, dy: 0 };
+let pvpLocalInputQueue = [];
+let pvpLocalScore = 0;
+let pvpGameRunning = false;
+let pvpLocalSkin = 'default';
+let pvpLocalFood = {};
+
+// Estado do oponente
+let pvpOpponentSnake = [];
+let pvpOpponentScore = 0;
+let pvpOpponentSkin = 'default';
+let pvpOpponentFood = {};
+let pvpOpponentDirection = { dx: 0, dy: 0 };
 
 
+// --- Funções de Matchmaking ---
+
+async function handleSearchMatch() {
+    const user = auth.currentUser;
+    if (!user || !currentUsername) {
+        alert("Seus dados ainda estão carregando. Por favor, aguarde um momento e tente novamente.");
+        return;
+    }
+    if (isSearching) return;
+
+    isSearching = true;
+    updateSearchUI(true);
+
+    try {
+        const queueRef = db.collection('matchmakingQueue').doc();
+        userQueueDocId = queueRef.id;
+
+        await queueRef.set({
+            userId: user.uid,
+            username: currentUsername,
+            difficulty: pvpDifficulty,
+            map: pvpMap,
+            skin: currentSkin,
+            status: 'waiting',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        findOpponent(user.uid);
+        listenForMyMatch(userQueueDocId);
+
+    } catch (error) {
+        console.error("Erro ao entrar na fila de matchmaking:", error);
+        alert("Ocorreu um erro ao procurar partida. Tente novamente.");
+        await cancelSearch();
+    }
+}
+
+function findOpponent(currentUserId) {
+    if (matchmakingListener) matchmakingListener();
+    
+    matchmakingListener = db.collection('matchmakingQueue')
+        .where('status', '==', 'waiting')
+        .where('difficulty', '==', pvpDifficulty)
+        .where('map', '==', pvpMap)
+        .onSnapshot(async (snapshot) => {
+            const potentialOpponents = [];
+            snapshot.forEach(doc => {
+                if (doc.data().userId !== currentUserId) {
+                    potentialOpponents.push({ id: doc.id, ...doc.data() });
+                }
+            });
+
+            if (potentialOpponents.length > 0) {
+                const opponent = potentialOpponents[0];
+                if (currentUserId < opponent.userId) {
+                    if (matchmakingListener) {
+                        matchmakingListener();
+                        matchmakingListener = null;
+                    }
+                    await createGameRoom(currentUserId, opponent);
+                }
+            }
+        });
+}
+
+function listenForMyMatch(myQueueId) {
+    if (activeRoomListener) activeRoomListener();
+
+    activeRoomListener = db.collection('matchmakingQueue').doc(myQueueId)
+        .onSnapshot((doc) => {
+            if (doc.exists && doc.data().status === 'matched') {
+                const roomId = doc.data().roomId;
+                if (roomId) {
+                    if (matchmakingListener) {
+                        matchmakingListener();
+                        matchmakingListener = null;
+                    }
+                    isSearching = false;
+                    matchFound(roomId);
+                }
+            }
+        });
+}
+
+async function createGameRoom(player1Id, opponent) {
+    try {
+        const roomRef = db.collection('gameRooms').doc();
+        const roomId = roomRef.id;
+
+        await roomRef.set({
+            player1: { id: player1Id, username: currentUsername, score: 0, skin: currentSkin, snake: [{ x: 5, y: 5 }], food: { x: randomTile(), y: randomTile() }, direction: {dx: 0, dy: 0} },
+            player2: { id: opponent.userId, username: opponent.username, score: 0, skin: opponent.skin, snake: [{ x: tileCount - 6, y: tileCount - 6 }], food: { x: randomTile(), y: randomTile() }, direction: {dx: 0, dy: 0} },
+            map: pvpMap,
+            difficulty: pvpDifficulty,
+            status: 'starting',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        const batch = db.batch();
+        batch.update(db.collection('matchmakingQueue').doc(userQueueDocId), { status: 'matched', roomId: roomId });
+        batch.update(db.collection('matchmakingQueue').doc(opponent.id), { status: 'matched', roomId: roomId });
+        await batch.commit();
+        
+        matchFound(roomId);
+
+    } catch (error) {
+        console.error("Erro ao criar a sala de jogo:", error);
+        await cancelSearch();
+    }
+}
+
+
+// --- Funções de Controle da Partida ---
+
+function matchFound(roomId) {
+    if (matchmakingListener) matchmakingListener();
+    if (activeRoomListener) activeRoomListener();
+    matchmakingListener = null;
+    activeRoomListener = null;
+
+    console.log(`Partida encontrada! Entrando na sala: ${roomId}`);
+    if (waitTimeInterval) clearInterval(waitTimeInterval);
+    
+    waitTimeDisplay.textContent = "Partida Encontrada!";
+    searchMatchBtn.style.display = 'none';
+    activeRoomId = roomId;
+    enterGameRoom(roomId);
+}
+
+// SUBSTITUA sua função enterGameRoom por esta:
+function enterGameRoom(roomId) {
+    const roomRef = db.collection('gameRooms').doc(roomId);
+    if (activeRoomListener) activeRoomListener();
+
+    activeRoomListener = roomRef.onSnapshot(doc => {
+        if (!doc.exists) {
+            if (pvpGameRunning) endPvpGame("O oponente saiu da partida.");
+            return;
+        };
+
+        const roomData = doc.data();
+        const user = auth.currentUser;
+
+        // Determina quem é quem e pega os dados da sala
+        const isPlayer1 = user.uid === roomData.player1.id;
+        localPlayerKey = isPlayer1 ? 'player1' : 'player2';
+        const opponentPlayerKey = isPlayer1 ? 'player2' : 'player1';
+
+        const localPlayerData = roomData[localPlayerKey];
+        const opponentPlayerData = roomData[opponentPlayerKey];
+        
+        // Atualiza os dados do oponente em tempo real
+        pvpOpponentSnake = opponentPlayerData.snake || [];
+        pvpOpponentScore = opponentPlayerData.score || 0;
+        pvpOpponentSkin = opponentPlayerData.skin;
+        pvpOpponentFood = opponentPlayerData.food || {};
+        pvpOpponentDirection = opponentPlayerData.direction || { dx: 0, dy: 0 };
+
+        // Se o jogo está começando, usa os dados iniciais para configurar e iniciar
+        if (roomData.status === 'starting' && !pvpGameRunning) {
+            // Passa os dados iniciais para a função de início
+            startCountdown(localPlayerData, opponentPlayerData); 
+            if (localPlayerKey === 'player1') {
+                roomRef.update({ status: 'countdown' });
+            }
+        }
+    });
+}
+
+function startCountdown(localPlayerData, opponentPlayerData) {
+    opponentOverlay.style.visibility = 'hidden';
+    const countdownElement = document.getElementById('pvpCountdown');
+    countdownElement.style.display = 'block';
+    let count = 5;
+    countdownElement.textContent = count;
+
+    const countdownInterval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            countdownElement.textContent = count;
+        } else {
+            clearInterval(countdownInterval);
+            countdownElement.style.display = 'none';
+            if (!pvpGameRunning) {
+                 // Inicia o jogo com os dados corretos da sala
+                 startPvpGame(localPlayerData, opponentPlayerData);
+            }
+        }
+    }, 1000);
+}
+
+function startPvpGame(localPlayerData, opponentPlayerData) {
+    console.log("A PARTIDA COMEÇOU COM OS DADOS CORRETOS!");
+    const timerElement = document.getElementById('pvpGameTimer');
+    timerElement.style.visibility = 'visible';
+    
+    pvpGameRunning = true;
+    
+    // **A MUDANÇA MAIS IMPORTANTE ESTÁ AQUI**
+    // Carrega o estado inicial a partir dos dados recebidos, em vez de criar um novo
+    pvpLocalSnake = localPlayerData.snake;
+    pvpLocalFood = localPlayerData.food;
+    pvpLocalSkin = localPlayerData.skin; // <- Isso resolve a skin invisível!
+    pvpLocalDirection = { dx: 0, dy: 0 };
+    pvpLocalInputQueue = [];
+    pvpLocalScore = 0;
+    
+    let gameTime = 180; // 3 minutos
+    pvpGameTimerInterval = setInterval(() => {
+        gameTime--;
+        const minutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
+        const seconds = (gameTime % 60).toString().padStart(2, '0');
+        timerElement.textContent = `${minutes}:${seconds}`;
+        if (gameTime <= 0) endPvpGame("O tempo acabou!");
+    }, 1000);
+
+    const gameSpeed = difficulties[pvpDifficulty] ? difficulties[pvpDifficulty].speed : 120;
+    if (pvpGameLoopInterval) clearInterval(pvpGameLoopInterval);
+    pvpGameLoopInterval = setInterval(pvpGameLoop, gameSpeed);
+}
+
+function pvpGameLoop() {
+    if (!pvpGameRunning) return;
+    processPvpInput();
+    updatePvpGame();
+    drawPvpBoards();
+    sendDataToFirebase();
+}
+
+// CORREÇÃO: Lógica de input para permitir o primeiro movimento
+function processPvpInput() {
+    if (pvpLocalInputQueue.length > 0) {
+        const nextMove = pvpLocalInputQueue.shift();
+        // Se a cobra está parada, qualquer movimento é válido.
+        if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) {
+            pvpLocalDirection = nextMove;
+            return;
+        }
+        // Se já está se movendo, impede o movimento para trás.
+        const isOppositeMove = (nextMove.dx !== 0 && nextMove.dx === -pvpLocalDirection.dx) || (nextMove.dy !== 0 && nextMove.dy === -pvpLocalDirection.dy);
+        if (!isOppositeMove) {
+            pvpLocalDirection = nextMove;
+        }
+    }
+}
+
+function updatePvpGame() {
+    if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) return;
+    const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
+
+    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+        endPvpGame("Você colidiu com a parede!");
+        return;
+    }
+    for (let i = 1; i < pvpLocalSnake.length; i++) {
+        if (head.x === pvpLocalSnake[i].x && head.y === pvpLocalSnake[i].y) {
+            endPvpGame("Você colidiu consigo mesmo!");
+            return;
+        }
+    }
+    pvpLocalSnake.unshift(head);
+
+    if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
+        pvpLocalScore++;
+        generatePvpFood();
+    } else {
+        pvpLocalSnake.pop();
+    }
+}
+
+function generatePvpFood() {
+    let newFoodPosition;
+    let validPosition = false;
+    
+    while (!validPosition) {
+        newFoodPosition = { x: randomTile(), y: randomTile() };
+        validPosition = true;
+        // Verifica se a nova comida não está na cobra do jogador local
+        for (const segment of pvpLocalSnake) {
+            if (segment.x === newFoodPosition.x && segment.y === newFoodPosition.y) {
+                validPosition = false;
+                break;
+            }
+        }
+    }
+    pvpLocalFood = newFoodPosition;
+}
+
+function updatePvpGame() {
+    if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) return;
+
+    const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
+    
+    const mapConfig = maps[pvpMap] || maps['normal'];
+
+    // Lógica de colisão ou "wrap-around" (atravessar parede)
+    if (mapConfig.wrapAround) {
+        if (head.x < 0) head.x = tileCount - 1;
+        else if (head.x >= tileCount) head.x = 0;
+        if (head.y < 0) head.y = tileCount - 1;
+        else if (head.y >= tileCount) head.y = 0;
+    } else {
+        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+            endPvpGame("Você colidiu com a parede!");
+            return;
+        }
+    }
+
+    // Colisão com o próprio corpo
+    for (let i = 1; i < pvpLocalSnake.length; i++) {
+        if (head.x === pvpLocalSnake[i].x && head.y === pvpLocalSnake[i].y) {
+            endPvpGame("Você colidiu consigo mesmo!");
+            return;
+        }
+    }
+
+    pvpLocalSnake.unshift(head);
+
+    // Lógica de crescimento ao comer
+    if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
+        pvpLocalScore++;
+        generatePvpFood(); // Gera nova comida
+    } else {
+        pvpLocalSnake.pop(); // Remove o último segmento se não comeu
+    }
+}
+
+function sendDataToFirebase() {
+    if (!activeRoomId || !localPlayerKey) return;
+    const updateData = {};
+    updateData[`${localPlayerKey}.snake`] = pvpLocalSnake;
+    updateData[`${localPlayerKey}.score`] = pvpLocalScore;
+    updateData[`${localPlayerKey}.food`] = pvpLocalFood;
+    updateData[`${localPlayerKey}.direction`] = pvpLocalDirection;
+    db.collection('gameRooms').doc(activeRoomId).update(updateData).catch(err => {
+        if (err.code !== 'not-found') {
+            console.error("Erro ao sincronizar dados:", err);
+        }
+    });
+}
+
+// ESTA É A ÚNICA FUNÇÃO DE DESENHO QUE VOCÊ PRECISA. COLE-A NO SEU CÓDIGO.
+function drawSnakeOnCanvas(ctx, snake, skinKey, direction, customColor = '#00b894') {
+    if (!snake || snake.length === 0) return;
+
+    // Adapta o tamanho da grade para funcionar tanto no jogo quanto no preview
+    const isPreview = (ctx.canvas.id.includes('Preview'));
+    const currentGridSize = isPreview ? 20 : gridSize;
+
+    const skinOptions = skins[skinKey] || skins['default'];
+    const dx = direction ? direction.dx : 0;
+    const dy = direction ? direction.dy : 0;
+    const head = snake[0];
+    const offsetX = isPreview ? 10 : 0;
+
+    // Função auxiliar para desenhar a teia da aranha
+    const drawWebPattern = (x, y) => {
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'; ctx.lineWidth = 1; ctx.beginPath();
+        ctx.moveTo(x + currentGridSize / 3, y); ctx.lineTo(x + currentGridSize / 3, y + currentGridSize);
+        ctx.moveTo(x + (currentGridSize / 3) * 2, y); ctx.lineTo(x + (currentGridSize / 3) * 2, y + currentGridSize);
+        ctx.moveTo(x, y + currentGridSize / 3); ctx.lineTo(x + currentGridSize, y + currentGridSize / 3);
+        ctx.moveTo(x, y + (currentGridSize / 3) * 2); ctx.lineTo(x + currentGridSize, y + (currentGridSize / 3) * 2);
+        ctx.stroke();
+    };
+
+    // Loop principal de desenho
+    for (let i = 0; i < snake.length; i++) {
+        const segment = snake[i];
+        const segX = segment.x * currentGridSize + offsetX;
+        const segY = segment.y * currentGridSize;
+        const isHead = (i === 0);
+        
+        if (skinKey === 'spider') {
+             if(isHead) {
+                ctx.fillStyle = skinOptions.redColor; ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                drawWebPattern(segX, segY);
+                const eyeX=currentGridSize*0.2, eyeY=currentGridSize*0.2, eyeW=currentGridSize*0.25, eyeH=currentGridSize*0.5;
+                ctx.fillStyle='white'; ctx.fillRect(segX+eyeX, segY+eyeY, eyeW, eyeH); ctx.fillRect(segX+currentGridSize-2-eyeX-eyeW, segY+eyeY, eyeW, eyeH);
+                ctx.strokeStyle='black'; ctx.lineWidth=1.5; ctx.strokeRect(segX+eyeX, segY+eyeY, eyeW, eyeH); ctx.strokeRect(segX+currentGridSize-2-eyeX-eyeW, segY+eyeY, eyeW, eyeH);
+             } else {
+                const isRed = i % 2 === 0;
+                ctx.fillStyle = isRed ? skinOptions.redColor : skinOptions.blueColor;
+                ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                if (isRed) drawWebPattern(segX, segY);
+             }
+        } else if (skinKey === 'pharaoh') {
+            const gold=skinOptions.bodyColor1, blue=skinOptions.headColor;
+            if (isHead) {
+                 ctx.save(); ctx.translate(segX+currentGridSize/2, segY+currentGridSize/2);
+                 let r=0; if(dx===1){r=Math.PI/2;}else if(dx===-1){r=-Math.PI/2;}else if(dy===1){r=Math.PI;}
+                 ctx.rotate(r); const hG=currentGridSize/2;
+                 ctx.fillStyle=blue; ctx.fillRect(-hG, -hG, currentGridSize, currentGridSize);
+                 ctx.fillStyle=gold; ctx.fillRect(-hG, -hG, currentGridSize, hG*0.2); ctx.fillRect(-hG, -hG*0.2, currentGridSize, hG*0.2); ctx.fillRect(-hG, hG*0.6, currentGridSize, hG*0.2);
+                 const eyeY=-hG*0.5,eyeX=-hG*0.2; ctx.fillStyle='#FFFFFF'; ctx.fillRect(eyeX-currentGridSize*0.2,eyeY,currentGridSize*0.4,currentGridSize*0.2); ctx.fillRect(-eyeX-currentGridSize*0.2,eyeY,currentGridSize*0.4,currentGridSize*0.2);
+                 ctx.fillStyle='#000000'; ctx.fillRect(eyeX-currentGridSize*0.05,eyeY,currentGridSize*0.1,currentGridSize*0.2); ctx.fillRect(-eyeX-currentGridSize*0.05,eyeY,currentGridSize*0.1,currentGridSize*0.2);
+                 const beardY=hG*0.1,beardH=hG*0.8; ctx.fillStyle=blue; ctx.fillRect(-currentGridSize*0.15,beardY,currentGridSize*0.3,beardH);
+                 ctx.fillStyle=gold; for(let j=0;j<3;j++){ctx.fillRect(-currentGridSize*0.15,beardY+(j*0.3)*beardH,currentGridSize*0.3,beardH*0.15);}
+                 ctx.restore();
+            } else {
+                 const prevSeg=snake[i-1]; const segDx=segment.x-prevSeg.x;
+                 if(segDx===0){ctx.fillStyle=gold; ctx.fillRect(segX,segY,currentGridSize/2,currentGridSize); ctx.fillStyle=blue; ctx.fillRect(segX+currentGridSize/2,segY,currentGridSize/2,currentGridSize);
+                 } else {ctx.fillStyle=gold; ctx.fillRect(segX,segY,currentGridSize,currentGridSize/2); ctx.fillStyle=blue; ctx.fillRect(segX,segY+currentGridSize/2,currentGridSize,currentGridSize/2);}
+            }
+        } else if (skinKey === 'halloween') {
+            if (!isHead) {
+                 const prevSeg=snake[i-1]; const segDx=segment.x-prevSeg.x;
+                 const fillS=currentGridSize-2, halfF=fillS/2, lineS=2;
+                 ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX,segY,currentGridSize,currentGridSize);
+                 ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,fillS);
+                 if(segDx===0){ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1+halfF+lineS/2,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1+halfF-lineS/2,segY+1,lineS,fillS);
+                 } else {ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1,segY+1+halfF+lineS/2,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1,segY+1+halfF-lineS/2,fillS,lineS);}
+            }
+        }
+else if (skinKey === 'coral') {
+                const [c1, c2, c3] = skinOptions.colors; // c1: Vermelho, c2: Preto, c3: Branco
+                if (isHead) {
+                    ctx.fillStyle = c2; // Cabeça preta
+                    ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                    const mSize = Math.max(2, Math.floor(currentGridSize / 6)); // Tamanho da boca
+                    ctx.fillStyle = c3; // Boca branca
+                    if (dx > 0) { ctx.fillRect(segX + currentGridSize - 2 - mSize, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
+                    else if (dx < 0) { ctx.fillRect(segX, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
+                    else if (dy > 0) { ctx.fillRect(segX + mSize, segY + currentGridSize - 2 - mSize, currentGridSize - 2 - (2 * mSize), mSize); }
+                    else { ctx.fillRect(segX + mSize, segY, currentGridSize - 2 - (2 * mSize), mSize); }
+                } else {
+                    const prevSegment = snake[i - 1];
+                    const segmentDx = segment.x - prevSegment.x;
+                    const segmentDy = segment.y - prevSegment.y;
+
+                    const patternIndex = (i - 1) % 4;
+                    const halfSize = (currentGridSize - 2) / 2;
+
+                    switch (patternIndex) {
+                        case 0: // Padrão 1: Quadrado Vermelho Inteiro
+                            ctx.fillStyle = c1;
+                            ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                            break;
+                        case 1: // Padrão 2 e 3: Quadrados Divididos
+                        case 2:
+                            // *** AJUSTE FINAL: Ordem das cores alterada para Preto/Branco ***
+                            const isPositiveDirection = (segmentDx > 0 || segmentDy > 0);
+                            const firstColor = isPositiveDirection ? c2 : c3; // Se for para direita/baixo, a primeira cor é Preto (c2)
+                            const secondColor = isPositiveDirection ? c3 : c2; // Se for para esquerda/cima, a primeira cor é Branco (c3)
+
+                            if (segmentDx === 0) { // Movendo na Vertical -> Divisão HORIZONTAL
+                                ctx.fillStyle = firstColor;
+                                ctx.fillRect(segX, segY, currentGridSize - 2, halfSize);
+                                ctx.fillStyle = secondColor;
+                                ctx.fillRect(segX, segY + halfSize, currentGridSize - 2, halfSize);
+                            } else { // Movendo na Horizontal -> Divisão VERTICAL
+                                ctx.fillStyle = firstColor;
+                                ctx.fillRect(segX, segY, halfSize, currentGridSize - 2);
+                                ctx.fillStyle = secondColor;
+                                ctx.fillRect(segX + halfSize, segY, halfSize, currentGridSize - 2);
+                            }
+                            break;
+                        case 3: // Padrão 4: Quadrado Preto Inteiro
+                            ctx.fillStyle = c2;
+                            ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                            break;
+                    }
+                }
+            }  
+else if (skinKey === 'circuit' || skinKey === 'galaxy' || skinKey === 'camo' || skinKey === 'christmas') {
+            if(isHead){ctx.fillStyle=skinOptions.headColor;} else {ctx.fillStyle=(skinKey==='circuit')?skinOptions.bodyColor:skinOptions.colors[i%skinOptions.colors.length];}
+            ctx.fillRect(segX,segY,currentGridSize-2,currentGridSize-2);
+            if(skinKey==='circuit'&&!isHead){ctx.strokeStyle='#000000';ctx.lineWidth=1;ctx.strokeRect(segX,segY,currentGridSize-2,currentGridSize-2);}
+            if(skinKey==='galaxy'){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(segX+Math.random()*(currentGridSize-2),segY+Math.random()*(currentGridSize-2),1,1);}
+        } else { // Default e Custom
+            let bColor,hColor; if(skinKey==='custom'){bColor=customColor;hColor=shadeColor(bColor,-20);}else{bColor=skinOptions.bodyColor;hColor=skinOptions.headColor;}
+            ctx.fillStyle=isHead?hColor:bColor; ctx.fillRect(segX, segY, currentGridSize-2, currentGridSize-2);
+        }
+    }
+    
+    // --- PASS 2: Desenhar conectores e cabeça para skins complexas ---
+    if (skinKey === 'halloween') {
+        // Conectores
+        if (snake.length > 1) {
+            for (let i = 1; i < snake.length; i++) {
+                const curr=snake[i],prev=snake[i-1]; const lineS=2; let cX,cY,cW,cH,isH;
+                if(curr.x===prev.x){isH=false;cW=currentGridSize-2;cH=2;cX=curr.x*currentGridSize+offsetX+1;cY=(curr.y>prev.y)?curr.y*currentGridSize-1+offsetX:prev.y*currentGridSize-1+offsetX;}
+                else{isH=true;cW=2;cH=currentGridSize-2;cY=curr.y*currentGridSize+1+offsetX;cX=(curr.x>prev.x)?curr.x*currentGridSize-1+offsetX:prev.x*currentGridSize-1+offsetX;}
+                const halfS=isH?cH/2:cW/2;
+                if(isH){ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,cW,halfS-lineS/2); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX,cY+halfS+lineS/2,cW,halfS-lineS/2); ctx.fillStyle=skinOptions.lineColor;ctx.fillRect(cX,cY+halfS-lineS/2,cW,lineS);}
+                else{ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,halfS-lineS/2,cH); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX+halfS+lineS/2,cY,halfS-lineS/2,cH); ctx.fillStyle=skinOptions.lineColor;ctx.fillRect(cX+halfS-lineS/2,cY,lineS,cH);}
+            }
+        }
+        // Cabeça
+        const headX=head.x*currentGridSize+offsetX,headY=head.y*currentGridSize; ctx.fillStyle=skinOptions.headColor; ctx.fillRect(headX,headY,currentGridSize,currentGridSize);
+        ctx.save(); ctx.translate(headX+currentGridSize/2,headY+currentGridSize/2); let r=0;if(dx===1){r=Math.PI/2;}else if(dx===-1){r=-Math.PI/2;}else if(dy===1){r=Math.PI;}
+        ctx.rotate(r); const hG=currentGridSize/2; ctx.fillStyle='#000000';
+        ctx.beginPath(); ctx.moveTo(-hG*0.6,-hG*0.6);ctx.lineTo(-hG*0.2,-hG*0.2);ctx.lineTo(-hG*0.6,-hG*0.2);ctx.closePath();ctx.fill();
+        ctx.beginPath(); ctx.moveTo(hG*0.6,-hG*0.6);ctx.lineTo(hG*0.2,-hG*0.2);ctx.lineTo(hG*0.6,-hG*0.2);ctx.closePath();ctx.fill();
+        ctx.beginPath(); ctx.moveTo(0,-hG*0.1);ctx.lineTo(-hG*0.2,hG*0.2);ctx.lineTo(hG*0.2,hG*0.2);ctx.closePath();ctx.fill();
+        const mY=hG*0.4; ctx.fillRect(-hG*0.8,mY,hG*1.6,hG*0.2); ctx.fillRect(-hG*0.5,mY-hG*0.2,hG*0.2,hG*0.2); ctx.fillRect(hG*0.3,mY-hG*0.2,hG*0.2,hG*0.2);
+        ctx.restore();
+    }
+}
+// Modifique sua função drawPvpBoards()
+function drawPvpBoards() {
+    // Desenha o tabuleiro local
+    pvpLocalCtx.fillStyle = '#11131e';
+    pvpLocalCtx.fillRect(0, 0, pvpLocalCanvas.width, pvpLocalCanvas.height);
+    // Chama a função unificada para a cobra local
+    drawSnakeOnCanvas(pvpLocalCtx, pvpLocalSnake, pvpLocalSkin, pvpLocalDirection);
+    drawPvpFood(pvpLocalCtx, pvpLocalFood);
+    drawPvpScore(pvpLocalCtx, pvpLocalScore, 'Sua Pontuação');
+
+    // Desenha o tabuleiro do oponente
+    pvpOpponentCtx.fillStyle = '#11131e';
+    pvpOpponentCtx.fillRect(0, 0, pvpOpponentCanvas.width, pvpOpponentCanvas.height);
+    // Chama a função unificada para a cobra do oponente
+    drawSnakeOnCanvas(pvpOpponentCtx, pvpOpponentSnake, pvpOpponentSkin, pvpOpponentDirection);
+    drawPvpFood(pvpOpponentCtx, pvpOpponentFood);
+    drawPvpScore(pvpOpponentCtx, pvpOpponentScore, 'Pontuação do Oponente');
+}
+
+function drawPvpFood(ctx, food) {
+    if (food.x === undefined) return;
+    ctx.fillStyle = '#fd79a8';
+    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+}
+
+function drawPvpScore(ctx, score, text) {
+    ctx.fillStyle = 'white';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${text}: ${score}`, 10, 20);
+}
+// Adicione esta função ao seu script
+function queuePvpDirection(newDx, newDy) {
+    // Só funciona se a partida PvP estiver rolando
+    if (!pvpGameRunning) return;
+
+    // Impede que a cobra ande para trás
+    let lastDirection = pvpLocalDirection;
+    if (pvpLocalInputQueue.length > 0) {
+        lastDirection = pvpLocalInputQueue[pvpLocalInputQueue.length - 1];
+    }
+    
+    // Se a cobra estiver parada, permite o primeiro movimento
+    if (lastDirection.dx === 0 && lastDirection.dy === 0) {
+        pvpLocalInputQueue.push({ dx: newDx, dy: newDy });
+        return;
+    }
+
+    // Impede o movimento contrário direto
+    if ((newDx !== 0 && newDx === -lastDirection.dx) || (newDy !== 0 && newDy === -lastDirection.dy)) {
+        return;
+    }
+
+    // Limita a fila para no máximo 2 movimentos para evitar "engasgos"
+    if (pvpLocalInputQueue.length < 2) {
+        pvpLocalInputQueue.push({ dx: newDx, dy: newDy });
+    }
+}
+function endPvpGame(reason) {
+    if (!pvpGameRunning) return;
+    pvpGameRunning = false;
+    
+    clearInterval(pvpGameLoopInterval);
+    clearInterval(pvpGameTimerInterval);
+    if(activeRoomListener) activeRoomListener();
+    activeRoomListener = null;
+
+    alert(`Fim de Jogo! ${reason}`);
+    
+    if (localPlayerKey === 'player1' && activeRoomId) {
+        db.collection('gameRooms').doc(activeRoomId).delete().catch(e => {});
+    }
+    
+    opponentOverlay.style.visibility = 'visible';
+    waitTimeDisplay.textContent = "Tempo de Espera: --";
+    searchMatchBtn.style.display = 'block';
+    document.getElementById('pvpGameTimer').style.visibility = 'hidden';
+}
+const pvpControls = document.getElementById('pvpGameControls');
+pvpControls.querySelector('.up').addEventListener('touchstart', (e) => { e.preventDefault(); queuePvpDirection(0, -1); });
+pvpControls.querySelector('.down').addEventListener('touchstart', (e) => { e.preventDefault(); queuePvpDirection(0, 1); });
+pvpControls.querySelector('.left').addEventListener('touchstart', (e) => { e.preventDefault(); queuePvpDirection(-1, 0); });
+pvpControls.querySelector('.right').addEventListener('touchstart', (e) => { e.preventDefault(); queuePvpDirection(1, 0); });
 </script> 
 </body>
 </html>
