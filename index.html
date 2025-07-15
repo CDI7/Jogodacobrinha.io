@@ -4429,34 +4429,124 @@ function sendDataToFirebase() {
 function drawSnakeOnCanvas(ctx, snake, skinKey, direction, customColor = '#00b894') {
     if (!snake || snake.length === 0) return;
 
-    // Adapta o tamanho da grade para funcionar tanto no jogo quanto no preview
     const isPreview = (ctx.canvas.id.includes('Preview'));
     const currentGridSize = isPreview ? 20 : gridSize;
-
     const skinOptions = skins[skinKey] || skins['default'];
     const dx = direction ? direction.dx : 0;
     const dy = direction ? direction.dy : 0;
-    const head = snake[0];
     const offsetX = isPreview ? 10 : 0;
 
-    // Função auxiliar para desenhar a teia da aranha
     const drawWebPattern = (x, y) => {
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'; ctx.lineWidth = 1; ctx.beginPath();
-        ctx.moveTo(x + currentGridSize / 3, y); ctx.lineTo(x + currentGridSize / 3, y + currentGridSize);
-        ctx.moveTo(x + (currentGridSize / 3) * 2, y); ctx.lineTo(x + (currentGridSize / 3) * 2, y + currentGridSize);
-        ctx.moveTo(x, y + currentGridSize / 3); ctx.lineTo(x + currentGridSize, y + currentGridSize / 3);
-        ctx.moveTo(x, y + (currentGridSize / 3) * 2); ctx.lineTo(x + currentGridSize, y + (currentGridSize / 3) * 2);
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + currentGridSize / 3, y);
+        ctx.lineTo(x + currentGridSize / 3, y + currentGridSize);
+        ctx.moveTo(x + (currentGridSize / 3) * 2, y);
+        ctx.lineTo(x + (currentGridSize / 3) * 2, y + currentGridSize);
+        ctx.moveTo(x, y + currentGridSize / 3);
+        ctx.lineTo(x + currentGridSize, y + currentGridSize / 3);
+        ctx.moveTo(x, y + (currentGridSize / 3) * 2);
+        ctx.lineTo(x + currentGridSize, y + (currentGridSize / 3) * 2);
         ctx.stroke();
     };
 
-    // Loop principal de desenho
     for (let i = 0; i < snake.length; i++) {
         const segment = snake[i];
         const segX = segment.x * currentGridSize + offsetX;
         const segY = segment.y * currentGridSize;
         const isHead = (i === 0);
-        
-        if (skinKey === 'spider') {
+
+        if (skinKey === 'pharaoh') {
+            const goldColor = skinOptions.bodyColor1;
+            const blueColor = skinOptions.headColor;
+
+            if (isHead) {
+                ctx.save();
+                ctx.translate(segX + currentGridSize / 2, segY + currentGridSize / 2);
+                let rotation = 0;
+                if (dx === 1) rotation = Math.PI / 2;
+                else if (dx === -1) rotation = -Math.PI / 2;
+                else if (dy === 1) rotation = Math.PI;
+                ctx.rotate(rotation);
+
+                const halfGrid = currentGridSize / 2;
+                ctx.fillStyle = blueColor;
+                ctx.fillRect(-halfGrid, -halfGrid, currentGridSize, currentGridSize);
+                ctx.fillStyle = goldColor;
+                ctx.fillRect(-halfGrid, -halfGrid, currentGridSize, currentGridSize * 0.2);
+                ctx.fillRect(-halfGrid, -halfGrid * 0.2, currentGridSize, currentGridSize * 0.2);
+                ctx.fillRect(-halfGrid, halfGrid * 0.6, currentGridSize, currentGridSize * 0.2);
+                ctx.fillStyle = goldColor;
+                ctx.fillRect(-halfGrid * 0.6, -halfGrid * 0.8, currentGridSize * 0.6, currentGridSize * 0.8);
+                const eyeY = -halfGrid * 0.5;
+                const eyeX = -halfGrid * 0.2;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(eyeX - (currentGridSize * 0.2), eyeY, currentGridSize * 0.4, currentGridSize * 0.2);
+                ctx.fillRect(-eyeX - (currentGridSize * 0.2), eyeY, currentGridSize * 0.4, currentGridSize * 0.2);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(eyeX - (currentGridSize * 0.05), eyeY, currentGridSize * 0.1, currentGridSize * 0.2);
+                ctx.fillRect(-eyeX - (currentGridSize * 0.05), eyeY, currentGridSize * 0.1, currentGridSize * 0.2);
+                const beardYStart = halfGrid * 0.1;
+                const beardHeight = halfGrid * 0.8;
+                ctx.fillStyle = blueColor;
+                ctx.fillRect(-currentGridSize * 0.15, beardYStart, currentGridSize * 0.3, beardHeight);
+                ctx.fillStyle = goldColor;
+                for (let j = 0; j < 3; j++) {
+                    ctx.fillRect(-currentGridSize * 0.15, beardYStart + (j * 0.3) * beardHeight, currentGridSize * 0.3, beardHeight * 0.15);
+                }
+                ctx.restore();
+            } else {
+                const prevSegment = snake[i - 1];
+                const segmentDx = prevSegment.x - segment.x;
+                const segmentDy = prevSegment.y - segment.y;
+                const halfGridSize = currentGridSize / 2;
+
+                if (segmentDy === -1) { // Movendo para Cima
+                    ctx.fillStyle = goldColor; ctx.fillRect(segX, segY, halfGridSize, currentGridSize);
+                    ctx.fillStyle = blueColor; ctx.fillRect(segX + halfGridSize, segY, halfGridSize, currentGridSize);
+                } else if (segmentDy === 1) { // Movendo para Baixo
+                    ctx.fillStyle = blueColor; ctx.fillRect(segX, segY, halfGridSize, currentGridSize);
+                    ctx.fillStyle = goldColor; ctx.fillRect(segX + halfGridSize, segY, halfGridSize, currentGridSize);
+                } else if (segmentDx === -1) { // Movendo para Esquerda
+                    ctx.fillStyle = blueColor; ctx.fillRect(segX, segY, currentGridSize, halfGridSize);
+                    ctx.fillStyle = goldColor; ctx.fillRect(segX, segY + halfGridSize, currentGridSize, halfGridSize);
+                } else { // Movendo para Direita
+                    ctx.fillStyle = goldColor; ctx.fillRect(segX, segY, currentGridSize, halfGridSize);
+                    ctx.fillStyle = blueColor; ctx.fillRect(segX, segY + halfGridSize, currentGridSize, halfGridSize);
+                }
+
+                if (i % 2 === 0) {
+                    const dotSize = 1;
+                    if (segmentDx !== 0) { // Movimento Horizontal (Esquerda ou Direita)
+                        // Se movendo para a ESQUERDA (segmentDx = -1), a parte de cima é AZUL e a de baixo é DOURADA.
+                        // Portanto, o ponto de cima deve ser DOURADO e o de baixo AZUL.
+                        // Se movendo para a DIREITA (segmentDx = 1), o inverso é verdadeiro.
+                        const topDotColor = (segmentDx === -1) ? goldColor : blueColor;
+                        const bottomDotColor = (segmentDx === -1) ? blueColor : goldColor;
+
+                        ctx.fillStyle = topDotColor; // Ponto na parte de cima
+                        ctx.fillRect(segX + currentGridSize * 0.25, segY + halfGridSize * 0.5 - dotSize / 2, dotSize, dotSize);
+                        
+                        ctx.fillStyle = bottomDotColor; // Ponto na parte de baixo
+                        ctx.fillRect(segX + currentGridSize * 0.75, segY + halfGridSize * 1.5 - dotSize / 2, dotSize, dotSize);
+
+                    } else { // Movimento Vertical (Cima ou Baixo)
+                        // Se movendo para BAIXO (segmentDy = 1), a parte da esquerda é AZUL e a da direita é DOURADA.
+                        // Portanto, o ponto da direita deve ser AZUL e o da esquerda DOURADO.
+                        // Se movendo para CIMA (segmentDy = -1), o inverso é verdadeiro.
+                        const rightDotColor = (segmentDy === 1) ? blueColor : goldColor;
+                        const leftDotColor = (segmentDy === 1) ? goldColor : blueColor;
+                        
+                        ctx.fillStyle = rightDotColor; // Ponto na parte da direita
+                        ctx.fillRect(segX + halfGridSize * 1.5 - dotSize / 2, segY + currentGridSize * 0.25, dotSize, dotSize);
+                        
+                        ctx.fillStyle = leftDotColor; // Ponto na parte da esquerda
+                        ctx.fillRect(segX + halfGridSize * 0.5 - dotSize / 2, segY + currentGridSize * 0.75, dotSize, dotSize);
+                    }
+                }
+            }
+        } else if (skinKey === 'spider') {
              if(isHead) {
                 ctx.fillStyle = skinOptions.redColor; ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
                 drawWebPattern(segX, segY);
@@ -4469,110 +4559,65 @@ function drawSnakeOnCanvas(ctx, snake, skinKey, direction, customColor = '#00b89
                 ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
                 if (isRed) drawWebPattern(segX, segY);
              }
-        } else if (skinKey === 'pharaoh') {
-            const gold=skinOptions.bodyColor1, blue=skinOptions.headColor;
+        } else if (skinKey === 'coral') {
+            const [c1, c2, c3] = skinOptions.colors;
             if (isHead) {
-                 ctx.save(); ctx.translate(segX+currentGridSize/2, segY+currentGridSize/2);
-                 let r=0; if(dx===1){r=Math.PI/2;}else if(dx===-1){r=-Math.PI/2;}else if(dy===1){r=Math.PI;}
-                 ctx.rotate(r); const hG=currentGridSize/2;
-                 ctx.fillStyle=blue; ctx.fillRect(-hG, -hG, currentGridSize, currentGridSize);
-                 ctx.fillStyle=gold; ctx.fillRect(-hG, -hG, currentGridSize, hG*0.2); ctx.fillRect(-hG, -hG*0.2, currentGridSize, hG*0.2); ctx.fillRect(-hG, hG*0.6, currentGridSize, hG*0.2);
-                 const eyeY=-hG*0.5,eyeX=-hG*0.2; ctx.fillStyle='#FFFFFF'; ctx.fillRect(eyeX-currentGridSize*0.2,eyeY,currentGridSize*0.4,currentGridSize*0.2); ctx.fillRect(-eyeX-currentGridSize*0.2,eyeY,currentGridSize*0.4,currentGridSize*0.2);
-                 ctx.fillStyle='#000000'; ctx.fillRect(eyeX-currentGridSize*0.05,eyeY,currentGridSize*0.1,currentGridSize*0.2); ctx.fillRect(-eyeX-currentGridSize*0.05,eyeY,currentGridSize*0.1,currentGridSize*0.2);
-                 const beardY=hG*0.1,beardH=hG*0.8; ctx.fillStyle=blue; ctx.fillRect(-currentGridSize*0.15,beardY,currentGridSize*0.3,beardH);
-                 ctx.fillStyle=gold; for(let j=0;j<3;j++){ctx.fillRect(-currentGridSize*0.15,beardY+(j*0.3)*beardH,currentGridSize*0.3,beardH*0.15);}
-                 ctx.restore();
+                ctx.fillStyle = c2;
+                ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+                const mSize = Math.max(2, Math.floor(currentGridSize / 6));
+                ctx.fillStyle = c3;
+                if (dx > 0) { ctx.fillRect(segX + currentGridSize - 2 - mSize, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
+                else if (dx < 0) { ctx.fillRect(segX, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
+                else if (dy > 0) { ctx.fillRect(segX + mSize, segY + currentGridSize - 2 - mSize, currentGridSize - 2 - (2 * mSize), mSize); }
+                else { ctx.fillRect(segX + mSize, segY, currentGridSize - 2 - (2 * mSize), mSize); }
             } else {
-                 const prevSeg=snake[i-1]; const segDx=segment.x-prevSeg.x;
-                 if(segDx===0){ctx.fillStyle=gold; ctx.fillRect(segX,segY,currentGridSize/2,currentGridSize); ctx.fillStyle=blue; ctx.fillRect(segX+currentGridSize/2,segY,currentGridSize/2,currentGridSize);
-                 } else {ctx.fillStyle=gold; ctx.fillRect(segX,segY,currentGridSize,currentGridSize/2); ctx.fillStyle=blue; ctx.fillRect(segX,segY+currentGridSize/2,currentGridSize,currentGridSize/2);}
+                const prevSegment = snake[i - 1]; const segmentDx = segment.x - prevSegment.x; const segmentDy = segment.y - prevSegment.y;
+                const patternIndex = (i - 1) % 4; const halfSize = (currentGridSize - 2) / 2;
+                switch (patternIndex) {
+                    case 0: ctx.fillStyle = c1; ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2); break;
+                    case 1: case 2:
+                        const isPositiveDirection = (segmentDx > 0 || segmentDy > 0); const firstColor = isPositiveDirection ? c2 : c3; const secondColor = isPositiveDirection ? c3 : c2;
+                        if (segmentDx === 0) { ctx.fillStyle = firstColor; ctx.fillRect(segX, segY, currentGridSize - 2, halfSize); ctx.fillStyle = secondColor; ctx.fillRect(segX, segY + halfSize, currentGridSize - 2, halfSize);
+                        } else { ctx.fillStyle = firstColor; ctx.fillRect(segX, segY, halfSize, currentGridSize - 2); ctx.fillStyle = secondColor; ctx.fillRect(segX + halfSize, segY, halfSize, currentGridSize - 2); }
+                        break;
+                    case 3: ctx.fillStyle = c2; ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2); break;
+                }
             }
         } else if (skinKey === 'halloween') {
+            const lineOrange = skinOptions.lineColor;
             if (!isHead) {
                  const prevSeg=snake[i-1]; const segDx=segment.x-prevSeg.x;
                  const fillS=currentGridSize-2, halfF=fillS/2, lineS=2;
                  ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX,segY,currentGridSize,currentGridSize);
                  ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,fillS);
-                 if(segDx===0){ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1+halfF+lineS/2,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1+halfF-lineS/2,segY+1,lineS,fillS);
-                 } else {ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1,segY+1+halfF+lineS/2,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1,segY+1+halfF-lineS/2,fillS,lineS);}
+                 if(segDx===0){ ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1+halfF+lineS/2,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=lineOrange; ctx.fillRect(segX+1+halfF-lineS/2,segY+1,lineS,fillS);
+                 } else { ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1,segY+1+halfF+lineS/2,fillS,halfF-lineS/2); ctx.fillStyle=lineOrange; ctx.fillRect(segX+1,segY+1+halfF-lineS/2,fillS,lineS); }
             }
-        }
-else if (skinKey === 'coral') {
-                const [c1, c2, c3] = skinOptions.colors; // c1: Vermelho, c2: Preto, c3: Branco
-                if (isHead) {
-                    ctx.fillStyle = c2; // Cabeça preta
-                    ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
-                    const mSize = Math.max(2, Math.floor(currentGridSize / 6)); // Tamanho da boca
-                    ctx.fillStyle = c3; // Boca branca
-                    if (dx > 0) { ctx.fillRect(segX + currentGridSize - 2 - mSize, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
-                    else if (dx < 0) { ctx.fillRect(segX, segY + mSize, mSize, currentGridSize - 2 - (2 * mSize)); }
-                    else if (dy > 0) { ctx.fillRect(segX + mSize, segY + currentGridSize - 2 - mSize, currentGridSize - 2 - (2 * mSize), mSize); }
-                    else { ctx.fillRect(segX + mSize, segY, currentGridSize - 2 - (2 * mSize), mSize); }
-                } else {
-                    const prevSegment = snake[i - 1];
-                    const segmentDx = segment.x - prevSegment.x;
-                    const segmentDy = segment.y - prevSegment.y;
-
-                    const patternIndex = (i - 1) % 4;
-                    const halfSize = (currentGridSize - 2) / 2;
-
-                    switch (patternIndex) {
-                        case 0: // Padrão 1: Quadrado Vermelho Inteiro
-                            ctx.fillStyle = c1;
-                            ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
-                            break;
-                        case 1: // Padrão 2 e 3: Quadrados Divididos
-                        case 2:
-                            // *** AJUSTE FINAL: Ordem das cores alterada para Preto/Branco ***
-                            const isPositiveDirection = (segmentDx > 0 || segmentDy > 0);
-                            const firstColor = isPositiveDirection ? c2 : c3; // Se for para direita/baixo, a primeira cor é Preto (c2)
-                            const secondColor = isPositiveDirection ? c3 : c2; // Se for para esquerda/cima, a primeira cor é Branco (c3)
-
-                            if (segmentDx === 0) { // Movendo na Vertical -> Divisão HORIZONTAL
-                                ctx.fillStyle = firstColor;
-                                ctx.fillRect(segX, segY, currentGridSize - 2, halfSize);
-                                ctx.fillStyle = secondColor;
-                                ctx.fillRect(segX, segY + halfSize, currentGridSize - 2, halfSize);
-                            } else { // Movendo na Horizontal -> Divisão VERTICAL
-                                ctx.fillStyle = firstColor;
-                                ctx.fillRect(segX, segY, halfSize, currentGridSize - 2);
-                                ctx.fillStyle = secondColor;
-                                ctx.fillRect(segX + halfSize, segY, halfSize, currentGridSize - 2);
-                            }
-                            break;
-                        case 3: // Padrão 4: Quadrado Preto Inteiro
-                            ctx.fillStyle = c2;
-                            ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
-                            break;
-                    }
-                }
-            }  
-else if (skinKey === 'circuit' || skinKey === 'galaxy' || skinKey === 'camo' || skinKey === 'christmas') {
+        } else if (skinKey === 'circuit' || skinKey === 'galaxy' || skinKey === 'camo' || skinKey === 'christmas') {
             if(isHead){ctx.fillStyle=skinOptions.headColor;} else {ctx.fillStyle=(skinKey==='circuit')?skinOptions.bodyColor:skinOptions.colors[i%skinOptions.colors.length];}
             ctx.fillRect(segX,segY,currentGridSize-2,currentGridSize-2);
             if(skinKey==='circuit'&&!isHead){ctx.strokeStyle='#000000';ctx.lineWidth=1;ctx.strokeRect(segX,segY,currentGridSize-2,currentGridSize-2);}
             if(skinKey==='galaxy'){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(segX+Math.random()*(currentGridSize-2),segY+Math.random()*(currentGridSize-2),1,1);}
-        } else { // Default e Custom
+        } else {
             let bColor,hColor; if(skinKey==='custom'){bColor=customColor;hColor=shadeColor(bColor,-20);}else{bColor=skinOptions.bodyColor;hColor=skinOptions.headColor;}
             ctx.fillStyle=isHead?hColor:bColor; ctx.fillRect(segX, segY, currentGridSize-2, currentGridSize-2);
         }
     }
-    
-    // --- PASS 2: Desenhar conectores e cabeça para skins complexas ---
+
     if (skinKey === 'halloween') {
-        // Conectores
+        const lineOrange = skinOptions.lineColor;
         if (snake.length > 1) {
             for (let i = 1; i < snake.length; i++) {
                 const curr=snake[i],prev=snake[i-1]; const lineS=2; let cX,cY,cW,cH,isH;
-                if(curr.x===prev.x){isH=false;cW=currentGridSize-2;cH=2;cX=curr.x*currentGridSize+offsetX+1;cY=(curr.y>prev.y)?curr.y*currentGridSize-1+offsetX:prev.y*currentGridSize-1+offsetX;}
-                else{isH=true;cW=2;cH=currentGridSize-2;cY=curr.y*currentGridSize+1+offsetX;cX=(curr.x>prev.x)?curr.x*currentGridSize-1+offsetX:prev.x*currentGridSize-1+offsetX;}
+                if(curr.x===prev.x){isH=false;cW=currentGridSize-2;cH=2;cX=curr.x*currentGridSize+offsetX+1;cY=(curr.y>prev.y)?curr.y*currentGridSize-1:prev.y*currentGridSize-1;}
+                else{isH=true;cW=2;cH=currentGridSize-2;cY=curr.y*currentGridSize+1+offsetX;cX=(curr.x>prev.x)?curr.x*currentGridSize-1:prev.x*currentGridSize-1;}
                 const halfS=isH?cH/2:cW/2;
-                if(isH){ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,cW,halfS-lineS/2); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX,cY+halfS+lineS/2,cW,halfS-lineS/2); ctx.fillStyle=skinOptions.lineColor;ctx.fillRect(cX,cY+halfS-lineS/2,cW,lineS);}
-                else{ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,halfS-lineS/2,cH); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX+halfS+lineS/2,cY,halfS-lineS/2,cH); ctx.fillStyle=skinOptions.lineColor;ctx.fillRect(cX+halfS-lineS/2,cY,lineS,cH);}
+                if(isH){ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,cW,halfS-lineS/2); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX,cY+halfS+lineS/2,cW,halfS-lineS/2); ctx.fillStyle=lineOrange;ctx.fillRect(cX,cY+halfS-lineS/2,cW,lineS);}
+                else{ctx.fillStyle=skinOptions.bodyColor1;ctx.fillRect(cX,cY,halfS-lineS/2,cH); ctx.fillStyle=skinOptions.bodyColor2;ctx.fillRect(cX+halfS+lineS/2,cY,halfS-lineS/2,cH); ctx.fillStyle=lineOrange;ctx.fillRect(cX+halfS-lineS/2,cY,lineS,cH);}
             }
         }
-        // Cabeça
-        const headX=head.x*currentGridSize+offsetX,headY=head.y*currentGridSize; ctx.fillStyle=skinOptions.headColor; ctx.fillRect(headX,headY,currentGridSize,currentGridSize);
+        const headX=snake[0].x*currentGridSize+offsetX,headY=snake[0].y*currentGridSize; ctx.fillStyle=skinOptions.headColor;
+        ctx.fillRect(headX,headY,currentGridSize,currentGridSize);
         ctx.save(); ctx.translate(headX+currentGridSize/2,headY+currentGridSize/2); let r=0;if(dx===1){r=Math.PI/2;}else if(dx===-1){r=-Math.PI/2;}else if(dy===1){r=Math.PI;}
         ctx.rotate(r); const hG=currentGridSize/2; ctx.fillStyle='#000000';
         ctx.beginPath(); ctx.moveTo(-hG*0.6,-hG*0.6);ctx.lineTo(-hG*0.2,-hG*0.2);ctx.lineTo(-hG*0.6,-hG*0.2);ctx.closePath();ctx.fill();
