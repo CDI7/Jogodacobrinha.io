@@ -1994,26 +1994,42 @@
                 if (isRedSegment) drawPreviewWebPattern(segmentX, segmentY);
             }
         } else if (skinKey === 'coral') {
-            const coralColors = skinOptions.colors;
-            if (isHead) {
-                previewCtx.fillStyle = coralColors[1]; // Preto
-                previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
-                const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
-                previewCtx.fillStyle = coralColors[2]; // Branco
-                previewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
-            } else {
-                const patternIndex = (i - 1) % 4;
-                const halfSize = (previewGridSize - 2) / 2;
-                switch (patternIndex) {
-                    case 0: previewCtx.fillStyle = coralColors[0]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
-                    case 1: case 2: // Para o preview horizontal, a cobra "desce" visualmente
-                        previewCtx.fillStyle = coralColors[2]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, halfSize);
-                        previewCtx.fillStyle = coralColors[1]; previewCtx.fillRect(segmentX, segmentY + halfSize, previewGridSize - 2, halfSize);
-                        break;
-                    case 3: previewCtx.fillStyle = coralColors[1]; previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
+                const [c1, c2, c3] = skinOptions.colors;
+                if (isHead) {
+                    previewCtx.fillStyle = c2; 
+                    previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                    const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
+                    previewCtx.fillStyle = c3;
+                    // CORREÇÃO: A boca agora fica na direita, na direção do movimento
+                    previewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
+                } else {
+                    const patternIndex = (i - 1) % 4;
+                    const halfSize = (previewGridSize - 2) / 2;
+
+                    switch (patternIndex) {
+                        case 0:
+                            previewCtx.fillStyle = c1;
+                            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                            break;
+                        case 1: 
+                        case 2:
+                            // A cobra está na horizontal, a divisão é na VERTICAL.
+                            // A ordem de cor é Preto/Branco.
+                            const firstColor = c3;
+                            const secondColor = c2;
+                            
+                            previewCtx.fillStyle = firstColor;
+                            previewCtx.fillRect(segmentX, segmentY, halfSize, previewGridSize - 2);
+                            previewCtx.fillStyle = secondColor;
+                            previewCtx.fillRect(segmentX + halfSize, segmentY, halfSize, previewGridSize - 2);
+                            break;
+                        case 3:
+                            previewCtx.fillStyle = c2;
+                            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                            break;
+                    }
                 }
-            }
-        } else if (skinKey === 'circuit') {
+            } else if (skinKey === 'circuit') {
             previewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.bodyColor;
             previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
             if (!isHead) {
