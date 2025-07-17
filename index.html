@@ -1339,6 +1339,7 @@
     <h1 data-lang-key="register_title">📝 Cadastro</h1>
     <input class="name-input" id="registerEmail" placeholder="Email" type="email" style="text-transform: none;"/>
     <input class="name-input" id="registerPass" placeholder="Senha" type="password"/>
+    <input class="name-input" id="registerPassConfirm" placeholder="Confirmar Senha" type="password"/>
     <input class="name-input" id="registerUsername" placeholder="Nome de Usuário" type="text" />
     <button class="btn btn-primary start-btn" onclick="handleRegister()" data-lang-key="register_button" style="margin-bottom: 0;">Cadastrar</button>
     <p style="margin-top: 15px;"><a href="#" onclick="showLogin()" data-lang-key="already_have_account_link">Já tem conta? Entrar</a></p>
@@ -1616,7 +1617,7 @@
         'windowsClassic': { name_pt: 'Windows Classic', name_en: 'Windows Classic', name_es: 'Windows Classic', unlockCoins: 1000 },
         'camo': { name_pt: 'Camo', name_en: 'Camo', name_es: 'Camo', unlockCoins: 500, colors: ['#4B5320', '#8B4513', '#D2B48C'], headColor: '#228B22' },
         'halloween': { name_pt: 'Halloween', name_en: 'Halloween', name_es: 'Halloween', unlockCoins: 1000, bodyColor1: '#000000', bodyColor2: '#4B0082', headColor: '#FF8C00', lineColor: '#FF8C00' },
-        'christmas': { name_pt: 'Natal', name_en: 'Christmas', name_es: 'Navidad', unlockCoins: 500, colors: ['#006400', '#DC143C'], headColor: '#FFD700' }
+        'christmas': { name_pt: 'Natal', name_en: 'Christmas', name_es: 'Navidad', unlockCoins: 500, bodyColor: '#ffffff', shadowColor: '#d0e1f9', eyeColor: '#2c3e50', noseColor: '#e67e22', wireColor: '#34495e', outlineColor: '#2c3e50', lightColors: ['#00FF00', '#FFFF00', '#0080FF', '#FF0000'], lightOffColor: '#2c3e50', glowColor: 'rgba(208, 225, 249, 0.7)' },
     };
     let currentSkin = 'default';
     let unlockedSkins = ['default', 'custom']; // Inicializa com default e custom
@@ -2028,102 +2029,179 @@
                             break;
                     }
                 }
-            } else if (skinKey === 'windowsClassic') {
-               const blueScreenColor = '#0000AA';
-               const folderColor = '#FFD700';
-               const textColor = '#FFFFFF';
+        } else if (skinKey === 'windowsClassic') {
+           const blueScreenColor = '#0000AA';
+           const folderColor = '#FFD700';
+           const textColor = '#FFFFFF';
 
-               if (isHead) {
-                   const growth = 2;
-                   const baseSize = previewGridSize - 2;
-                   const headY = segmentY + (previewGridSize * 0.1) - (growth / 2);
-                   const headX = segmentX - (growth / 2);
-                   const headSize = baseSize + growth;
+           if (isHead) {
+               const growth = 2;
+               const baseSize = previewGridSize - 2;
+               const headY = segmentY + (previewGridSize * 0.1) - (growth / 2);
+               const headX = segmentX - (growth / 2);
+               const headSize = baseSize + growth;
 
-                   const bezelColor = '#DCDCDC';
-                   const shadowColor = '#888888';
-                   const highlightColor = '#FFFFFF';
+               const bezelColor = '#DCDCDC';
+               const shadowColor = '#888888';
+               const highlightColor = '#FFFFFF';
 
-                   previewCtx.fillStyle = bezelColor;
-                   previewCtx.fillRect(headX, headY, headSize, headSize);
-                   previewCtx.fillStyle = highlightColor;
-                   previewCtx.fillRect(headX, headY, headSize, 1);
-                   previewCtx.fillRect(headX, headY, 1, headSize);
-                   previewCtx.fillStyle = shadowColor;
-                   previewCtx.fillRect(headX, headY + headSize - 1, headSize, 1);
-                   previewCtx.fillRect(headX + headSize - 1, headY, 1, headSize);
+               previewCtx.fillStyle = bezelColor;
+               previewCtx.fillRect(headX, headY, headSize, headSize);
+               previewCtx.fillStyle = highlightColor;
+               previewCtx.fillRect(headX, headY, headSize, 1);
+               previewCtx.fillRect(headX, headY, 1, headSize);
+               previewCtx.fillStyle = shadowColor;
+               previewCtx.fillRect(headX, headY + headSize - 1, headSize, 1);
+               previewCtx.fillRect(headX + headSize - 1, headY, 1, headSize);
 
-                   const screenX = headX + 3;
-                   const screenY = headY + 3;
-                   const screenSize = headSize - 6;
-                   const skyColor = '#4595E7';
-                   const hillColor = '#58B435';
-                   const cloudColor = '#FFFFFF';
+               const screenX = headX + 3;
+               const screenY = headY + 3;
+               const screenSize = headSize - 6;
+               const skyColor = '#4595E7';
+               const hillColor = '#58B435';
+               const cloudColor = '#FFFFFF';
 
-                   previewCtx.fillStyle = skyColor;
-                   previewCtx.fillRect(screenX, screenY, screenSize, screenSize);
-                   previewCtx.fillStyle = hillColor;
-                   previewCtx.beginPath();
-                   previewCtx.moveTo(screenX, screenY + screenSize * 0.5);
-                   previewCtx.quadraticCurveTo(screenX + screenSize / 2, screenY + screenSize * 0.4, screenX + screenSize, screenY + screenSize * 0.6);
-                   previewCtx.lineTo(screenX + screenSize, screenY + screenSize);
-                   previewCtx.lineTo(screenX, screenY + screenSize);
-                   previewCtx.closePath();
-                   previewCtx.fill();
-                   previewCtx.fillStyle = cloudColor;
-                   previewCtx.fillRect(screenX + screenSize * 0.55, screenY + screenSize * 0.15, screenSize * 0.3, screenSize * 0.1);
-                   previewCtx.fillRect(screenX + screenSize * 0.2, screenY + screenSize * 0.25, screenSize * 0.35, screenSize * 0.1);
-               } else {
-                   // Ícone de pasta na pré-visualização
-                   const backColor = '#FBC02D';
-                   const frontColor = '#FFF176';
-                   const handleColor = '#64B5F6';
-                   const size = previewGridSize;
+               previewCtx.fillStyle = skyColor;
+               previewCtx.fillRect(screenX, screenY, screenSize, screenSize);
+               previewCtx.fillStyle = hillColor;
+               previewCtx.beginPath();
+               previewCtx.moveTo(screenX, screenY + screenSize * 0.5);
+               previewCtx.quadraticCurveTo(screenX + screenSize / 2, screenY + screenSize * 0.4, screenX + screenSize, screenY + screenSize * 0.6);
+               previewCtx.lineTo(screenX + screenSize, screenY + screenSize);
+               previewCtx.lineTo(screenX, screenY + screenSize);
+               previewCtx.closePath();
+               previewCtx.fill();
+               previewCtx.fillStyle = cloudColor;
+               previewCtx.fillRect(screenX + screenSize * 0.55, screenY + screenSize * 0.15, screenSize * 0.3, screenSize * 0.1);
+               previewCtx.fillRect(screenX + screenSize * 0.2, screenY + screenSize * 0.25, screenSize * 0.35, screenSize * 0.1);
+           } else {
+               // Ícone de pasta na pré-visualização
+               const backColor = '#FBC02D';
+               const frontColor = '#FFF176';
+               const handleColor = '#64B5F6';
+               const size = previewGridSize;
 
-                   previewCtx.fillStyle = backColor;
-                   previewCtx.beginPath();
-                   previewCtx.rect(segmentX + 1, segmentY + size * 0.2, size - 2, size * 0.8 - 1);
-                   previewCtx.rect(segmentX + 1, segmentY + size * 0.1, size * 0.4, size * 0.2);
-                   previewCtx.fill();
-                   
-                   previewCtx.fillStyle = frontColor;
-                   previewCtx.fillRect(segmentX + 1, segmentY + size * 0.3, size - 2, size * 0.7 - 1);
+               previewCtx.fillStyle = backColor;
+               previewCtx.beginPath();
+               previewCtx.rect(segmentX + 1, segmentY + size * 0.2, size - 2, size * 0.8 - 1);
+               previewCtx.rect(segmentX + 1, segmentY + size * 0.1, size * 0.4, size * 0.2);
+               previewCtx.fill();
+               
+               previewCtx.fillStyle = frontColor;
+               previewCtx.fillRect(segmentX + 1, segmentY + size * 0.3, size - 2, size * 0.7 - 1);
 
-                   previewCtx.fillStyle = handleColor;
-                   const handleY = segmentY + size * 0.55;
-                   const handleHeight = size * 0.4;
-                   const legWidth = size * 0.2;
-                   previewCtx.fillRect(segmentX + size * 0.15, handleY, legWidth, handleHeight);
-                   previewCtx.fillRect(segmentX + size - size * 0.15 - legWidth, handleY, legWidth, handleHeight);
-                   previewCtx.fillRect(segmentX + size * 0.15, handleY + handleHeight - legWidth, size - (size * 0.15 * 2), legWidth);
-               }
+               previewCtx.fillStyle = handleColor;
+               const handleY = segmentY + size * 0.55;
+               const handleHeight = size * 0.4;
+               const legWidth = size * 0.2;
+               previewCtx.fillRect(segmentX + size * 0.15, handleY, legWidth, handleHeight);
+               previewCtx.fillRect(segmentX + size - size * 0.15 - legWidth, handleY, legWidth, handleHeight);
+               previewCtx.fillRect(segmentX + size * 0.15, handleY + handleHeight - legWidth, size - (size * 0.15 * 2), legWidth);
+           }
         } else if (skinKey === 'galaxy') {
             previewCtx.fillStyle = isHead ? skinOptions.headColor : skinOptions.colors[i % skinOptions.colors.length];
             previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
             previewCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             previewCtx.fillRect(segmentX + Math.random() * (previewGridSize-2), segmentY + Math.random() * (previewGridSize-2), isHead ? 1.5 : 1, isHead ? 1.5 : 1);
-        // CÓDIGO NOVO
-} else if (skinKey === 'camo') {
-    if (isHead) {
-        previewCtx.fillStyle = skinOptions.headColor;
-    } else {
-        previewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
-    }
-    previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+        
+        } else if (skinKey === 'camo') {
+            if (isHead) {
+                previewCtx.fillStyle = skinOptions.headColor;
+            } else {
+                previewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
+            }
+            previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+        
+        } else if (skinKey === 'christmas') {
+            const currentGridSize = 20; // Tamanho da grade do preview
+            const segX = segment.x * currentGridSize + 10;
+            const segY = segment.y * currentGridSize;
+            const centerX = segX + currentGridSize / 2;
+            const centerY = segY + currentGridSize / 2;
+            const radius = (currentGridSize / 2) + 1;
 
-} else if (skinKey === 'christmas') {
-    if (isHead) {
-        previewCtx.fillStyle = skinOptions.headColor;
-    } else {
-        previewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
-    }
-    previewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            previewCtx.shadowColor = skinOptions.glowColor;
+            previewCtx.shadowBlur = 8;
 
-    if (!isHead && i % 2 === 0) {
-         previewCtx.fillStyle = 'rgba(255, 215, 0, 0.5)';
-         previewCtx.fillRect(segmentX, segmentY + previewGridSize / 3, previewGridSize - 2, previewGridSize / 3);
-    }
-} else if (skinKey === 'halloween') {
+            previewCtx.fillStyle = skinOptions.shadowColor;
+            previewCtx.beginPath();
+            previewCtx.arc(centerX, centerY + 1, radius - 1.5, 0, 2 * Math.PI);
+            previewCtx.fill();
+            previewCtx.fillStyle = skinOptions.bodyColor;
+            previewCtx.beginPath();
+            previewCtx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+            previewCtx.fill();
+            previewCtx.strokeStyle = skinOptions.outlineColor;
+            previewCtx.lineWidth = 2;
+            previewCtx.beginPath();
+            previewCtx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+            previewCtx.stroke();
+            
+            previewCtx.shadowColor = 'transparent';
+            previewCtx.shadowBlur = 0;
+
+            if (isHead) {
+                previewCtx.save();
+                previewCtx.translate(centerX, centerY);
+                // A preview sempre vai para a direita, então dx=1, dy=0
+                let rotation = Math.PI / 2;
+                previewCtx.rotate(rotation);
+                previewCtx.fillStyle = skinOptions.eyeColor;
+                const eyeRadius = currentGridSize / 12;
+                previewCtx.beginPath();
+                previewCtx.arc(-radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+                previewCtx.arc(radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+                previewCtx.fill();
+                const mouthDotRadius = currentGridSize / 20;
+                for (let j = 0; j < 5; j++) {
+                    const angle = Math.PI * 0.6 + (j * Math.PI * 0.2) / 4;
+                    const mouthX = Math.cos(angle) * radius * 0.6;
+                    const mouthY = Math.sin(angle) * radius * 0.6;
+                    previewCtx.beginPath();
+                    previewCtx.arc(mouthX, mouthY, mouthDotRadius, 0, 2 * Math.PI);
+                    previewCtx.fill();
+                }
+                previewCtx.fillStyle = skinOptions.noseColor;
+                previewCtx.beginPath();
+                previewCtx.moveTo(0, -eyeRadius);
+                previewCtx.lineTo(0, eyeRadius);
+                previewCtx.lineTo(radius * 0.7, 0);
+                previewCtx.closePath();
+                previewCtx.fill();
+                previewCtx.restore();
+            } else {
+                const prevSegment = previewSnake[i - 1]; // Usa a array correta
+                const prevSegX = prevSegment.x * currentGridSize + 10;
+                const prevSegY = prevSegment.y * currentGridSize;
+                const prevCenterX = prevSegX + currentGridSize / 2;
+                const prevCenterY = prevSegY + currentGridSize / 2;
+                const segDx_preview = segment.x - prevSegment.x;
+                const segDy_preview = segment.y - prevSegment.y;
+                
+                previewCtx.strokeStyle = skinOptions.wireColor;
+                previewCtx.lineWidth = 1.5;
+                previewCtx.beginPath();
+                previewCtx.moveTo(prevCenterX, prevCenterY);
+                previewCtx.lineTo(centerX, centerY);
+                previewCtx.stroke();
+                
+                let entryPoint, exitPoint, controlPoint, remainingArc;
+                if (segDx_preview === 1) { entryPoint = { x: centerX - radius, y: centerY }; exitPoint = { x: prevCenterX + radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY + radius / 1.5 }; remainingArc = { start: Math.PI / 2, end: -Math.PI / 2 }; } 
+                else if (segDx_preview === -1) { entryPoint = { x: centerX + radius, y: centerY }; exitPoint = { x: prevCenterX - radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY - radius / 1.5 }; remainingArc = { start: -Math.PI / 2, end: Math.PI / 2 }; } 
+                else if (segDy_preview === 1) { entryPoint = { x: centerX, y: centerY - radius }; exitPoint = { x: prevCenterX, y: prevCenterY + radius }; controlPoint = { x: centerX - radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: 0, end: Math.PI }; } 
+                else { entryPoint = { x: centerX, y: centerY + radius }; exitPoint = { x: prevCenterX, y: prevCenterY - radius }; controlPoint = { x: centerX + radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: Math.PI, end: 0 }; }
+                
+                previewCtx.strokeStyle = skinOptions.wireColor;
+                previewCtx.lineWidth = 2.5;
+                previewCtx.beginPath();
+                previewCtx.moveTo(exitPoint.x, exitPoint.y);
+                previewCtx.quadraticCurveTo(controlPoint.x, controlPoint.y, entryPoint.x, entryPoint.y);
+                previewCtx.stroke();
+                previewCtx.beginPath();
+                previewCtx.arc(centerX, centerY, radius - 1.5, remainingArc.start, remainingArc.end, segDx_preview === -1 || segDy_preview === 0);
+                previewCtx.stroke();
+            }
+        } else if (skinKey === 'halloween') {
             const pumpkinColor = skinOptions.headColor;
             const bodyBlack = skinOptions.bodyColor1;
             const bodyPurple = skinOptions.bodyColor2;
@@ -2890,30 +2968,44 @@ async function isUsernameTaken(username) {
 async function handleRegister() {
     const email = document.getElementById('registerEmail').value.trim();
     const pass = document.getElementById('registerPass').value.trim();
+    const passConfirm = document.getElementById('registerPassConfirm').value.trim(); // 1. Obtenha o valor da confirmação
     const username = document.getElementById('registerUsername').value.trim();
     const usernameLowercase = username.toLowerCase();
 
-    // ... (suas validações existentes) ...
-    if (email === '' || pass === '' || username === '') { alert(translations[currentLanguage]['alert_fill_all_fields']); return; }
-    if (!validateEmail(email)) { alert(translations[currentLanguage]['alert_invalid_email']); return; }
-    const passwordError = validatePassword(pass); if (passwordError) { alert(passwordError); return; }
+    // 2. Adicione o novo campo à verificação de preenchimento
+    if (email === '' || pass === '' || username === '' || passConfirm === '') { 
+        alert('Preencha todos os campos'); // Mensagem de exemplo
+        return; 
+    }
 
-    // A verificação agora usa a nova função e vai funcionar corretamente
-    if (await isUsernameTaken(username)) {
-        alert(translations[currentLanguage]['alert_username_taken']);
+    // 3. Adicione a verificação para ver se as senhas coincidem
+    if (pass !== passConfirm) {
+        alert('As senhas não coincidem.'); // Mensagem de exemplo
         return;
     }
-    
+
+    if (!validateEmail(email)) { 
+        alert('Por favor, insira um endereço de e-mail válido.'); // Mensagem de exemplo
+        return; 
+    }
+    const passwordError = validatePassword(pass); 
+    if (passwordError) { 
+        alert(passwordError); 
+        return; 
+    }
+
+    if (await isUsernameTaken(username)) {
+        alert('Este nome de usuário já está em uso.'); // Mensagem de exemplo
+        return;
+    }
+
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
         const user = userCredential.user;
-        
-        // Criar o documento do usuário
+
         const userRef = db.collection('users').doc(user.uid);
-        // Criar o documento de referência do nome de usuário
         const usernameRef = db.collection('usernames').doc(usernameLowercase);
 
-        // Usar um batch para garantir que ambas as operações ocorram juntas
         const batch = db.batch();
 
         batch.set(userRef, {
@@ -2929,15 +3021,15 @@ async function handleRegister() {
         });
 
         batch.set(usernameRef, {
-            userId: user.uid // Armazena o UID do dono do nome de usuário
+            userId: user.uid
         });
 
-        await batch.commit(); // Executa ambas as operações
-        
-        alert(translations[currentLanguage]['alert_registration_success']);
+        await batch.commit(); 
+
+        alert('Cadastro realizado com sucesso!'); // Mensagem de exemplo
     } catch (error) {
         console.error("Erro no cadastro:", error);
-        alert(error.code === 'auth/email-already-in-use' ? translations[currentLanguage]['alert_user_exists'] : error.message);
+        alert(error.code === 'auth/email-already-in-use' ? 'Este email já está cadastrado' : error.message);
     }
 }
     
@@ -3935,27 +4027,112 @@ function drawPvpSkinPreview(skinKey) {
                pvpPreviewCtx.fillRect(segmentX + size - size * 0.15 - legWidth, handleY, legWidth, handleHeight);
                pvpPreviewCtx.fillRect(segmentX + size * 0.15, handleY + handleHeight - legWidth, size - (size * 0.15 * 2), legWidth);
            }
+       } else if (skinKey === 'galaxy') {
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = skinOptions.headColor;
+            } else {
+                pvpPreviewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
+            }
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            pvpPreviewCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            pvpPreviewCtx.fillRect(segmentX + Math.random()*(previewGridSize-2), segmentY + Math.random()*(previewGridSize-2), isHead ? 1.5 : 1, isHead ? 1.5 : 1);
        } else if (skinKey === 'camo') {
-    if (isHead) {
-        pvpPreviewCtx.fillStyle = skinOptions.headColor;
-    } else {
-        pvpPreviewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
-    }
-    pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+            if (isHead) {
+                pvpPreviewCtx.fillStyle = skinOptions.headColor;
+            } else {
+                pvpPreviewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
+            }
+            pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
 
-} else if (skinKey === 'christmas') {
-    if (isHead) {
-        pvpPreviewCtx.fillStyle = skinOptions.headColor;
-    } else {
-        pvpPreviewCtx.fillStyle = skinOptions.colors[i % skinOptions.colors.length];
-    }
-    pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+       } else if (skinKey === 'christmas') {
+            const currentGridSize = previewGridSize;
+            const segX = segment.x * currentGridSize + 10;
+            const segY = segment.y * currentGridSize;
+            const centerX = segX + currentGridSize / 2;
+            const centerY = segY + currentGridSize / 2;
+            const radius = (currentGridSize / 2) + 1;
 
-    if (!isHead && i % 2 === 0) {
-         pvpPreviewCtx.fillStyle = 'rgba(255, 215, 0, 0.5)';
-         pvpPreviewCtx.fillRect(segmentX, segmentY + previewGridSize / 3, previewGridSize - 2, previewGridSize / 3);
-    }
-} else if (skinKey === 'halloween') {
+            pvpPreviewCtx.shadowColor = skinOptions.glowColor;
+            pvpPreviewCtx.shadowBlur = 8;
+            
+            pvpPreviewCtx.fillStyle = skinOptions.shadowColor;
+            pvpPreviewCtx.beginPath();
+            pvpPreviewCtx.arc(centerX, centerY + 1, radius - 1.5, 0, 2 * Math.PI);
+            pvpPreviewCtx.fill();
+            pvpPreviewCtx.fillStyle = skinOptions.bodyColor;
+            pvpPreviewCtx.beginPath();
+            pvpPreviewCtx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+            pvpPreviewCtx.fill();
+
+            pvpPreviewCtx.strokeStyle = skinOptions.outlineColor;
+            pvpPreviewCtx.lineWidth = 2;
+            pvpPreviewCtx.beginPath();
+            pvpPreviewCtx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+            pvpPreviewCtx.stroke();
+            
+            pvpPreviewCtx.shadowColor = 'transparent';
+            pvpPreviewCtx.shadowBlur = 0;
+
+            if (isHead) {
+                pvpPreviewCtx.save();
+                pvpPreviewCtx.translate(centerX, centerY);
+                let rotation = Math.PI / 2; // Preview sempre para a direita
+                pvpPreviewCtx.rotate(rotation);
+                pvpPreviewCtx.fillStyle = skinOptions.eyeColor;
+                const eyeRadius = currentGridSize / 12;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.arc(-radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+                pvpPreviewCtx.arc(radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+                pvpPreviewCtx.fill();
+                const mouthDotRadius = currentGridSize / 20;
+                for (let j = 0; j < 5; j++) {
+                    const angle = Math.PI * 0.6 + (j * Math.PI * 0.2) / 4;
+                    const mouthX = Math.cos(angle) * radius * 0.6;
+                    const mouthY = Math.sin(angle) * radius * 0.6;
+                    pvpPreviewCtx.beginPath();
+                    pvpPreviewCtx.arc(mouthX, mouthY, mouthDotRadius, 0, 2 * Math.PI);
+                    pvpPreviewCtx.fill();
+                }
+                pvpPreviewCtx.fillStyle = skinOptions.noseColor;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(0, -eyeRadius);
+                pvpPreviewCtx.lineTo(0, eyeRadius);
+                pvpPreviewCtx.lineTo(radius * 0.7, 0);
+                pvpPreviewCtx.closePath();
+                pvpPreviewCtx.fill();
+                pvpPreviewCtx.restore();
+            } else {
+                const prevSegment = previewSnake[i - 1];
+                const prevSegX = prevSegment.x * currentGridSize + 10;
+                const prevSegY = prevSegment.y * currentGridSize;
+                const prevCenterX = prevSegX + currentGridSize / 2;
+                const prevCenterY = prevSegY + currentGridSize / 2;
+                const segDx_preview = segment.x - prevSegment.x;
+                
+                pvpPreviewCtx.strokeStyle = skinOptions.wireColor;
+                pvpPreviewCtx.lineWidth = 1.5;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(prevCenterX, prevCenterY);
+                pvpPreviewCtx.lineTo(centerX, centerY);
+                pvpPreviewCtx.stroke();
+                
+                let entryPoint, exitPoint, controlPoint, remainingArc;
+                if (segDx_preview === 1) { entryPoint = { x: centerX - radius, y: centerY }; exitPoint = { x: prevCenterX + radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY + radius / 1.5 }; remainingArc = { start: Math.PI / 2, end: -Math.PI / 2 }; } 
+                else if (segDx_preview === -1) { entryPoint = { x: centerX + radius, y: centerY }; exitPoint = { x: prevCenterX - radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY - radius / 1.5 }; remainingArc = { start: -Math.PI / 2, end: Math.PI / 2 }; }
+                else if (segment.y > prevSegment.y) { entryPoint = { x: centerX, y: centerY - radius }; exitPoint = { x: prevCenterX, y: prevCenterY + radius }; controlPoint = { x: centerX - radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: 0, end: Math.PI }; } 
+                else { entryPoint = { x: centerX, y: centerY + radius }; exitPoint = { x: prevCenterX, y: prevCenterY - radius }; controlPoint = { x: centerX + radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: Math.PI, end: 0 }; }
+
+                pvpPreviewCtx.strokeStyle = skinOptions.wireColor;
+                pvpPreviewCtx.lineWidth = 2.5;
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.moveTo(exitPoint.x, exitPoint.y);
+                pvpPreviewCtx.quadraticCurveTo(controlPoint.x, controlPoint.y, entryPoint.x, entryPoint.y);
+                pvpPreviewCtx.stroke();
+                pvpPreviewCtx.beginPath();
+                pvpPreviewCtx.arc(centerX, centerY, radius - 1.5, remainingArc.start, remainingArc.end, segDx_preview === -1);
+                pvpPreviewCtx.stroke();
+            }
+        } else if (skinKey === 'halloween') {
             const pumpkinColor = skinOptions.headColor;
             const bodyBlack = skinOptions.bodyColor1;
             const bodyPurple = skinOptions.bodyColor2;
@@ -4826,10 +5003,179 @@ function drawSnakeOnCanvas(ctx, snake, skinKey, direction, customColor = '#00b89
                 ctx.fillRect(segX + size - size * 0.15 - legWidth, handleY, legWidth, handleHeight);
                 ctx.fillRect(segX + size * 0.15, handleY + handleHeight - legWidth, size - (size * 0.15 * 2), legWidth);
             }
-       } else if (skinKey === 'galaxy' || skinKey === 'camo' || skinKey === 'christmas') {
-           if(isHead){ctx.fillStyle=skinOptions.headColor;} else {ctx.fillStyle=skinOptions.colors[(i-1)%skinOptions.colors.length];}
-           ctx.fillRect(segX,segY,currentGridSize-2,currentGridSize-2);
-           if(skinKey==='galaxy'){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(segX+Math.random()*(currentGridSize-2),segY+Math.random()*(currentGridSize-2),1,1);}
+       } else if (skinKey === 'galaxy') {
+           // Lógica de desenho para a skin Galáxia
+           if(isHead){
+               ctx.fillStyle = skinOptions.headColor;
+           } else {
+               ctx.fillStyle = skinOptions.colors[(i-1) % skinOptions.colors.length];
+           }
+           ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+           
+           // Efeito especial de "estrela" piscando
+           ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+           ctx.fillRect(segX + Math.random() * (currentGridSize - 2), segY + Math.random() * (currentGridSize - 2), 1, 1);
+
+       } else if (skinKey === 'camo') {
+           // Lógica de desenho para a skin Camuflada
+           if(isHead){
+               ctx.fillStyle = skinOptions.headColor;
+           } else {
+               ctx.fillStyle = skinOptions.colors[(i-1) % skinOptions.colors.length];
+           }
+           ctx.fillRect(segX, segY, currentGridSize - 2, currentGridSize - 2);
+           // (Você pode adicionar efeitos especiais para a Camu aqui)
+
+       } else if (skinKey === 'christmas') {
+    const isPreview = ctx.canvas.id.includes('Preview');
+    const currentGridSize = isPreview ? 20 : gridSize;
+    const segX = segment.x * currentGridSize + (isPreview ? 10 : 0);
+    const segY = segment.y * currentGridSize;
+
+    const centerX = segX + currentGridSize / 2;
+    const centerY = segY + currentGridSize / 2;
+    const radius = (currentGridSize / 2) + 1;
+
+    // Efeito de brilho para a bola de neve
+    ctx.shadowColor = skinOptions.glowColor;
+    ctx.shadowBlur = 8;
+
+    // --- DESENHA A BASE DE BOLA DE NEVE ---
+    ctx.fillStyle = skinOptions.shadowColor;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY + 1, radius - 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = skinOptions.bodyColor;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Contorno
+    ctx.strokeStyle = skinOptions.outlineColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius - 1.5, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // Reseta o brilho para não afetar os fios e luzes
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+
+    if (isHead) {
+        // --- DESENHA O ROSTO DO BONECO DE NEVE ---
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        let rotation = (dx === 1) ? Math.PI / 2 : (dx === -1) ? -Math.PI / 2 : (dy === 1) ? Math.PI : 0;
+        ctx.rotate(rotation);
+
+        ctx.fillStyle = skinOptions.eyeColor;
+        const eyeRadius = currentGridSize / 12;
+        ctx.beginPath();
+        ctx.arc(-radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+        ctx.arc(radius / 2.5, -radius / 2.5, eyeRadius, 0, 2 * Math.PI);
+        ctx.fill();
+
+        const mouthDotRadius = currentGridSize / 20;
+        for (let j = 0; j < 5; j++) {
+            const angle = Math.PI * 0.6 + (j * Math.PI * 0.2) / 4;
+            const mouthX = Math.cos(angle) * radius * 0.6;
+            const mouthY = Math.sin(angle) * radius * 0.6;
+            ctx.beginPath();
+            ctx.arc(mouthX, mouthY, mouthDotRadius, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        ctx.fillStyle = skinOptions.noseColor;
+        ctx.beginPath();
+        ctx.moveTo(0, -eyeRadius);
+        ctx.lineTo(0, eyeRadius);
+        ctx.lineTo(radius * 0.7, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+     } else {
+        // --- LÓGICA COMBINADA PARA O CORPO (COM A CORREÇÃO) ---
+        const prevSegment = snake[i - 1];
+  
+        // Verifica se a distância entre os segmentos é maior que 1,
+        // o que indica um teleporte (wrap-around). Se for, pula o desenho do fio.
+        const distanceX = Math.abs(segment.x - prevSegment.x);
+        const distanceY = Math.abs(segment.y - prevSegment.y);
+        if (distanceX > 1 || distanceY > 1) {
+            continue; // Pula para o próximo segmento do loop, não desenhando o fio
+        }
+     
+        const prevSegX = prevSegment.x * currentGridSize + (isPreview ? 10 : 0);
+        const prevSegY = prevSegment.y * currentGridSize;
+        const prevCenterX = prevSegX + currentGridSize / 2;
+        const prevCenterY = prevSegY + currentGridSize / 2;
+
+        const segDx = segment.x - prevSegment.x;
+        const segDy = segment.y - prevSegment.y;
+
+        // Fio reto de conexão central
+        ctx.strokeStyle = skinOptions.wireColor;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(prevCenterX, prevCenterY);
+        ctx.lineTo(centerX, centerY);
+        ctx.stroke();
+
+        // Fio que envolve a bola por fora
+        let entryPoint, exitPoint, controlPoint, remainingArc;
+        if (segDx === 1) { /* Direita */ entryPoint = { x: centerX - radius, y: centerY }; exitPoint = { x: prevCenterX + radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY + radius / 1.5 }; remainingArc = { start: Math.PI / 2, end: -Math.PI / 2 };
+        } else if (segDx === -1) { /* Esquerda */ entryPoint = { x: centerX + radius, y: centerY }; exitPoint = { x: prevCenterX - radius, y: prevCenterY }; controlPoint = { x: (centerX + prevCenterX) / 2, y: centerY - radius / 1.5 }; remainingArc = { start: -Math.PI / 2, end: Math.PI / 2 };
+        } else if (segDy === 1) { /* Baixo */ entryPoint = { x: centerX, y: centerY - radius }; exitPoint = { x: prevCenterX, y: prevCenterY + radius }; controlPoint = { x: centerX - radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: 0, end: Math.PI };
+        } else { /* Cima */ entryPoint = { x: centerX, y: centerY + radius }; exitPoint = { x: prevCenterX, y: prevCenterY - radius }; controlPoint = { x: centerX + radius / 1.5, y: (centerY + prevCenterY) / 2 }; remainingArc = { start: Math.PI, end: 0 };
+        }
+
+        ctx.strokeStyle = skinOptions.wireColor;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(exitPoint.x, exitPoint.y);
+        ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, entryPoint.x, entryPoint.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius - 1.5, remainingArc.start, remainingArc.end, segDx === -1 || segDy === 0);
+        ctx.stroke();
+
+        // PISCA-PISCAS MULTICOLORIDOS COM BRILHO INDIVIDUAL
+        const lightCount = 6;
+        const lightRadius = currentGridSize / 11;
+        const seededRandom = (seed) => { let x = Math.sin(seed) * 10000; return x - Math.floor(x); };
+
+        for (let j = 0; j < lightCount; j++) {
+            const blinkSeed = j + segment.x - segment.y * 2;
+            const isOn = (Math.floor(Date.now() / 400) + blinkSeed) % 2 === 0;
+
+            const angleSeed = j + segment.x;
+            const angle = remainingArc.start + seededRandom(angleSeed) * (remainingArc.end - remainingArc.start);
+            const lightX = centerX + Math.cos(angle) * (radius - 1.5);
+            const lightY = centerY + Math.sin(angle) * (radius - 1.5);
+            
+            let lightColor;
+            if (isOn) {
+                const colorSeed = j + segment.y;
+                const colorIndex = Math.floor(seededRandom(colorSeed) * skinOptions.lightColors.length);
+                lightColor = skinOptions.lightColors[colorIndex];
+                
+                // LÓGICA DO BRILHO PARA CADA LUZ
+                ctx.shadowColor = lightColor;
+                ctx.shadowBlur = 10;
+            } else {
+                lightColor = skinOptions.lightOffColor;
+            }
+            
+            ctx.fillStyle = lightColor;
+            ctx.beginPath();
+            ctx.arc(lightX, lightY, lightRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Limpa o brilho para a próxima luz não ser afetada
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+        }
+    }
        }
     }
 
