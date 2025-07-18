@@ -55,10 +55,11 @@
 .settings-btn-pvp {
     position: absolute;
     top: 15px;
-    left: 15px;
+    right: 15px;
     z-index: 2650; /* Garante que fique acima do conteúdo pvp, mas abaixo do modal */
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    border: none;
+    outline: none;
     width: 35px;
     height: 35px;
     border-radius: 50%;
@@ -86,7 +87,7 @@
             font-size: 2.5em;
             color: #ffffff;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 3px;
         }
 
         .login-logo {
@@ -983,8 +984,8 @@
         
         .close-pvp-btn {
             position: absolute;
-            top: 0px;  /* Ajusta a posição */
-            right: 5px; /* Ajusta a posição */
+            top: 15px;
+            left: 15px;
             width: 30px;
             height: 30px;
             background: #d63031;
@@ -1145,7 +1146,7 @@
             </div>
             <div style="overflow-x: auto;">
                 <table class="admin-table" id="leaderboardTable">
-                     <thead><tr><th>#</th><th>Nome</th><th>Pontuação</th><th>Dificuldade</th><th>Data</th><th>Ação</th></tr></thead>
+                     <thead><tr><th>#</th><th>Nome</th><th>Pontuação</th><th>Comidas</th><th>Dificuldade</th><th>Data</th><th>Ação</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -1536,7 +1537,16 @@
 <p><span data-lang-key="coins_earned_in_game_prefix">Moedas ganhas nesta partida: </span><span id="coinsEarnedGameOver">0</span>🪙</p>
 <button class="btn btn-primary restart-btn" onclick="restartGame()" data-lang-key="play_again_button">Jogar Novamente</button>
 </div>
-
+<div class="modal-overlay" id="quitConfirmModal">
+    <div class="modal-content" style="max-width: 320px;">
+        <h3>Sair da Partida?</h3>
+        <p style="margin-top: 5px; font-size: 13px; opacity: 0.8;">Seu progresso na partida atual será perdido.</p>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-secondary" style="width: 100%;" onclick="handleCancelQuit()">Cancelar</button>
+            <button class="btn btn-danger" style="width: 100%;" onclick="handleConfirmQuit()">Sim, Sair</button>
+        </div>
+    </div>
+</div>
 </div>
 
 <div id="floatingJoystick" style="position: fixed; bottom: 40px; right: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
@@ -1597,6 +1607,7 @@
     // Variáveis para o sistema de moedas
     let snakeCoins = 0; // Total de Snake Coins do usuário
     let coinsEarnedThisGame = 0; // Moedas ganhas na partida atual
+    let foodEatenThisGame = 0;
     const coinsEarnedCongratsElement = document.getElementById('coinsEarnedCongrats');
     const coinsEarnedGameOverElement = document.getElementById('coinsEarnedGameOver');
     const totalSnakeCoinsElement = document.getElementById('totalSnakeCoins');
@@ -1830,6 +1841,12 @@
     
     function queueDirection(newDx, newDy) {
         if (!gameRunning || !gameStarted) return;
+
+        // SE O JOGO ESTIVER PAUSADO, UM TOQUE DIRECIONAL IRÁ CONTINUÁ-LO
+        if (gamePaused) {
+            togglePause();
+        }
+
         let lastDirection = { dx: dx, dy: dy };
         if (inputQueue.length > 0) {
             lastDirection = inputQueue[inputQueue.length - 1];
@@ -2301,14 +2318,12 @@
 
     // SUBSTITUA a sua função drawGame por esta:
 function drawGame() {
-    // 1. Limpa e desenha o fundo do jogo com a cor escolhida
-    ctx.fillStyle = document.getElementById('gameBackgroundColor').value || '#11131e';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 2. Chama a função unificada para desenhar a cobra
+    // A LINHA QUE LIMPAVA O CANVAS FOI REMOVIDA DAQUI
+    
+    // 1. Chama a função unificada para desenhar a cobra
     drawSnakeOnCanvas(ctx, snake, currentSkin, { dx, dy }, document.getElementById('snakeColorPicker').value);
 
-    // 3. Desenha a comida
+    // 2. Desenha a comida
     ctx.fillStyle = '#e17055';
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
     ctx.fillStyle = '#fd79a8';
@@ -2325,6 +2340,7 @@ function drawGame() {
         for (let segment of snake) { if (head.x === segment.x && head.y === segment.y) { gameOver(); return; } }
         snake.unshift(head);
         if (head.x === food.x && head.y === food.y) {
+            foodEatenThisGame++;
             let foodPoints = difficulties[currentDifficulty].points;
             score += foodPoints;
             scoreElement.textContent = score;
@@ -2437,7 +2453,7 @@ async function handlePurchase(isPvpMenu = false) {
         if (!user || !currentUsername) return;
         try {
             const name = currentUsername.substring(0, 15).toUpperCase();
-            const newEntry = { userId: user.uid, name, score, difficulty: currentDifficulty, map: currentMap, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+            const newEntry = { userId: user.uid, name, score, difficulty: currentDifficulty, map: currentMap, foodCount: foodEatenThisGame, skin: currentSkin, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
             await db.collection('scores').add(newEntry);
             await updateLeaderboardDisplay();
         } catch (error) {
@@ -2475,6 +2491,7 @@ async function handlePurchase(isPvpMenu = false) {
         inputQueue = [];
         snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}]; dx = 0; dy = 0; score = 0; scoreElement.textContent = score;
         coinsEarnedThisGame = 0;
+        foodEatenThisGame = 0;
         gameRunning = true; gameStarted = true; gamePaused = false;
         startScreen.style.display = 'none'; toggleJoystick();
         pauseBtn.style.display = 'inline-block'; quitGameBtn.style.display = 'inline-block'; gameInstructions.style.display = 'block'; difficultyDisplay.style.display = 'block';
@@ -2489,46 +2506,84 @@ async function handlePurchase(isPvpMenu = false) {
         gamePaused = !gamePaused; 
         pauseBtn.innerHTML = gamePaused ? `▶️ ${translations[currentLanguage].continue_button}` : `⏸️ ${translations[currentLanguage].pause_button}`; 
     }
-    function quitGame() { if (confirm(translations[currentLanguage]['alert_confirm_quit'])) { restartGame(); } }
+    function quitGame() {
+        // Pausa o jogo se ele não estiver pausado.
+        if (!gamePaused) {
+            togglePause();
+        }
+        // Exibe o nosso novo modal de confirmação personalizado.
+        document.getElementById('quitConfirmModal').style.display = 'flex';
+    }
+
+    // 2. ADICIONE estas duas novas funções ao seu script:
+    function handleConfirmQuit() {
+        // Esconde o modal.
+        document.getElementById('quitConfirmModal').style.display = 'none';
+        // Reinicia o jogo (volta para a tela de menu).
+        restartGame();
+    }
+
+    function handleCancelQuit() {
+        // Apenas esconde o modal.
+        document.getElementById('quitConfirmModal').style.display = 'none';
+        // O jogo continuará pausado, esperando que você pressione o botão de "Continuar" (▶️).
+    }
     
     async function gameOver() {
-        gameRunning = false; gameStarted = false;
-        if (gameInterval) { clearInterval(gameInterval); }
-if (gameInterval) { clearInterval(gameInterval); }
-    
-       const statsRef = db.collection('game_stats').doc('counters');
-        await statsRef.update({ 
-        totalGamesPlayed: firebase.firestore.FieldValue.increment(1) 
+    gameRunning = false;
+    gameStarted = false;
+    if (gameInterval) {
+        clearInterval(gameInterval);
+    }
+
+    // --- LÓGICA CORRIGIDA ---
+    if (score > 0) {
+        // 1. Salva os dados desta partida para a ABA DE ANÁLISES.
+        await logGameForAnalytics();
+    }
+
+    // 2. Verifica se a aba de análises está aberta para atualizar em tempo real.
+    const adminPanel = document.getElementById('adminPanel');
+    const analyticsTabButton = document.querySelector('.admin-tab-button[onclick*="analytics"]');
+    if (adminPanel.style.display === 'flex' && analyticsTabButton.classList.contains('selected')) {
+        loadGameAnalytics();
+    }
+    // --- FIM DA CORREÇÃO ---
+
+    const statsRef = db.collection('game_stats').doc('counters');
+    await statsRef.update({
+        totalGamesPlayed: firebase.firestore.FieldValue.increment(1)
     }).catch(async (error) => {
-                if (error.code === 'not-found') {
+        if (error.code === 'not-found') {
             await statsRef.set({ totalGamesPlayed: 1 });
         }
     });
-        quitGameBtn.style.display = 'none'; reenterPrompt.style.display = 'none';
-        
-        snakeCoins += coinsEarnedThisGame;
-        await updateUserCoins(snakeCoins);
-        totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
 
-        const currentMapHighScore = userHighScoresPerMap[currentMap] || 0;
-        if (score > currentMapHighScore) {
-            await updateUserHighScore(score, currentMap);
-            userHighScoreDisplay.textContent = score;
-        }
-
-        if (await isNewRecord(score) && score > 0) {
-            await saveScore();
-            finalScoreCongrats.textContent = score;
-            coinsEarnedCongratsElement.textContent = coinsEarnedThisGame;
-            triggerFireworks();
-        } else {
-            finalScoreElement.textContent = score;
-            coinsEarnedGameOverElement.textContent = coinsEarnedThisGame;
-            gameOverElement.style.display = 'flex';
-        }
+    quitGameBtn.style.display = 'none';
+    reenterPrompt.style.display = 'none';
+    snakeCoins += coinsEarnedThisGame;
+    await updateUserCoins(snakeCoins);
+    totalSnakeCoinsElement.textContent = `🪙 ${snakeCoins} ${translations[currentLanguage]['total_coins_display']}`;
+    const currentMapHighScore = userHighScoresPerMap[currentMap] || 0;
+    if (score > currentMapHighScore) {
+        await updateUserHighScore(score, currentMap);
+        userHighScoreDisplay.textContent = score;
     }
 
-    function restartGame() {
+    // A função saveScore() volta a ser chamada apenas para recordes, como era originalmente.
+    if (await isNewRecord(score) && score > 0) {
+        await saveScore(); // Salva a pontuação para o LEADERBOARD
+        finalScoreCongrats.textContent = score;
+        coinsEarnedCongratsElement.textContent = coinsEarnedThisGame;
+        triggerFireworks();
+    } else {
+        finalScoreElement.textContent = score;
+        coinsEarnedGameOverElement.textContent = coinsEarnedThisGame;
+        gameOverElement.style.display = 'flex';
+    }
+}
+
+    function restartGame() {        
         if (gameInterval) { clearInterval(gameInterval); }
         if (fireworksInterval) { clearInterval(fireworksInterval); fireworksInterval = null; }
         inputQueue = [];
@@ -2542,12 +2597,32 @@ if (gameInterval) { clearInterval(gameInterval); }
         ctx.fillStyle = '#2d3436'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         updateLeaderboardDisplay();
     }
-    
-    function gameLoop() {
-        processInput();
-        updateGame();
-        drawGame();
+    async function logGameForAnalytics() {
+    const user = auth.currentUser;
+    if (!user || !currentUsername) return;
+    try {
+        // Salva os dados em uma NOVA coleção, apenas para as análises.
+        await db.collection('game_logs').add({
+            userId: user.uid,
+            username: currentUsername,
+            score: score,
+            difficulty: currentDifficulty,
+            map: currentMap,
+            skin: currentSkin,
+            foodCount: foodEatenThisGame,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Erro ao registrar log do jogo para análises:", error);
     }
+}
+    function gameLoop() {    
+    processInput();
+    updateGame();
+    ctx.fillStyle = document.getElementById('gameBackgroundColor').value || '#11131e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);       
+    drawGame();           // Cobra e comida (desenhada por último, fica na frente)
+}
     document.getElementById('upBtn').addEventListener('touchstart', (e) => { e.preventDefault(); queueDirection(0, -1); });
     document.getElementById('downBtn').addEventListener('touchstart', (e) => { e.preventDefault(); queueDirection(0, 1); });
     document.getElementById('leftBtn').addEventListener('touchstart', (e) => { e.preventDefault(); queueDirection(-1, 0); });
@@ -3274,106 +3349,122 @@ async function handleChangeUsername() {
             alert("Não foi possível carregar os dados do dashboard.");
         }
     }
+    
+// SUBSTITUA SUA FUNÇÃO INTEIRA PELA VERSÃO ABAIXO
+async function loadGameAnalytics() {
+    const mostUsedSkinStat = document.getElementById('mostUsedSkinStat');
+    const mostPlayedMapStat = document.getElementById('mostPlayedMapStat');
+    const mostUsedDifficultyStat = document.getElementById('mostUsedDifficultyStat');
+    const skinUsageTableBody = document.querySelector('#skinUsageTable tbody');
+    const difficultyChartContainer = document.getElementById('difficultyDistributionChart');
+    const mostPlayedMapsList = document.getElementById('mostPlayedMapsList');
 
-    // ABA 2 - Análises do Jogo (MODIFICADA)
-    async function loadGameAnalytics() {
-        const mostUsedSkinStat = document.getElementById('mostUsedSkinStat');
-        const mostPlayedMapStat = document.getElementById('mostPlayedMapStat');
-        const mostUsedDifficultyStat = document.getElementById('mostUsedDifficultyStat');
-        const skinUsageTableBody = document.querySelector('#skinUsageTable tbody');
-        const difficultyChartContainer = document.getElementById('difficultyDistributionChart');
-        const mostPlayedMapsList = document.getElementById('mostPlayedMapsList');
+    // Resetar campos
+    mostUsedSkinStat.textContent = "Calculando...";
+    mostPlayedMapStat.textContent = "Calculando...";
+    mostUsedDifficultyStat.textContent = "Calculando...";
+    skinUsageTableBody.innerHTML = '<tr><td colspan="3">Calculando...</td></tr>';
+    difficultyChartContainer.innerHTML = '<p>Calculando...</p>';
+    mostPlayedMapsList.innerHTML = '<p>Calculando...</p>';
 
-        // Resetar campos
-        mostUsedSkinStat.textContent = "Calculando...";
-        mostPlayedMapStat.textContent = "Calculando...";
-        mostUsedDifficultyStat.textContent = "Calculando...";
-        skinUsageTableBody.innerHTML = '<tr><td colspan="3">Calculando...</td></tr>';
-        difficultyChartContainer.innerHTML = '<p>Calculando...</p>';
-        mostPlayedMapsList.innerHTML = '<p>Calculando...</p>';
+    try {
+        const scoresSnapshot = await db.collection('game_logs').get();
+        const totalScores = scoresSnapshot.size;
 
-        try {
-            const usersSnapshot = await db.collection('users').get();
-            const scoresSnapshot = await db.collection('scores').get();
-            const totalUsers = usersSnapshot.size;
+        const skinCounts = {};
+        const mapCounts = {};
+        const difficultyCounts = {};
+        
+        scoresSnapshot.forEach(doc => {
+            const gameData = doc.data();
+            const skin = gameData.skin || 'default';
+            const map = gameData.map || 'normal';
+            const diff = gameData.difficulty || 'normal';
 
-            // --- Análise de Skins ---
-            const skinCounts = {};
-            usersSnapshot.forEach(doc => {
-                const skin = (doc.data().settings && doc.data().settings.skin) ? doc.data().settings.skin : 'default';
-                skinCounts[skin] = (skinCounts[skin] || 0) + 1;
-            });
-            
-            skinUsageTableBody.innerHTML = '';
-            Object.keys(skins).forEach(skinKey => {
-                const count = skinCounts[skinKey] || 0;
-                const percentage = totalUsers > 0 ? ((count / totalUsers) * 100).toFixed(1) : 0;
-                const skinName = translations[currentLanguage][`skin_${skinKey}`] || skins[skinKey].name_pt;
-                const row = `<tr>
-                    <td>${skinName}</td>
-                    <td>${count}</td>
-                    <td>${percentage}%</td>
-                </tr>`;
-                skinUsageTableBody.innerHTML += row;
-            });
+            skinCounts[skin] = (skinCounts[skin] || 0) + 1;
+            mapCounts[map] = (mapCounts[map] || 0) + 1;
+            difficultyCounts[diff] = (difficultyCounts[diff] || 0) + 1;
+        });
+        
+        skinUsageTableBody.innerHTML = '';
+        Object.keys(skins).forEach(skinKey => {
+            const count = skinCounts[skinKey] || 0;
+            const percentage = totalScores > 0 ? ((count / totalScores) * 100).toFixed(1) : 0;
+            const skinName = translations[currentLanguage][`skin_${skinKey}`] || skins[skinKey].name_pt;
+            const row = `<tr>
+                <td>${skinName}</td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            </tr>`;
+            skinUsageTableBody.innerHTML += row;
+        });
 
-            const mostUsedSkinKey = Object.keys(skinCounts).reduce((a, b) => skinCounts[a] > skinCounts[b] ? a : b, 'default');
+        // --- CORREÇÃO APLICADA ABAIXO ---
+
+        // 1. Encontra a skin mais usada
+        const mostUsedSkinKey = Object.keys(skinCounts).length > 0 ? Object.keys(skinCounts).reduce((a, b) => skinCounts[a] > skinCounts[b] ? a : b) : 'N/A';
+        // VERIFICA SE A SKIN REALMENTE EXISTE ANTES DE MOSTRAR
+        if (mostUsedSkinKey !== 'N/A' && skins[mostUsedSkinKey]) {
             mostUsedSkinStat.textContent = translations[currentLanguage][`skin_${mostUsedSkinKey}`] || skins[mostUsedSkinKey].name_pt;
-            
-            // --- Análise de Partidas (Mapas e Dificuldades) ---
-            const mapCounts = {};
-            const difficultyCounts = {};
-            scoresSnapshot.forEach(doc => {
-                const map = doc.data().map || 'normal';
-                const diff = doc.data().difficulty || 'normal';
-                mapCounts[map] = (mapCounts[map] || 0) + 1;
-                difficultyCounts[diff] = (difficultyCounts[diff] || 0) + 1;
-            });
-            const totalScores = scoresSnapshot.size;
-
-            const mostPlayedMapKey = Object.keys(mapCounts).reduce((a, b) => mapCounts[a] > mapCounts[b] ? a : b, 'normal');
-            mostPlayedMapStat.textContent = maps[mostPlayedMapKey]['name_' + currentLanguage];
-
-            const mostUsedDifficultyKey = Object.keys(difficultyCounts).reduce((a, b) => difficultyCounts[a] > difficultyCounts[b] ? a : b, 'normal');
-            mostUsedDifficultyStat.textContent = difficulties[mostUsedDifficultyKey]['name_' + currentLanguage];
-
-            // Gráfico de Distribuição de Dificuldade
-            difficultyChartContainer.innerHTML = '';
-            Object.keys(difficulties).forEach(diffKey => {
-                const count = difficultyCounts[diffKey] || 0;
-                const percentage = totalScores > 0 ? ((count / totalScores) * 100).toFixed(1) : 0;
-                const diffName = difficulties[diffKey]['name_' + currentLanguage];
-                const chartItem = `
-                    <div class="bar-chart-item">
-                        <div class="bar-chart-label">${diffName}</div>
-                        <div class="bar-chart-bar-bg">
-                            <div class="bar-chart-bar" style="width: ${percentage}%;"></div>
-                        </div>
-                        <div class="bar-chart-value">${count}</div>
-                    </div>`;
-                difficultyChartContainer.innerHTML += chartItem;
-            });
-            
-            // Lista de Mapas Mais Jogados
-            mostPlayedMapsList.innerHTML = '';
-            const sortedMaps = Object.entries(mapCounts).sort(([,a],[,b]) => b-a);
-             sortedMaps.forEach(([mapKey, count]) => {
-                const mapName = maps[mapKey] ? maps[mapKey]['name_' + currentLanguage] : 'Desconhecido';
-                const listItem = `<p>${mapName}: <strong>${count} partidas</strong></p>`;
-                mostPlayedMapsList.innerHTML += listItem;
-            });
-
-        } catch (error) {
-            console.error("Erro ao carregar análises detalhadas:", error);
-            mostUsedSkinStat.textContent = "Erro";
-            skinUsageTableBody.innerHTML = '<tr><td colspan="3">Erro ao carregar.</td></tr>';
-            difficultyChartContainer.innerHTML = '<p>Erro ao carregar.</p>';
-            mostPlayedMapsList.innerHTML = '<p>Erro ao carregar.</p>';
+        } else {
+            mostUsedSkinStat.textContent = 'N/A';
         }
+
+        // 2. Encontra o mapa mais jogado
+        const mostPlayedMapKey = Object.keys(mapCounts).length > 0 ? Object.keys(mapCounts).reduce((a, b) => mapCounts[a] > mapCounts[b] ? a : b) : 'N/A';
+        // VERIFICA SE O MAPA REALMENTE EXISTE ANTES DE MOSTRAR
+        if (mostPlayedMapKey !== 'N/A' && maps[mostPlayedMapKey]) {
+            mostPlayedMapStat.textContent = maps[mostPlayedMapKey]['name_' + currentLanguage];
+        } else {
+            mostPlayedMapStat.textContent = 'N/A';
+        }
+
+        // 3. Encontra a dificuldade mais usada
+        const mostUsedDifficultyKey = Object.keys(difficultyCounts).length > 0 ? Object.keys(difficultyCounts).reduce((a, b) => difficultyCounts[a] > difficultyCounts[b] ? a : b) : 'N/A';
+        // VERIFICA SE A DIFICULDADE REALMENTE EXISTE ANTES DE MOSTRAR
+        if (mostUsedDifficultyKey !== 'N/A' && difficulties[mostUsedDifficultyKey]) {
+            mostUsedDifficultyStat.textContent = difficulties[mostUsedDifficultyKey]['name_' + currentLanguage];
+        } else {
+            mostUsedDifficultyStat.textContent = 'N/A';
+        }
+        
+        // O restante da função continua igual
+        difficultyChartContainer.innerHTML = '';
+        Object.keys(difficulties).forEach(diffKey => {
+            const count = difficultyCounts[diffKey] || 0;
+            const percentage = totalScores > 0 ? ((count / totalScores) * 100).toFixed(1) : 0;
+            const diffName = difficulties[diffKey]['name_' + currentLanguage];
+            const chartItem = `
+                <div class="bar-chart-item">
+                    <div class="bar-chart-label">${diffName}</div>
+                    <div class="bar-chart-bar-bg">
+                        <div class="bar-chart-bar" style="width: ${percentage}%;"></div>
+                    </div>
+                    <div class="bar-chart-value">${count}</div>
+                </div>`;
+            difficultyChartContainer.innerHTML += chartItem;
+        });
+        
+        mostPlayedMapsList.innerHTML = '';
+        const sortedMaps = Object.entries(mapCounts).sort(([,a],[,b]) => b-a);
+        sortedMaps.forEach(([mapKey, count]) => {
+            // Adiciona uma verificação aqui também por segurança
+            const mapName = maps[mapKey] ? maps[mapKey]['name_' + currentLanguage] : 'Mapa Desconhecido';
+            const listItem = `<p>${mapName}: <strong>${count} partidas</strong></p>`;
+            mostPlayedMapsList.innerHTML += listItem;
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar análises detalhadas:", error);
+        mostUsedSkinStat.textContent = "Erro";
+        mostPlayedMapStat.textContent = "Erro";
+        mostUsedDifficultyStat.textContent = "Erro";
+        skinUsageTableBody.innerHTML = '<tr><td colspan="3">Erro ao carregar.</td></tr>';
+        difficultyChartContainer.innerHTML = '<p>Erro ao carregar.</p>';
+        mostPlayedMapsList.innerHTML = '<p>Erro ao carregar.</p>';
     }
-
-
-    // ABA 3: Gerenciamento de Usuários
+}
+  
     async function listAllUsers(query = db.collection('users').orderBy('username_lowercase')) {
         const tableBody = document.querySelector('#usersTable tbody');
         tableBody.innerHTML = '<tr><td colspan="5">Carregando...</td></tr>';
@@ -3463,39 +3554,47 @@ async function handleChangeUsername() {
 
     // ABA 4: Moderação do Leaderboard
     async function loadFullLeaderboard(map) {
-        const tableBody = document.querySelector('#leaderboardTable tbody');
-        tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
-        const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
-        try {
-            const snapshot = await db.collection('scores').where('map', '==', map).orderBy('score', 'desc').limit(50).get();
-            if (snapshot.empty) {
-                tableBody.innerHTML = `<tr><td colspan="6">Nenhuma pontuação para o mapa "${map}".</td></tr>`;
-                return;
-            }
-            tableBody.innerHTML = '';
-            let rank = 1;
-            snapshot.forEach(doc => {
-                const score = doc.data();
-                const date = score.timestamp ? score.timestamp.toDate().toLocaleDateString('pt-BR') : 'N/A';
-                const row = `
-                    <tr>
-                        <td>${rank++}</td>
-                        <td>${score.name}</td>
-                        <td>${score.score}</td>
-                        <td>${difficultyEmojis[score.difficulty] || ''}</td>
-                        <td>${date}</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteScore('${doc.id}', '${map}')">Excluir</button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        } catch(error) {
-            console.error("Erro ao carregar leaderboard:", error);
-            tableBody.innerHTML = '<tr><td colspan="6">Erro ao carregar pontuações.</td></tr>';
+    const tableBody = document.querySelector('#leaderboardTable tbody');
+    // ATUALIZE O COLSPAN PARA 7 (por causa da nova coluna)
+    tableBody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>'; 
+    const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
+    try {
+        const snapshot = await db.collection('scores').where('map', '==', map).orderBy('score', 'desc').limit(50).get();
+        if (snapshot.empty) {
+            // ATUALIZE O COLSPAN PARA 7
+            tableBody.innerHTML = `<tr><td colspan="7">Nenhuma pontuação para o mapa "${map}".</td></tr>`;
+            return;
         }
+        tableBody.innerHTML = '';
+        let rank = 1;
+        snapshot.forEach(doc => {
+            const score = doc.data();
+            const date = score.timestamp ? score.timestamp.toDate().toLocaleDateString('pt-BR') : 'N/A';
+            
+            // Pega a contagem de comida. Se o recorde for antigo e não tiver o dado, exibe '?'
+            const foodCount = score.foodCount || '?';
+
+            // ATUALIZE A LINHA DA TABELA PARA INCLUIR A NOVA CÉLULA
+            const row = `
+                <tr>
+                    <td>${rank++}</td>
+                    <td>${score.name}</td>
+                    <td>${score.score}</td>
+                    <td>${foodCount}</td> <td>${difficultyEmojis[score.difficulty] || ''}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteScore('${doc.id}', '${map}')">Excluir</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    } catch(error) {
+        console.error("Erro ao carregar leaderboard:", error);
+        // ATUALIZE O COLSPAN PARA 7
+        tableBody.innerHTML = '<tr><td colspan="7">Erro ao carregar pontuações.</td></tr>';
     }
+}
 
     async function deleteScore(scoreId, map) {
         if(confirm("Tem certeza que deseja excluir esta pontuação? A ação não pode ser desfeita.")) {
@@ -3939,25 +4038,36 @@ function drawPvpSkinPreview(skinKey) {
                 if (isRedSegment) drawPreviewWebPattern(segmentX, segmentY);
             }
         } else if (skinKey === 'coral') {
-            const coralColors = skinOptions.colors;
-            if (isHead) {
-                pvpPreviewCtx.fillStyle = coralColors[1];
+    const [c1, c2, c3] = skinOptions.colors;
+    if (isHead) {
+        pvpPreviewCtx.fillStyle = c2;
+        pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+        const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
+        pvpPreviewCtx.fillStyle = c3;
+        pvpPreviewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
+    } else {
+        const patternIndex = (i - 1) % 4;
+        const halfSize = (previewGridSize - 2) / 2;
+        switch (patternIndex) {
+            case 0:
+                pvpPreviewCtx.fillStyle = c1;
                 pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
-                const mouthSize = Math.max(2, Math.floor(previewGridSize / 6));
-                pvpPreviewCtx.fillStyle = coralColors[2];
-                pvpPreviewCtx.fillRect(segmentX + previewGridSize - 2 - mouthSize, segmentY + mouthSize, mouthSize, previewGridSize - 2 - (2 * mouthSize));
-            } else {
-                const patternIndex = (i - 1) % 4;
-                const halfSize = (previewGridSize - 2) / 2;
-                switch (patternIndex) {
-                    case 0: pvpPreviewCtx.fillStyle = coralColors[0]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
-                    case 1: case 2:
-                        pvpPreviewCtx.fillStyle = coralColors[2]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, halfSize);
-                        pvpPreviewCtx.fillStyle = coralColors[1]; pvpPreviewCtx.fillRect(segmentX, segmentY + halfSize, previewGridSize - 2, halfSize);
-                        break;
-                    case 3: pvpPreviewCtx.fillStyle = coralColors[1]; pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2); break;
-                }
-            }
+                break;
+            case 1:
+            case 2:
+                const firstColor = c3;
+                const secondColor = c2;
+                pvpPreviewCtx.fillStyle = firstColor;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, halfSize, previewGridSize - 2); // Metade esquerda
+                pvpPreviewCtx.fillStyle = secondColor;
+                pvpPreviewCtx.fillRect(segmentX + halfSize, segmentY, halfSize, previewGridSize - 2); // Metade direita
+                break;
+            case 3:
+                pvpPreviewCtx.fillStyle = c2;
+                pvpPreviewCtx.fillRect(segmentX, segmentY, previewGridSize - 2, previewGridSize - 2);
+                break;
+        }
+    }
         } else if (skinKey === 'windowsClassic') {
            const blueScreenColor = '#0000AA';
            const folderColor = '#FFD700';
@@ -4382,19 +4492,28 @@ async function cancelSearch() {
 
 // Função para atualizar a UI durante a busca
 function updateSearchUI(isSearchingUpdate) {
+    // Adiciona uma referência ao botão de cancelar
+    const cancelSearchBtn = document.getElementById('cancelSearchBtn');
+
     if (isSearchingUpdate) {
-        searchMatchBtn.disabled = true;
-        searchMatchBtn.textContent = "Procurando...";
+        // Esconde o botão de procurar e mostra o de cancelar
+        searchMatchBtn.style.display = 'none';
+        cancelSearchBtn.style.display = 'block'; 
+
+        // Inicia o cronômetro de espera
         let seconds = 0;
-        waitTimeDisplay.textContent = "Procurando... 0s";
+        waitTimeDisplay.textContent = `Procurando... 0s`;
         if (waitTimeInterval) clearInterval(waitTimeInterval);
         waitTimeInterval = setInterval(() => {
             seconds++;
             waitTimeDisplay.textContent = `Procurando... ${seconds}s`;
         }, 1000);
     } else {
-        searchMatchBtn.disabled = false;
-        searchMatchBtn.textContent = "Procurar Partida";
+        // Esconde o botão de cancelar e mostra o de procurar
+        searchMatchBtn.style.display = 'block';
+        cancelSearchBtn.style.display = 'none';
+
+        // Para e reseta o cronômetro de espera
         if (waitTimeInterval) clearInterval(waitTimeInterval);
         waitTimeDisplay.textContent = "Tempo de Espera: --";
     }
@@ -4654,7 +4773,6 @@ function startPvpGame(localPlayerData, opponentPlayerData) {
     if (pvpGameLoopInterval) clearInterval(pvpGameLoopInterval);
     pvpGameLoopInterval = setInterval(pvpGameLoop, gameSpeed);
 }
-
 function pvpGameLoop() {
     if (!pvpGameRunning) return;
     processPvpInput();
@@ -4935,18 +5053,154 @@ function drawSnakeOnCanvas(ctx, snake, skinKey, direction, customColor = '#00b89
                 }
             }
         } else if (skinKey === 'halloween') {
-            if (!isHead) {
-                 const prevSeg=snake[i-1]; const segDx=segment.x-prevSeg.x;
-                 const fillS=currentGridSize-2, halfF=fillS/2, lineS=2;
-                 ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX,segY,currentGridSize,currentGridSize);
-                 ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,fillS);
-                 if(segDx===0){
-                    ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1+halfF+lineS/2,segY+1,halfF-lineS/2,fillS); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1+halfF-lineS/2,segY+1,lineS,fillS);
-                 } else {
-                    ctx.fillStyle=skinOptions.bodyColor1; ctx.fillRect(segX+1,segY+1,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.bodyColor2; ctx.fillRect(segX+1,segY+1+halfF+lineS/2,fillS,halfF-lineS/2); ctx.fillStyle=skinOptions.lineColor; ctx.fillRect(segX+1,segY+1+halfF-lineS/2,fillS,lineS);
-                 }
+            if (isHead) {
+    const pumpkinColor = skinOptions.headColor;
+    const centerX = segX + currentGridSize / 2;
+    const centerY = segY + currentGridSize / 2;
+    const radiusX = currentGridSize / 2 * 1.1; // Um pouco mais larga
+    const radiusY = currentGridSize / 2 * 0.95; // Um pouco mais baixa
+
+    // Desenha o corpo principal da abóbora
+    ctx.fillStyle = pumpkinColor;
+    ctx.beginPath();
+    ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Desenha as linhas de segmento
+    ctx.strokeStyle = "rgba(0,0,0,0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - radiusY);
+    ctx.quadraticCurveTo(centerX - radiusX * 0.7, centerY, centerX, centerY + radiusY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - radiusY);
+    ctx.quadraticCurveTo(centerX + radiusX * 0.7, centerY, centerX, centerY + radiusY);
+    ctx.stroke();
+
+    // Desenha o talo
+    ctx.fillStyle = '#6A4B24';
+    ctx.beginPath();
+    ctx.moveTo(centerX - 2, segY + 2);
+    ctx.lineTo(centerX - 3, segY - 3);
+    ctx.lineTo(centerX + 3, segY - 3);
+    ctx.lineTo(centerX + 2, segY + 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Salva o estado para rotacionar apenas o rosto
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    
+    // Rotaciona o rosto com base na direção da cobra
+    let rotation = 0;
+    if (dx === 1) { rotation = Math.PI / 2; }
+    else if (dx === -1) { rotation = -Math.PI / 2; }
+    else if (dy === 1) { rotation = Math.PI; }
+    ctx.rotate(rotation);
+
+    const hG = currentGridSize / 2;
+    // Usa um amarelo brilhante para as partes "esculpidas"
+    ctx.fillStyle = '#FFD700';
+    ctx.shadowColor = '#FFD700';
+    ctx.shadowBlur = 6;
+
+    // Olhos (triângulos)
+    ctx.beginPath();
+    ctx.moveTo(-hG * 0.6, -hG * 0.5);
+    ctx.lineTo(-hG * 0.2, -hG * 0.2);
+    ctx.lineTo(-hG * 0.7, -hG * 0.1);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(hG * 0.6, -hG * 0.5);
+    ctx.lineTo(hG * 0.2, -hG * 0.2);
+    ctx.lineTo(hG * 0.7, -hG * 0.1);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Reseta o brilho para a boca
+    ctx.shadowBlur = 0;
+
+    // Boca (formato de sorriso)
+    ctx.beginPath();
+    ctx.moveTo(-hG * 0.8, hG * 0.3);
+    ctx.quadraticCurveTo(0, hG * 0.8, hG * 0.8, hG * 0.3);
+    ctx.lineTo(hG * 0.6, hG * 0.5);
+    ctx.quadraticCurveTo(0, hG * 1.1, -hG * 0.6, hG * 0.5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Restaura o estado do canvas
+    ctx.restore();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+} else {
+                // 1. Desenha o corpo listrado (para TODOS os segmentos)
+                const prevSeg = snake[i - 1];
+                const segDx = segment.x - prevSeg.x;
+                const fillS = currentGridSize - 2,
+                    halfF = fillS / 2,
+                    lineS = 2;
+                ctx.fillStyle = skinOptions.bodyColor2;
+                ctx.fillRect(segX, segY, currentGridSize, currentGridSize);
+                ctx.fillStyle = skinOptions.bodyColor1;
+                ctx.fillRect(segX + 1, segY + 1, fillS, fillS);
+                if (segDx === 0) {
+                    ctx.fillStyle = skinOptions.bodyColor1;
+                    ctx.fillRect(segX + 1, segY + 1, halfF - lineS / 2, fillS);
+                    ctx.fillStyle = skinOptions.bodyColor2;
+                    ctx.fillRect(segX + 1 + halfF + lineS / 2, segY + 1, halfF - lineS / 2, fillS);
+                    ctx.fillStyle = skinOptions.lineColor;
+                    ctx.fillRect(segX + 1 + halfF - lineS / 2, segY + 1, lineS, fillS);
+                } else {
+                    ctx.fillStyle = skinOptions.bodyColor1;
+                    ctx.fillRect(segX + 1, segY + 1, fillS, halfF - lineS / 2);
+                    ctx.fillStyle = skinOptions.bodyColor2;
+                    ctx.fillRect(segX + 1, segY + 1 + halfF + lineS / 2, fillS, halfF - lineS / 2);
+                    ctx.fillStyle = skinOptions.lineColor;
+                    ctx.fillRect(segX + 1, segY + 1 + halfF - lineS / 2, fillS, lineS);
+                }
+                
+                // `i` é o índice do segmento, o corpo começa em i=1.
+                if (i <= 4) {
+                    ctx.globalCompositeOperation = 'lighter';
+
+                    const auraCenterX = segX + currentGridSize / 2;
+                    const auraCenterY = segY + currentGridSize / 2;
+                    
+                    const particleCount = 10;
+                    const maxOffset = currentGridSize * 0.7;
+                    const maxInitialSize = 7;
+
+                    for (let j = 0; j < particleCount; j++) {
+                        const particleX = auraCenterX + (Math.random() - 0.5) * maxOffset;
+                        const particleY = auraCenterY + (Math.random() - 0.5) * maxOffset;
+                        const size = Math.random() * maxInitialSize;
+                        const opacity = Math.random() * 0.3 + 0.1;
+                        
+                        const transitionLength = 3;
+                        const fireColor = [255, 120, 0];
+                        const smokeColor = [90, 80, 100];
+                        const t = Math.min(1, (i - 1) / (transitionLength - 1));
+
+                        const r = Math.round(fireColor[0] * (1 - t) + smokeColor[0] * t);
+                        const g = Math.round(fireColor[1] * (1 - t) + smokeColor[1] * t);
+                        const b = Math.round(fireColor[2] * (1 - t) + smokeColor[2] * t);
+
+                        const particleColor = `${r}, ${g}, ${b}`;
+
+                        ctx.fillStyle = `rgba(${particleColor}, ${opacity})`;
+                        ctx.beginPath();
+                        ctx.arc(particleX, particleY, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.globalCompositeOperation = 'source-over';
+                }
             }
-        } else if (skinKey === 'windowsClassic') {
+       } else if (skinKey === 'windowsClassic') {
            if (isHead) {
                 const growth = 2;
                 const baseSize = currentGridSize - 2;
