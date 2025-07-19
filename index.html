@@ -901,16 +901,17 @@
         }
 
 .pvp-content {
-    width: 100%;
-    max-width: 380px; /* Reduz a largura máxima para dar mais espaço nas laterais */
+    width: 95%;
+    max-width: 500px;
     max-height: 100%;
-    overflow-y: hidden; /* Remove a rolagem vertical */
+    overflow-y: hidden;
+    overflow-x: hidden; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    justify-content: center; 
     align-items: center;
-    gap: 5px; /* Reduz drasticamente o espaço entre os elementos */
-    padding: 5px 0; /* Adiciona um pequeno preenchimento vertical */
+    gap: 2px;
+    padding: 5px 0;
 }
 
         .pvp-content::-webkit-scrollbar {
@@ -926,23 +927,22 @@
 
         .opponent-view, .local-player-view {
             width: 100%;
-            max-width: 360px;
+            max-width: 480px;
             text-align: center;
-            position: relative; /* Necessário para posicionar elementos filhos */
+            position: relative; 
         }
 
         #opponentCanvas, #localPlayerPvPCanvas {
-    border-radius: 12px; /* Diminui o raio da borda */
+    border-radius: 12px;
     background: #11131e;
-    width: 90%; /* Define uma largura um pouco menor que o contêiner */
-    max-width: 300px; /* Define um tamanho máximo menor para o canvas */
-    height: auto;
-    margin: 0 auto; /* Centraliza o canvas */
+    width: 100%; /* ALTERADO: Para ser flexível */
+    height: auto; /* ALTERADO: Para manter a proporção automaticamente */
+    max-width: 480px; /* Adicionado: Define o tamanho máximo que ele pode atingir */
+    margin: 0 auto;
 }
 
         #opponentCanvas {
-            border: 3px solid #d63031; /* Borda vermelha */
-            background: #000;
+            border: 3px solid #d63031; /* Borda vermelha */            
         }
 
         #localPlayerPvPCanvas {
@@ -951,23 +951,26 @@
 
         .opponent-overlay {
     position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 300px;
-    height: 100%;
+    /* Ajuste de posição e tamanho */
+    width: calc(100% - 6px); /* Subtrai a largura da borda (3px de cada lado) */
+    height: calc(100% - 6px); /* Subtrai a altura da borda (3px de cada lado) */
+    top: 3px;
+    left: 3px;
+    transform: none; /* Remove a transformação anterior */
+    /* Estilos existentes */
+    max-width: 480px;
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
-    
-    /* Adicione estas 4 linhas */
+    border-radius: 10px; /* Um raio um pouco menor para encaixar melhor */
     display: flex;
     flex-direction: column;
     gap: 15px;
     justify-content: center;
     align-items: center;
 }
-
+/* Adicione esta regra para corrigir o problema do modal fantasma */
+#quitConfirmModal {
+    z-index: 2100; /* Um valor maior que o da tela de Game Over (2000) */
+}
 .wait-time-display {
     color: white;
     font-size: 14px;
@@ -1007,27 +1010,27 @@
         }
 
         #pvpGameControls {
-   margin-top: 5px; /* Diminui a margem superior */
+   margin-top: 5px;
    flex-shrink: 0;
 }
 /* Estilos para a área de informação da partida PvP */
 .pvp-match-info {
     position: relative;
     width: 100%;
-    margin: 5px 0;
+    margin: 0;
     text-align: center;
 }
 
 /* Estilo para o cronômetro principal do jogo (03:00) */
 #pvpGameTimer {
-    font-size: 20px;
+    font-size: 16px; /* REDUZIDO */
     font-weight: bold;
-    color: #FFD700; /* Cor dourada para destaque */
+    color: #FFD700; 
     background: rgba(0,0,0,0.3);
-    padding: 5px 15px;
+    padding: 3px 10px; /* REDUZIDO */
     border-radius: 8px;
     display: inline-block;
-    visibility: hidden; /* Começa escondido e se torna visível com JS */
+    visibility: hidden;
 }
 
 /* Estilo para a contagem regressiva (5, 4, 3...) */
@@ -1041,10 +1044,40 @@
     color: white;
     text-shadow: 0 0 20px rgba(0,0,0,0.7);
     z-index: 50;
-    display: none; /* Começa escondido e é ativado via JS */
+    display: none;
     animation: countdown-pulse 1s infinite;
 }
+/* Estilo para os novos placares do PvP */
+.pvp-score-display {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 0px; /* Adiciona espaço acima do placar */
+    text-align: center;
+}
 
+/* Exceção para o placar do OPONENTE ficar acima do mapa */
+#localScoreDisplay {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 8px;
+    text-align: center;
+}
+
+/* Estilo para o placar do OPONENTE (agora flutuando sobre o mapa) */
+#opponentScoreDisplay {
+    position: absolute;  /* Tira o elemento do fluxo normal */
+    top: 10px;           /* Distância do topo do container pai */
+    left: 0;
+    right: 0;
+    z-index: 10;         /* Garante que fique visível */
+    
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
 /* Animação de pulsar para a contagem regressiva */
 @keyframes countdown-pulse {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -1238,11 +1271,12 @@
 <div id="pvpPanel">
     <button id="pvpSettingsBtn" class="settings-btn-pvp" onclick="openPvPSettings()">⚙️</button>
     
-    <button class="close-pvp-btn" onclick="closePvPPanel()">×</button>
+    <button class="close-pvp-btn" onclick="requestQuitPvp()">×</button>
 
     <div class="pvp-content">
-        <div class="opponent-view">
-    <canvas id="opponentCanvas" width="320" height="320"></canvas>
+       <div class="opponent-view">
+    <div id="opponentScoreDisplay" class="pvp-score-display">Oponente: 0</div>
+    <canvas id="opponentCanvas" width="400" height="256"></canvas>
     <div class="opponent-overlay">
         <div id="waitTimeDisplay" class="wait-time-display">
             Tempo de Espera: --
@@ -1255,13 +1289,14 @@
         <!--  NOVO CÓDIGO PARA OS CRONÔMETROS  -->
         <!-- ================================= -->
         <div id="pvpMatchInfo" class="pvp-match-info">
-            <div id="pvpGameTimer">03:00</div>
+            <div id="pvpGameTimer">01:30</div>
             <div id="pvpCountdown" class="pvp-countdown"></div>
         </div>
         <!-- ================================= -->
-        <div class="local-player-view">
-            <canvas id="localPlayerPvPCanvas" width="320" height="320"></canvas>
-        </div>
+         <div class="local-player-view">
+    <canvas id="localPlayerPvPCanvas" width="400" height="256"></canvas>
+    <div id="localScoreDisplay" class="pvp-score-display">Sua Pontuação: 0</div>
+         </div>
 
         <div class="controls" id="pvpGameControls">
             <button class="control-btn up">↑</button>
@@ -1548,7 +1583,18 @@
     </div>
 </div>
 </div>
-
+<div class="modal-overlay" id="quitPvpConfirmModal" style="z-index: 2800;">
+        <div class="modal-content" style="max-width: 320px;">
+            <h3>Sair da Partida PvP?</h3>
+            <p style="margin-top: 5px; font-size: 13px; opacity: 0.8;">
+                Seu oponente será notificado e a partida será encerrada.
+            </p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-secondary" style="width: 100%;" onclick="cancelQuitPvp()">Cancelar</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="confirmQuitPvp()">Sim, Sair</button>
+            </div>
+        </div>
+    </div>
 <div id="floatingJoystick" style="position: fixed; bottom: 40px; right: 40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); display: none; touch-action: none;">
     <div id="joystickThumb" style="width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; position: absolute; left: 40px; top: 40px;"></div>
 </div>
@@ -3848,12 +3894,69 @@ async function loadGameAnalytics() {
         document.getElementById('pvpPanel').style.display = 'flex';
     }
 
-    // CORRIGIDO: Agora cancela a busca se o jogador fechar o painel
-function closePvPPanel() {
-    if (isSearching) {
-        cancelSearch();
+    function resumePvpGame() {
+    // Limpa o timer de 4 segundos para evitar que ele feche o modal novamente
+    if (quitConfirmTimeout) {
+        clearTimeout(quitConfirmTimeout);
+        quitConfirmTimeout = null;
     }
-    document.getElementById('pvpPanel').style.display = 'none';
+    // Esconde o modal de confirmação
+    document.getElementById('quitPvpConfirmModal').style.display = 'none';
+    // Desativa o estado de pausa
+    isPvpPausedForQuit = false;
+}
+
+function requestQuitPvp() {
+    // Não faz nada se o jogo não estiver rodando ou se a pergunta já estiver na tela
+    if (!pvpGameRunning || isPvpPausedForQuit) return;
+
+    // 1. Ativa o estado de pausa
+    isPvpPausedForQuit = true;
+    
+    // 2. Mostra a pergunta de confirmação
+    document.getElementById('quitPvpConfirmModal').style.display = 'flex';
+
+    // 3. Inicia o timer de 4 segundos para resumir o jogo automaticamente
+    quitConfirmTimeout = setTimeout(() => {
+        // Se o usuário não fizer nada, chama a função para resumir o jogo
+        resumePvpGame(); 
+    }, 4000);
+}
+
+// 2. Função chamada pelo botão "Cancelar" do novo modal
+function cancelQuitPvp() {
+    // Apenas resume o jogo
+    resumePvpGame();
+}
+
+// 3. Função chamada pelo botão "Sim, Sair" do novo modal
+async function confirmQuitPvp() {
+    // Limpa o timer de 4 segundos imediatamente para não conflitar
+    if (quitConfirmTimeout) {
+        clearTimeout(quitConfirmTimeout);
+        quitConfirmTimeout = null;
+    }
+
+    // A condição de saída agora verifica os dois estados, garantindo que funcione sempre.
+    if ((!pvpGameRunning && !isCountdownActive) || !activeRoomId) return;
+
+    try {
+        const roomRef = db.collection('gameRooms').doc(activeRoomId);
+        await roomRef.update({
+            status: 'opponent_left',
+            quitterId: auth.currentUser.uid
+        });
+
+        // A função endPvpGame já foi corrigida para limpar tudo corretamente.
+        endPvpGame("Você saiu da partida.");
+
+        document.getElementById('quitPvpConfirmModal').style.display = 'none';
+        document.getElementById('pvpPanel').style.display = 'none';
+
+    } catch (error) {
+        console.error("Erro ao desistir da partida:", error);
+        alert("Ocorreu um erro ao tentar sair. Verifique sua conexão.");
+    }
 }
 // ==================================================================
 // FUNÇÕES DAS NOVAS CONFIGURAÇÕES DO PVP
@@ -3865,6 +3968,8 @@ let pvpMap = 'normal';
 const pvpSettingsPanel = document.getElementById('pvpSettingsPanel');
 const pvpSkinPreviewCanvas = document.getElementById('skinPreviewCanvasPvp');
 const pvpPreviewCtx = pvpSkinPreviewCanvas.getContext('2d');
+const pvpTileCountX = 25; // 25 quadrados na horizontal (400px / 16px)
+const pvpTileCountY = 16; // 16 quadrados na vertical (256px / 16px)
 
 // --- Funções do Modal e Abas ---
 
@@ -4529,6 +4634,7 @@ let pvpGameLoopInterval = null;
 let pvpGameTimerInterval = null;
 let activeRoomId = null;
 let localPlayerKey = null;
+let pvpCountdownInterval = null;
 
 const pvpLocalCanvas = document.getElementById('localPlayerPvPCanvas');
 const pvpLocalCtx = pvpLocalCanvas.getContext('2d');
@@ -4544,6 +4650,7 @@ let pvpLocalScore = 0;
 let pvpGameRunning = false;
 let pvpLocalSkin = 'default';
 let pvpLocalFood = {};
+let isCountdownActive = false;
 
 // Estado do oponente
 let pvpOpponentSnake = [];
@@ -4551,6 +4658,8 @@ let pvpOpponentScore = 0;
 let pvpOpponentSkin = 'default';
 let pvpOpponentFood = {};
 let pvpOpponentDirection = { dx: 0, dy: 0 };
+let isPvpPausedForQuit = false; // Controla se o jogo está pausado para a decisão
+let quitConfirmTimeout = null; // Armazena o ID do timer de 4 segundos
 
 
 // --- Funções de Matchmaking ---
@@ -4642,9 +4751,17 @@ async function createGameRoom(player1Id, opponent) {
         const roomRef = db.collection('gameRooms').doc();
         const roomId = roomRef.id;
 
+        // Posições iniciais ajustadas para serem mais centrais
+        const player1InitialSnake = [{ x: Math.floor(pvpTileCountX / 4), y: Math.floor(pvpTileCountY / 2) }];
+        const player2InitialSnake = [{ x: Math.floor(pvpTileCountX * 3 / 4), y: Math.floor(pvpTileCountY / 2) }];
+
+        // Comidas iniciais ajustadas para o novo mapa retangular
+        const player1InitialFood = { x: Math.floor(Math.random() * pvpTileCountX), y: Math.floor(Math.random() * pvpTileCountY) };
+        const player2InitialFood = { x: Math.floor(Math.random() * pvpTileCountX), y: Math.floor(Math.random() * pvpTileCountY) };
+
         await roomRef.set({
-            player1: { id: player1Id, username: currentUsername, score: 0, skin: currentSkin, snake: [{ x: 5, y: 5 }], food: { x: randomTile(), y: randomTile() }, direction: {dx: 0, dy: 0} },
-            player2: { id: opponent.userId, username: opponent.username, score: 0, skin: opponent.skin, snake: [{ x: tileCount - 6, y: tileCount - 6 }], food: { x: randomTile(), y: randomTile() }, direction: {dx: 0, dy: 0} },
+            player1: { id: player1Id, username: currentUsername, score: 0, skin: currentSkin, snake: player1InitialSnake, food: player1InitialFood, direction: {dx: 0, dy: 0} },
+            player2: { id: opponent.userId, username: opponent.username, score: 0, skin: opponent.skin, snake: player2InitialSnake, food: player2InitialFood, direction: {dx: 0, dy: 0} },
             map: pvpMap,
             difficulty: pvpDifficulty,
             status: 'starting',
@@ -4682,38 +4799,37 @@ function matchFound(roomId) {
     enterGameRoom(roomId);
 }
 
-// SUBSTITUA sua função enterGameRoom por esta:
 function enterGameRoom(roomId) {
     const roomRef = db.collection('gameRooms').doc(roomId);
     if (activeRoomListener) activeRoomListener();
 
     activeRoomListener = roomRef.onSnapshot(doc => {
-        if (!doc.exists) {
-            if (pvpGameRunning) endPvpGame("O oponente saiu da partida.");
+        if (!doc.exists || (doc.data().status === 'opponent_left' && doc.data().quitterId !== auth.currentUser.uid)) {
+            endPvpGame("O oponente saiu da partida.");
             return;
         };
 
         const roomData = doc.data();
         const user = auth.currentUser;
 
-        // Determina quem é quem e pega os dados da sala
+        // ... (o resto do código que busca dados do jogador) ...
         const isPlayer1 = user.uid === roomData.player1.id;
         localPlayerKey = isPlayer1 ? 'player1' : 'player2';
         const opponentPlayerKey = isPlayer1 ? 'player2' : 'player1';
-
+        // ... (resto do código que atualiza a UI) ...
         const localPlayerData = roomData[localPlayerKey];
         const opponentPlayerData = roomData[opponentPlayerKey];
-        
-        // Atualiza os dados do oponente em tempo real
         pvpOpponentSnake = opponentPlayerData.snake || [];
         pvpOpponentScore = opponentPlayerData.score || 0;
         pvpOpponentSkin = opponentPlayerData.skin;
         pvpOpponentFood = opponentPlayerData.food || {};
         pvpOpponentDirection = opponentPlayerData.direction || { dx: 0, dy: 0 };
+        document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${localPlayerData.score || 0}`;
+        document.getElementById('opponentScoreDisplay').textContent = `Oponente: ${opponentPlayerData.score || 0}`;
 
-        // Se o jogo está começando, usa os dados iniciais para configurar e iniciar
-        if (roomData.status === 'starting' && !pvpGameRunning) {
-            // Passa os dados iniciais para a função de início
+        // --- MUDANÇA PRINCIPAL AQUI ---
+        // Adicionamos a verificação "!isCountdownActive" para criar a trava.
+        if ((roomData.status === 'starting' || roomData.status === 'countdown') && !pvpGameRunning && !isCountdownActive) {
             startCountdown(localPlayerData, opponentPlayerData); 
             if (localPlayerKey === 'player1') {
                 roomRef.update({ status: 'countdown' });
@@ -4723,21 +4839,22 @@ function enterGameRoom(roomId) {
 }
 
 function startCountdown(localPlayerData, opponentPlayerData) {
+    isCountdownActive = true; // ATIVA A TRAVA
     opponentOverlay.style.visibility = 'hidden';
     const countdownElement = document.getElementById('pvpCountdown');
     countdownElement.style.display = 'block';
     let count = 5;
     countdownElement.textContent = count;
 
-    const countdownInterval = setInterval(() => {
+    // Lembre-se de usar a variável global aqui, como na correção anterior
+    pvpCountdownInterval = setInterval(() => {
         count--;
         if (count > 0) {
             countdownElement.textContent = count;
         } else {
-            clearInterval(countdownInterval);
+            clearInterval(pvpCountdownInterval);
             countdownElement.style.display = 'none';
             if (!pvpGameRunning) {
-                 // Inicia o jogo com os dados corretos da sala
                  startPvpGame(localPlayerData, opponentPlayerData);
             }
         }
@@ -4745,22 +4862,22 @@ function startCountdown(localPlayerData, opponentPlayerData) {
 }
 
 function startPvpGame(localPlayerData, opponentPlayerData) {
+    isCountdownActive = false;
     console.log("A PARTIDA COMEÇOU COM OS DADOS CORRETOS!");
     const timerElement = document.getElementById('pvpGameTimer');
     timerElement.style.visibility = 'visible';
-    
     pvpGameRunning = true;
-    
-    // **A MUDANÇA MAIS IMPORTANTE ESTÁ AQUI**
-    // Carrega o estado inicial a partir dos dados recebidos, em vez de criar um novo
     pvpLocalSnake = localPlayerData.snake;
     pvpLocalFood = localPlayerData.food;
-    pvpLocalSkin = localPlayerData.skin; // <- Isso resolve a skin invisível!
+    pvpLocalSkin = localPlayerData.skin;
     pvpLocalDirection = { dx: 0, dy: 0 };
     pvpLocalInputQueue = [];
     pvpLocalScore = 0;
     
-    let gameTime = 180; // 3 minutos
+    let gameTime = 90; // Tempo da partida em segundos (1:30)   
+    const initialMinutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
+    const initialSeconds = (gameTime % 60).toString().padStart(2, '0');
+    timerElement.textContent = `${initialMinutes}:${initialSeconds}`;    
     pvpGameTimerInterval = setInterval(() => {
         gameTime--;
         const minutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
@@ -4775,10 +4892,16 @@ function startPvpGame(localPlayerData, opponentPlayerData) {
 }
 function pvpGameLoop() {
     if (!pvpGameRunning) return;
-    processPvpInput();
-    updatePvpGame();
+
+    // Se o jogo NÃO estiver pausado, executa a lógica de movimento
+    if (!isPvpPausedForQuit) {
+        processPvpInput();
+        updatePvpGame();
+        sendDataToFirebase();
+    }
+
+    // O desenho dos tabuleiros acontece sempre, para que a tela não congele
     drawPvpBoards();
-    sendDataToFirebase();
 }
 
 // CORREÇÃO: Lógica de input para permitir o primeiro movimento
@@ -4800,22 +4923,36 @@ function processPvpInput() {
 
 function updatePvpGame() {
     if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) return;
+
     const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
 
-    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-        endPvpGame("Você colidiu com a parede!");
-        return;
+    const mapConfig = maps[pvpMap] || maps['normal'];
+
+    if (mapConfig.wrapAround) {
+        if (head.x < 0) head.x = pvpTileCountX - 1;
+        else if (head.x >= pvpTileCountX) head.x = 0;
+        if (head.y < 0) head.y = pvpTileCountY - 1;
+        else if (head.y >= pvpTileCountY) head.y = 0;
+    } else {
+        if (head.x < 0 || head.x >= pvpTileCountX || head.y < 0 || head.y >= pvpTileCountY) {
+            endPvpGame("Você colidiu com a parede!");
+            return;
+        }
     }
+
     for (let i = 1; i < pvpLocalSnake.length; i++) {
         if (head.x === pvpLocalSnake[i].x && head.y === pvpLocalSnake[i].y) {
             endPvpGame("Você colidiu consigo mesmo!");
             return;
         }
     }
+
     pvpLocalSnake.unshift(head);
 
     if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
         pvpLocalScore++;
+        // ATUALIZA O PLACAR DO JOGADOR LOCAL NO HTML
+        document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
         generatePvpFood();
     } else {
         pvpLocalSnake.pop();
@@ -4827,7 +4964,11 @@ function generatePvpFood() {
     let validPosition = false;
     
     while (!validPosition) {
-        newFoodPosition = { x: randomTile(), y: randomTile() };
+        // Gera comida dentro dos limites do novo mapa retangular
+        newFoodPosition = { 
+            x: Math.floor(Math.random() * pvpTileCountX), 
+            y: Math.floor(Math.random() * pvpTileCountY) 
+        };
         validPosition = true;
         // Verifica se a nova comida não está na cobra do jogador local
         for (const segment of pvpLocalSnake) {
@@ -4838,45 +4979,6 @@ function generatePvpFood() {
         }
     }
     pvpLocalFood = newFoodPosition;
-}
-
-function updatePvpGame() {
-    if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) return;
-
-    const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
-    
-    const mapConfig = maps[pvpMap] || maps['normal'];
-
-    // Lógica de colisão ou "wrap-around" (atravessar parede)
-    if (mapConfig.wrapAround) {
-        if (head.x < 0) head.x = tileCount - 1;
-        else if (head.x >= tileCount) head.x = 0;
-        if (head.y < 0) head.y = tileCount - 1;
-        else if (head.y >= tileCount) head.y = 0;
-    } else {
-        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-            endPvpGame("Você colidiu com a parede!");
-            return;
-        }
-    }
-
-    // Colisão com o próprio corpo
-    for (let i = 1; i < pvpLocalSnake.length; i++) {
-        if (head.x === pvpLocalSnake[i].x && head.y === pvpLocalSnake[i].y) {
-            endPvpGame("Você colidiu consigo mesmo!");
-            return;
-        }
-    }
-
-    pvpLocalSnake.unshift(head);
-
-    // Lógica de crescimento ao comer
-    if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
-        pvpLocalScore++;
-        generatePvpFood(); // Gera nova comida
-    } else {
-        pvpLocalSnake.pop(); // Remove o último segmento se não comeu
-    }
 }
 
 function sendDataToFirebase() {
@@ -5486,7 +5588,6 @@ function drawPvpBoards() {
     // Chama a função unificada para a cobra local
     drawSnakeOnCanvas(pvpLocalCtx, pvpLocalSnake, pvpLocalSkin, pvpLocalDirection);
     drawPvpFood(pvpLocalCtx, pvpLocalFood);
-    drawPvpScore(pvpLocalCtx, pvpLocalScore, 'Sua Pontuação');
 
     // Desenha o tabuleiro do oponente
     pvpOpponentCtx.fillStyle = '#11131e';
@@ -5494,7 +5595,6 @@ function drawPvpBoards() {
     // Chama a função unificada para a cobra do oponente
     drawSnakeOnCanvas(pvpOpponentCtx, pvpOpponentSnake, pvpOpponentSkin, pvpOpponentDirection);
     drawPvpFood(pvpOpponentCtx, pvpOpponentFood);
-    drawPvpScore(pvpOpponentCtx, pvpOpponentScore, 'Pontuação do Oponente');
 }
 
 function drawPvpFood(ctx, food) {
@@ -5503,12 +5603,7 @@ function drawPvpFood(ctx, food) {
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 }
 
-function drawPvpScore(ctx, score, text) {
-    ctx.fillStyle = 'white';
-    ctx.font = '14px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`${text}: ${score}`, 10, 20);
-}
+
 // Adicione esta função ao seu script
 function queuePvpDirection(newDx, newDy) {
     // Só funciona se a partida PvP estiver rolando
@@ -5537,21 +5632,27 @@ function queuePvpDirection(newDx, newDy) {
     }
 }
 function endPvpGame(reason) {
-    if (!pvpGameRunning) return;
+    // A condição de saída agora também verifica a nova trava
+    if (!pvpGameRunning && !isCountdownActive) return;
+    
+    isCountdownActive = false; // DESATIVA A TRAVA
     pvpGameRunning = false;
     
+    // ... (o resto da sua função continua igual) ...
     clearInterval(pvpGameLoopInterval);
     clearInterval(pvpGameTimerInterval);
+    if (pvpCountdownInterval) {
+        clearInterval(pvpCountdownInterval);
+        pvpCountdownInterval = null;
+    }
     if(activeRoomListener) activeRoomListener();
     activeRoomListener = null;
-
     alert(`Fim de Jogo! ${reason}`);
-    
     if (localPlayerKey === 'player1' && activeRoomId) {
         db.collection('gameRooms').doc(activeRoomId).delete().catch(e => {});
     }
-    
     opponentOverlay.style.visibility = 'visible';
+    document.getElementById('pvpCountdown').style.display = 'none';
     waitTimeDisplay.textContent = "Tempo de Espera: --";
     searchMatchBtn.style.display = 'block';
     document.getElementById('pvpGameTimer').style.visibility = 'hidden';
