@@ -1429,7 +1429,21 @@
             <div id="sabotageControls">
                 </div>
         </div>
-
+        <div class="modal-overlay" id="pvpResultModal" style="z-index: 2800; display: none;">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+        <h2 id="pvpResultTitle" style="margin-top: 0;"></h2>
+        <p id="pvpResultMessage" style="font-size: 14px; opacity: 0.9; margin: 15px 0;"></p>
+        <p id="pvpResultCoins" style="font-size: 24px; font-weight: bold; color: #FFD700; min-height: 30px;"></p>
+        <button class="btn btn-primary" onclick="closePvpResultModal()" style="margin-top: 20px; width:100%;">OK</button>
+    </div>
+</div>
+<div class="modal-overlay" id="customAlertModal" style="z-index: 2900;">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+        <h3 id="customAlertTitle" style="margin-top: 0; margin-bottom: 15px;">Título do Aviso</h3>
+        <p id="customAlertMessage" style="font-size: 14px; opacity: 0.9; line-height: 1.5; margin: 15px 0;"></p>
+        <button class="btn btn-primary" onclick="closeCustomAlert()" style="margin-top: 20px; width:100%;">OK</button>
+    </div>
+</div>
         <div class="controls" id="pvpGameControls">
             <button class="control-btn up">↑</button>
             <button class="control-btn left">←</button>
@@ -1819,6 +1833,12 @@
         let f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
         return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
     }
+const pvpRewards = {
+    easy: 10,
+    normal: 25,
+    hard: 50,
+    insane: 100
+};
     const difficulties = {
         easy: { speed: 150, name_pt: 'Fácil', name_en: 'Easy', name_es: 'Fácil', description_pt: 'Velocidade lenta - Ideal para relaxar!', description_en: 'Slow speed - Ideal for relaxing!', description_es: 'Velocidad lenta - ¡Ideal para relajarse!', emoji: '🐌', points: 5 },
         normal: { speed: 120, name_pt: 'Normal', name_en: 'Normal', name_es: 'Normal', description_pt: 'Velocidade balanceada - A experiência clássica.', description_en: 'Balanced speed - The classic experience.', description_es: 'Velocidad equilibrada - La experiencia clásica.', emoji: '🐍', points: 10 },
@@ -2983,6 +3003,53 @@ async function handlePurchase(isPvpMenu = false) {
                 case 'down': queueDirection(0, 1); break;
                 case 'left': queueDirection(-1, 0); break;
                 case 'right': queueDirection(1, 0); break;
+            }
+        }
+    }, { passive: false });
+
+const pvpControlsContainer = document.getElementById('pvpGameControls');
+    pvpControlsContainer.addEventListener('touchstart', (e) => {
+        // Garante que a lógica só se aplique a toques no fundo do container, não nos botões
+        if (e.target !== pvpControlsContainer) {
+            return;
+        }
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
+
+        // Mapeia os botões direcionais do PvP
+        const pvpButtons = {
+            up: document.querySelector('#pvpGameControls .up'),
+            down: document.querySelector('#pvpGameControls .down'),
+            left: document.querySelector('#pvpGameControls .left'),
+            right: document.querySelector('#pvpGameControls .right')
+        };
+
+        let nearestButton = null;
+        let minDistance = Infinity;
+
+        // Calcula qual botão está mais próximo do local do toque
+        for (const [direction, buttonElement] of Object.entries(pvpButtons)) {
+            const rect = buttonElement.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const distanceSq = Math.pow(touchX - centerX, 2) + Math.pow(touchY - centerY, 2);
+
+            if (distanceSq < minDistance) {
+                minDistance = distanceSq;
+                nearestButton = direction;
+            }
+        }
+
+        // Aciona a função de movimento do PvP correspondente ao botão mais próximo
+        if (nearestButton) {
+            switch(nearestButton) {
+                case 'up': queuePvpDirection(0, -1); break;
+                case 'down': queuePvpDirection(0, 1); break;
+                case 'left': queuePvpDirection(-1, 0); break;
+                case 'right': queuePvpDirection(1, 0); break;
             }
         }
     }, { passive: false });
@@ -4220,8 +4287,23 @@ async function confirmQuitPvp() {
         quitConfirmTimeout = null;
     }
 
-    // A condição de saída agora verifica os dois estados, garantindo que funcione sempre.
-    if ((!pvpGameRunning && !isCountdownActive) || !activeRoomId) return;
+    // --- BLOCO DE SEGURANÇA ADICIONADO ---
+    // Verifica se temos todas as informações necessárias antes de prosseguir.
+    if (!auth.currentUser || !activeRoomId || !activeRoomData || !opponentPlayerKey || !activeRoomData[opponentPlayerKey] || !activeRoomData[opponentPlayerKey].id) {
+        console.error("Tentativa de desistir sem dados válidos.", {
+            hasUser: !!auth.currentUser,
+            hasRoomId: !!activeRoomId,
+            hasRoomData: !!activeRoomData,
+            hasOpponentKey: !!opponentPlayerKey
+        });
+        alert("Não foi possível processar a desistência. Verifique sua conexão e tente novamente.");
+        
+        // Reseta a interface para um estado seguro
+        document.getElementById('quitPvpConfirmModal').style.display = 'none';
+        isPvpPausedForQuit = false;
+        return; // Interrompe a execução da função aqui.
+    }
+    // --- FIM DO BLOCO DE SEGURANÇA ---
 
     try {
         const roomRef = db.collection('gameRooms').doc(activeRoomId);
@@ -4230,11 +4312,19 @@ async function confirmQuitPvp() {
             quitterId: auth.currentUser.uid
         });
 
-        // A função endPvpGame já foi corrigida para limpar tudo corretamente.
-        endPvpGame("Você saiu da partida.");
+        // O código abaixo agora é seguro, pois já foi verificado acima
+        const opponentId = activeRoomData[opponentPlayerKey].id;
+        const outcome = { 
+            winnerId: opponentId, 
+            loserId: auth.currentUser.uid, 
+            localPlayerId: auth.currentUser.uid 
+        };
+        
+        endPvpGame("Você saiu da partida.", outcome);
 
         document.getElementById('quitPvpConfirmModal').style.display = 'none';
-        document.getElementById('pvpPanel').style.display = 'none';
+        // A linha abaixo pode ser desnecessária, pois o resetPvpPanel já deve ser chamado
+        // document.getElementById('pvpPanel').style.display = 'none';
 
     } catch (error) {
         console.error("Erro ao desistir da partida:", error);
@@ -4788,38 +4878,65 @@ const waitTimeDisplay = document.getElementById('waitTimeDisplay');
 
 // Função principal chamada pelo botão "Procurar Partida"
 async function handleSearchMatch() {
-    const user = auth.currentUser;
-    // VERIFICAÇÃO DE SEGURANÇA ADICIONADA AQUI
-    if (!user || !currentUsername) {
-        alert("Seus dados ainda estão carregando. Por favor, aguarde um momento e tente novamente.");
+    // Pega o custo da partida com base na dificuldade selecionada
+    const requiredCoins = pvpRewards[pvpDifficulty];
+    
+    // Log no console para ajudar em futuras depurações
+    console.log(`--- Verificando Saldo PvP ---`);
+    console.log(`Saldo Atual (snakeCoins): ${snakeCoins} (Tipo: ${typeof snakeCoins})`);
+    console.log(`Dificuldade Selecionada (pvpDifficulty): '${pvpDifficulty}'`);
+    console.log(`Custo da Partida (requiredCoins): ${requiredCoins} (Tipo: ${typeof requiredCoins})`);
+    console.log(`-----------------------------`);
+
+    // Verificação de segurança para garantir que os dados de saldo e custo foram carregados corretamente
+    if (typeof snakeCoins !== 'number' || typeof requiredCoins !== 'number') {
+        showCustomAlert("Erro", "Não foi possível verificar seu saldo. Seus dados ainda podem estar carregando. Por favor, tente novamente em alguns segundos.");
+        console.error("Verificação de saldo falhou porque um dos valores não era um número.", { saldo: snakeCoins, custo: requiredCoins });
         return;
     }
-    if (isSearching) return; // Impede cliques duplos
 
+    // Verificação principal de saldo insuficiente
+    if (snakeCoins < requiredCoins) {
+        const title = "Saldo Insuficiente";
+        const message = `Você precisa de ${requiredCoins} SC 🪙 para entrar em uma partida na dificuldade '${pvpDifficulty}', mas você possui apenas ${snakeCoins} SC 🪙.`;
+        showCustomAlert(title, message);
+        return;
+    }
+    
+    // Verificações padrão de estado do jogo e do usuário
+    const user = auth.currentUser;
+    if (!user || !currentUsername) {
+        showCustomAlert("Aguarde", "Seus dados ainda estão carregando. Por favor, tente novamente em um momento.");
+        return;
+    }
+    if (isSearching) return;
+
+    // Inicia o processo de busca
     isSearching = true;
-    updateSearchUI(true); // Atualiza a interface para o estado "procurando"
+    updateSearchUI(true);
 
     try {
-        // Adiciona o jogador à fila no Firebase
         const queueRef = db.collection('matchmakingQueue').doc();
         userQueueDocId = queueRef.id;
 
+        // Adiciona o jogador à fila no Firebase
         await queueRef.set({
             userId: user.uid,
             username: currentUsername,
             difficulty: pvpDifficulty,
             map: pvpMap,
-            status: 'waiting', // Status inicial
+            skin: currentSkin,
+            status: 'waiting',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        // Começa a procurar por um oponente
-        await findOpponent(user.uid);
+        
+        findOpponent(user.uid);
+        listenForMyMatch(userQueueDocId);
 
     } catch (error) {
         console.error("Erro ao entrar na fila de matchmaking:", error);
-        alert("Ocorreu um erro ao procurar partida. Tente novamente.");
-        await cancelSearch(); // Limpa o estado se algo der errado
+        showCustomAlert("Erro de Conexão", "Ocorreu um erro ao procurar partida. Tente novamente.");
+        await cancelSearch();
     }
 }
 
@@ -4946,6 +5063,9 @@ let pvpGameTimerInterval = null;
 let activeRoomId = null;
 let localPlayerKey = null;
 let pvpCountdownInterval = null;
+let opponentPlayerKey = null;
+let activeRoomData = {};
+let isGameEnding = false;
 
 const pvpLocalCanvas = document.getElementById('localPlayerPvPCanvas');
 const pvpLocalCtx = pvpLocalCanvas.getContext('2d');
@@ -4985,6 +5105,34 @@ let quitConfirmTimeout = null; // Armazena o ID do timer de 4 segundos
 // --- Funções de Matchmaking ---
 
 async function handleSearchMatch() {
+    // PASSO 1: O "INVESTIGADOR" - Mostra os valores no console para diagnóstico.
+    const requiredCoins = pvpRewards[pvpDifficulty];
+    console.log(`--- Verificando Saldo PvP ---`);
+    console.log(`Saldo Atual (snakeCoins): ${snakeCoins} (Tipo: ${typeof snakeCoins})`);
+    console.log(`Dificuldade Selecionada (pvpDifficulty): '${pvpDifficulty}'`);
+    console.log(`Custo da Partida (requiredCoins): ${requiredCoins} (Tipo: ${typeof requiredCoins})`);
+    console.log(`-----------------------------`);
+
+    // PASSO 2: O "GUARDA-COSTAS" - Uma verificação mais robusta.
+    // Primeiro, garante que temos números válidos para comparar.
+    if (typeof snakeCoins !== 'number' || typeof requiredCoins !== 'number') {
+        alert(`Ocorreu um erro ao verificar seu saldo. Seus dados ainda podem estar carregando. Por favor, tente novamente em alguns segundos.`);
+        // Mostra um erro mais detalhado para nos ajudar a depurar
+        console.error("Verificação de saldo falhou porque um dos valores não era um número.", {
+            saldo: snakeCoins,
+            custo: requiredCoins
+        });
+        return; // Bloqueia a busca
+    }
+
+    // Se ambos são números, faz a comparação normal.
+    if (snakeCoins < requiredCoins) {
+        alert(`Você não tem moedas suficientes para entrar nesta partida.\n\nDificuldade ${pvpDifficulty}: Requer ${requiredCoins} SC 🪙\nVocê tem: ${snakeCoins} SC 🪙`);
+        return; // Bloqueia a busca.
+    }
+    // --- Fim do novo bloco de verificação ---
+
+    // O resto da função continua como estava...
     const user = auth.currentUser;
     if (!user || !currentUsername) {
         alert("Seus dados ainda estão carregando. Por favor, aguarde um momento e tente novamente.");
@@ -5121,71 +5269,83 @@ function matchFound(roomId) {
 
 function enterGameRoom(roomId) {
     const roomRef = db.collection('gameRooms').doc(roomId);
-    if (activeRoomListener) activeRoomListener();
+    if (activeRoomListener) activeRoomListener(); // Limpa qualquer listener antigo
 
-    // Variável de controle para evitar que a mesma sabotagem seja ativada múltiplas vezes
-    let lastSabotageTimestamp = null; 
+    let lastSabotageTimestamp = null;
 
     activeRoomListener = roomRef.onSnapshot(doc => {
-        // Se a sala for deletada (fim de jogo), encerra a partida localmente.
+        // Se a sala for deletada, o jogo já acabou. Apenas limpa a UI.
         if (!doc.exists) {
             endPvpGame("A partida foi encerrada.");
             return;
         }
 
         const roomData = doc.data();
-
-        // Se o oponente desistiu usando o botão de sair, encerra a partida.
-        if (roomData.status === 'opponent_left' && roomData.quitterId !== auth.currentUser.uid) {
-            endPvpGame("O oponente saiu da partida.");
-            return;
-        };
-
+        activeRoomData = roomData;
         const user = auth.currentUser;
+
+        if (!user) {
+            endPvpGame("Erro de autenticação.");
+            return;
+        }
+        
         const isPlayer1 = user.uid === roomData.player1.id;
         localPlayerKey = isPlayer1 ? 'player1' : 'player2';
-        const opponentPlayerKey = isPlayer1 ? 'player2' : 'player1';
-        const opponentPlayerData = roomData[opponentPlayerKey];        
-   
-        // Verifica o timestamp do oponente apenas se o jogo estiver em andamento.
-        if (pvpGameRunning && opponentPlayerData.lastUpdate) {
-            const lastUpdateMillis = opponentPlayerData.lastUpdate.toMillis();
-            const timeDifference = Date.now() - lastUpdateMillis;
-            const TIMEOUT_THRESHOLD = 5000; // 5 segundos de tolerância
+        opponentPlayerKey = isPlayer1 ? 'player2' : 'player1';
 
-            // Se o oponente não envia uma atualização por mais de 5s, considera desconectado.
-            if (timeDifference > TIMEOUT_THRESHOLD) {
-                endPvpGame("O adversário perdeu a conexão.");
-                return; // Para a execução para evitar outros processamentos.
+        // --- NOVO VIGIA PARA O FIM DA PARTIDA ---
+        // Esta é agora a verificação principal para o fim de jogo por tempo.
+        // Ambos os jogadores verão o status 'finished' e reagirão a ele.
+        if (roomData.status === 'finished' && roomData.result) {
+            const outcome = {
+                ...roomData.result, // Pega o resultado (winnerId, loserId, etc.) do Firebase
+                localPlayerId: user.uid // Adiciona o ID local para a lógica da UI
+            };
+            endPvpGame("O tempo acabou!", outcome);
+            return; // Encerra a execução do listener aqui.
+        }
+        
+        // A lógica abaixo continua a tratar de casos onde o jogo não termina por tempo.
+
+        // Cenário de desistência
+        if (roomData.status === 'opponent_left' && roomData.quitterId !== user.uid) {
+            const outcome = { winnerId: user.uid, loserId: roomData.quitterId, localPlayerId: user.uid };
+            endPvpGame("O oponente saiu da partida.", outcome);
+            return;
+        }
+
+        // Cenário de desconexão (timeout)
+        if (pvpGameRunning && roomData[opponentPlayerKey].lastUpdate) {
+            const timeDifference = Date.now() - roomData[opponentPlayerKey].lastUpdate.toMillis();
+            if (timeDifference > 5000) { // 5 segundos
+                const outcome = { winnerId: user.uid, loserId: roomData[opponentPlayerKey].id, localPlayerId: user.uid };
+                endPvpGame("O adversário perdeu a conexão.", outcome);
+                return;
             }
         }
         
-        // Bloco para processar sabotagens recebidas
+        // Recebimento de sabotagens
         if (roomData.lastSabotage) {
             const sabotageInfo = roomData.lastSabotage;
-            
-            // Só ativa se a sabotagem for para mim e se for uma nova sabotagem
             if (sabotageInfo.target === localPlayerKey && sabotageInfo.timestamp?.toMillis() !== lastSabotageTimestamp) {
-                lastSabotageTimestamp = sabotageInfo.timestamp?.toMillis(); 
+                lastSabotageTimestamp = sabotageInfo.timestamp?.toMillis();
                 handleIncomingSabotage(sabotageInfo.type);
             }
         }
-        
-        // Atualiza os dados locais com as informações do Firebase
-        const localPlayerData = roomData[localPlayerKey];
-        pvpOpponentSnake = opponentPlayerData.snake || [];
-        pvpOpponentScore = opponentPlayerData.score || 0;
-        pvpOpponentSkin = opponentPlayerData.skin;
-        pvpOpponentFood = opponentPlayerData.food || {};
-        pvpOpponentDirection = opponentPlayerData.direction || { dx: 0, dy: 0 };
-        pvpOpponentPoisonFood = opponentPlayerData.poisonFood || {};
-        document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${localPlayerData.score || 0}`;
-        document.getElementById('opponentScoreDisplay').textContent = `Oponente: ${opponentPlayerData.score || 0}`;
 
-        // Inicia a contagem regressiva se a sala estiver pronta e o jogo ainda não começou
+        // Sincronização do estado do oponente (posições, placar, etc.)
+        pvpOpponentSnake = roomData[opponentPlayerKey].snake || [];
+        pvpOpponentScore = roomData[opponentPlayerKey].score || 0;
+        pvpOpponentSkin = roomData[opponentPlayerKey].skin;
+        pvpOpponentFood = roomData[opponentPlayerKey].food || {};
+        pvpOpponentDirection = roomData[opponentPlayerKey].direction || { dx: 0, dy: 0 };
+        pvpOpponentPoisonFood = roomData[opponentPlayerKey].poisonFood || {};
+        document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${roomData[localPlayerKey].score || 0}`;
+        document.getElementById('opponentScoreDisplay').textContent = `Oponente: ${roomData[opponentPlayerKey].score || 0}`;
+
+        // Início da contagem regressiva
         if ((roomData.status === 'starting' || roomData.status === 'countdown') && !pvpGameRunning && !isCountdownActive) {
-            startCountdown(localPlayerData, opponentPlayerData); 
-            // Garante que o status da sala seja atualizado para 'countdown'
+            startCountdown(roomData[localPlayerKey], roomData[opponentPlayerKey]);
             if (localPlayerKey === 'player1') {
                 roomRef.update({ status: 'countdown' });
             }
@@ -5318,22 +5478,45 @@ function startPvpGame(localPlayerData, opponentPlayerData) {
     pvpLocalDirection = { dx: 0, dy: 0 };
     pvpLocalInputQueue = [];
     pvpLocalScore = 0;
+    
     const allSabotageKeys = Object.keys(sabotages);
-    // Embaralha as chaves para pegar 3 aleatórias
     const shuffledKeys = allSabotageKeys.sort(() => 0.5 - Math.random());
     localPlayerSabotages = shuffledKeys.slice(0, 3);
     displaySabotageButtons();
     
-    let gameTime = 90; // Tempo da partida em segundos (1:30)   
+    let gameTime = 90;
     const initialMinutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
     const initialSeconds = (gameTime % 60).toString().padStart(2, '0');
     timerElement.textContent = `${initialMinutes}:${initialSeconds}`;    
+    
     pvpGameTimerInterval = setInterval(() => {
         gameTime--;
         const minutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
         const seconds = (gameTime % 60).toString().padStart(2, '0');
         timerElement.textContent = `${minutes}:${seconds}`;
-        if (gameTime <= 0) endPvpGame("O tempo acabou!");
+        
+        // --- MUDANÇA PRINCIPAL AQUI ---
+        // Quando o tempo acaba, o 'player1' apenas atualiza a sala com o resultado.
+        if (gameTime <= 0 && localPlayerKey === 'player1') {
+            clearInterval(pvpGameTimerInterval); // Para o timer para não executar de novo
+
+            const opponentScore = pvpOpponentScore || 0;
+            let result = {};
+
+            if (pvpLocalScore > opponentScore) {
+                result = { winnerId: auth.currentUser.uid, loserId: activeRoomData[opponentPlayerKey].id };
+            } else if (opponentScore > pvpLocalScore) {
+                result = { winnerId: activeRoomData[opponentPlayerKey].id, loserId: auth.currentUser.uid };
+            } else {
+                result = { isDraw: true };
+            }
+
+            // Atualiza o status da sala no Firebase para 'finished' e adiciona o resultado.
+            db.collection('gameRooms').doc(activeRoomId).update({
+                status: 'finished',
+                result: result
+            }).catch(err => console.error("Erro ao finalizar a partida:", err));
+        }
     }, 1000);
 
     const gameSpeed = difficulties[pvpDifficulty] ? difficulties[pvpDifficulty].speed : 120;
@@ -6246,37 +6429,108 @@ function queuePvpDirection(newDx, newDy) {
         pvpLocalInputQueue.push({ dx: newDx, dy: newDy });
     }
 }
-function endPvpGame(reason) {
-    // Condição para garantir que a função não seja executada múltiplas vezes
-    if (!pvpGameRunning && !isCountdownActive) return;
+function showPvpResultModal(title, message, coinMessage, errorDetails = null) {
+    document.getElementById('pvpResultTitle').textContent = title;
 
+    let finalMessage = message;
+    // Se houver detalhes do erro, anexa à mensagem principal
+    if (errorDetails && errorDetails.message) {
+        finalMessage += `\n\nDetalhe do erro: ${errorDetails.message}`;
+    }
+
+    document.getElementById('pvpResultMessage').textContent = finalMessage;
+    document.getElementById('pvpResultCoins').textContent = coinMessage;
+    document.getElementById('pvpResultModal').style.display = 'flex';
+}
+
+function closePvpResultModal() {
+    document.getElementById('pvpResultModal').style.display = 'none';
+    // Apenas depois de fechar o resultado, o painel é resetado para um novo jogo.
+    if (localPlayerKey === 'player1' && activeRoomId) {
+        db.collection('gameRooms').doc(activeRoomId).delete().catch(e => {});
+    }
+    resetPvpPanel();
+}
+async function endPvpGame(reason, outcome = {}) {
+    // 1. O "Cadeado de Ferro": Impede que a função seja executada múltiplas vezes no mesmo cliente.
+    if (isGameEnding) {
+        console.log("endPvpGame bloqueada: processo de encerramento já em andamento.");
+        return; 
+    }
+    isGameEnding = true; // Tranca o cadeado.
+
+    console.log("endPvpGame chamado com:", { reason, outcome });
+
+    // 2. Limpeza Imediata: Para todos os processos do jogo.
     isCountdownActive = false;
     pvpGameRunning = false;
-
-    // 1. Para todos os timers e listeners (escutas) do jogo
     clearInterval(pvpGameLoopInterval);
     clearInterval(pvpGameTimerInterval);
-    if (pvpCountdownInterval) {
-        clearInterval(pvpCountdownInterval);
-        pvpCountdownInterval = null;
-    }
-    if (activeRoomListener) {
-        activeRoomListener(); // Desconecta o listener do Firebase
-        activeRoomListener = null;
-    }
+    if (pvpCountdownInterval) clearInterval(pvpCountdownInterval);
+    if (activeRoomListener) activeRoomListener(); // Desativa o "vigia" da sala.
+    pvpCountdownInterval = null;
+    activeRoomListener = null;
 
-    // 2. Informa ao jogador o motivo do fim da partida
-    alert(`Fim de Jogo! ${reason}`);
+    const coinChange = pvpRewards[pvpDifficulty] || 25;
+    let title, message, coinMessage = '';
 
-    // 3. Se for o player 1, deleta a sala do banco de dados para limpeza
-    if (localPlayerKey === 'player1' && activeRoomId) {
-        db.collection('gameRooms').doc(activeRoomId).delete().catch(e => {
-            // Ignora erros caso a sala já tenha sido deletada
-        });
+    try {
+        // 3. Lógica Principal: Executada por ambos os jogadores.
+        if (outcome.winnerId && outcome.loserId && outcome.localPlayerId) {
+            
+            // 4. AÇÃO RESTRITA AO PLAYER 1: Apenas o "juiz" executa a transação de moedas.
+            if (localPlayerKey === 'player1') {
+                const winnerRef = db.collection('users').doc(outcome.winnerId);
+                const loserRef = db.collection('users').doc(outcome.loserId);
+                
+                await db.runTransaction(async (transaction) => {
+                    const winnerDoc = await transaction.get(winnerRef);
+                    const loserDoc = await transaction.get(loserRef);
+                    if (!winnerDoc.exists || !loserDoc.exists) throw new Error("Um dos jogadores não foi encontrado no banco de dados.");
+                    
+                    const winnerData = winnerDoc.data();
+                    const loserData = loserDoc.data();
+                    const newWinnerCoins = (winnerData.snakeCoins || 0) + coinChange;
+                    const newLoserCoins = Math.max(0, (loserData.snakeCoins || 0) - coinChange);
+                    
+                    transaction.update(winnerRef, { snakeCoins: newWinnerCoins });
+                    transaction.update(loserRef, { snakeCoins: newLoserCoins });
+                });
+            }
+
+            // 5. Lógica da Interface: Executada por ambos para mostrar o resultado correto.
+            if (outcome.localPlayerId === outcome.winnerId) {
+                title = "🎉 Você Venceu! 🎉";
+                message = reason;
+                coinMessage = `+${coinChange} 🪙`;
+            } else {
+                title = "😕 Fim de Jogo 😕";
+                message = reason;
+                coinMessage = `-${coinChange} 🪙`;
+            }
+
+        } else if (outcome.isDraw) {
+            title = "Empate!";
+            message = "A partida terminou em empate.";
+            coinMessage = `±0 🪙`;
+        } else {
+            // Caso a função seja chamada sem um resultado (ex: sala deletada), apenas mostra a razão.
+            title = "Fim de Jogo";
+            message = reason;
+        }
+        
+        showPvpResultModal(title, message, coinMessage);
+
+    } catch (error) {
+        // Bloco de erro com diagnóstico na tela (para o caso de algo ainda falhar).
+        console.error("Erro detalhado ao processar recompensas:", error);
+        showPvpResultModal(
+            "Ocorreu um Erro", 
+            `Fim de Jogo! ${reason}.`, 
+            "Não foi possível atualizar as moedas.",
+            error
+        );
     }
-
-    // 4. Chama a função central de reset para limpar a interface e o estado do jogo
-    resetPvpPanel();
 }
 function resetPvpPanel() {
     // --- Redefine os Elementos da Interface ---
@@ -6325,6 +6579,18 @@ function resetPvpPanel() {
     pvpLocalObstacles = [];
     localPlayerSabotages = [];
     document.getElementById('sabotageControls').innerHTML = '';
+
+    // ATUALIZAÇÃO: "DESTRAVA" O CADEADO NO FINAL DO PROCESSO DE RESET
+    isGameEnding = false; 
+}
+function showCustomAlert(title, message) {
+    document.getElementById('customAlertTitle').textContent = title;
+    document.getElementById('customAlertMessage').textContent = message;
+    document.getElementById('customAlertModal').style.display = 'flex';
+}
+
+function closeCustomAlert() {
+    document.getElementById('customAlertModal').style.display = 'none';
 }
 function processPvpInput() {
     // Se o jogo não estiver rodando ou não houver comandos na fila, não faz nada.
