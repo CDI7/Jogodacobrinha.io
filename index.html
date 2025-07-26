@@ -71,7 +71,272 @@
     align-items: center;
     transition: all 0.2s ease;
 }
+#sabotageControls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  justify-content: flex-start;
+  min-height: 50px; /* <<-- ADICIONE ESTA LINHA */
+}
+.power-bar-container.bar-is-full .power-bar-bg {
+  /* Aplica a animação à barra quando o container tiver a classe .bar-is-full */
+  animation: pulseBar 2s ease-in-out infinite;
+}
 
+
+/* Encontre sua regra .sabotage-btn.ready e ADICIONE a linha 'animation' */
+.sabotage-btn.ready {
+  background-color: rgba(40, 40, 40, 0.85); /* Fundo cinza escuro e semi-transparente */
+  color: white;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+  border-color: #ffc107;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+  animation: pulseButton 1.5s ease-in-out infinite; /* A animação de pulso continua! */
+}
+/* Um container para os botões, para mantê-los centralizados */
+.sabotage-buttons-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.power-bar-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    z-index: 2; /* Garante que o texto fique na frente */
+}
+.power-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60%; /* Ocupa uma boa parte do espaço */
+    margin: 0 10px;
+}
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+.screen-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+#localPlayerPvPCanvas.slowness-effect {
+    filter: grayscale(80%);
+    transition: filter 0.5s ease-in-out;
+}
+@keyframes zoom-effect {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.4); }
+    35% { transform: scale(0.9); }
+    55% { transform: scale(1.2); }
+    75% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+}
+
+#localPlayerPvPCanvas.chaotic-zoom {
+    animation: zoom-effect 0.8s ease-in-out infinite;
+}
+#opponent-smoke-overlay {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+    background: radial-gradient(circle, transparent 25%, rgba(40, 40, 40, 0.95) 70%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20; /* Garante que fique sobre o canvas do oponente */
+    transition: opacity 0.5s ease-in-out;
+    border-radius: 10px;
+}
+@keyframes food-panic-pulse {
+    0% {
+        border-color: #d63031;
+    }
+    50% {
+        border-color: #e17055;
+    }
+    100% {
+        border-color: #d63031;
+    }
+}
+
+#localPlayerPvPCanvas.fugitive-food-effect {
+    animation: food-panic-pulse 0.5s infinite;
+}
+#sabotage-warning-timer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 70px;
+    font-weight: 900;
+    color: #d63031; /* Um vermelho de alerta */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    z-index: 150; /* Garante que fique sobre o canvas */
+    pointer-events: none; /* Impede que bloqueie cliques/toques */
+    display: none; /* Começa escondido */
+    animation: countdown-pulse 1s infinite; /* Usa a mesma animação da contagem inicial */
+}
+@keyframes magnetic-pulse {
+    0% { box-shadow: 0 0 10px #4a72ff; }
+    50% { box-shadow: 0 0 25px #8e44ad, inset 0 0 15px #8e44ad; }
+    100% { box-shadow: 0 0 10px #4a72ff; }
+}
+
+#localPlayerPvPCanvas.magnetic-effect {
+    animation: magnetic-pulse 1.5s infinite;
+}
+Entendido! A referência anterior era mais "borbulhante", e esta nova imagem é muito mais "rochosa e fluida", com veios, texturas e uma direção de movimento clara. É um ótimo direcionamento de arte!
+
+Para alcançar esse efeito, vamos abandonar a técnica de filter que cria as bolhas e adotar uma nova estratégia: sobreposição de múltiplos gradientes lineares com animações em velocidades e ângulos diferentes. Isso criará a ilusão de camadas de lava fluindo e se solidificando.
+
+Esta é uma técnica puramente de CSS e o resultado ficará bem mais próximo da sua nova referência.
+
+Código CSS: Novo Efeito "Rio de Lava"
+Por favor, substitua todo o bloco de CSS referente à barra de progresso (@keyframes, .power-bar-bg, .power-bar-fill e seu pseudo-elemento ::after) por este novo código. Não há nenhuma alteração necessária no JavaScript ou HTML.
+
+CSS
+
+/* ================================================= */
+/* NOVO CÓDIGO DA BARRA "RIO DE LAVA"       */
+/* ================================================= */
+
+/* Animação para a base fluida da lava (camada de baixo) */
+@keyframes flowLavaBase {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Animação para os veios e texturas (camada de cima) - mais rápida */
+@keyframes flowLavaStreaks {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+
+/* O container da barra. Removemos os filtros. */
+.power-bar-bg {
+  width: 250px; /* Tamanho fixo para dar espaço aos botões */
+  height: 25px;
+  background-color: #000;
+  border: 2px solid #555;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.7);
+}
+
+/* A barra de preenchimento. Agora ela contém a camada principal da lava. */
+.power-bar-fill {
+  height: 100%;
+  width: 0%; /* Controlado pelo JS */
+  position: relative;
+  transition: width 0.3s ease-in-out;
+  
+  /* Aumentamos o tamanho do fundo para a animação ser suave */
+  background-size: 400% 400%;
+
+  /* Camada 1: O fluxo principal de cores, do laranja ao vermelho e roxo. */
+  background-image: 
+    linear-gradient(
+      135deg, 
+      #ff6f00 15%, /* Laranja intenso */
+      #c62828 40%, /* Vermelho fogo */
+      #581169 70%, /* Roxo escuro */
+      #c62828 85%, /* Vermelho fogo novamente */
+      #ff6f00 100% /* Laranja intenso nas bordas */
+    );
+  
+  /* Animação lenta para o fluxo principal */
+  animation: flowLavaBase 15s linear infinite;
+}
+
+/* O pseudo-elemento agora cria os veios e as rochas escuras. */
+.power-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  background-size: 400% 400%;
+  
+  /* Camada 2 e 3: Sobreposição de veios escuros e brilhantes. */
+  background-image: 
+    /* Veios finos e brilhantes de lava quente (amarelo) */
+    repeating-linear-gradient(
+      145deg,
+      transparent 0, transparent 15px,
+      #ffee58 16px, #ffee58 17px, /* Linha fina amarela */
+      transparent 18px, transparent 35px
+    ),
+    /* Veios mais grossos de rocha resfriando (preto/roxo) */
+    repeating-linear-gradient(
+      135deg,
+      transparent 0, transparent 5px,
+      rgba(10, 0, 20, 0.8) 6px, rgba(10, 0, 20, 0.8) 10px, /* Faixa escura */
+      transparent 11px, transparent 20px
+    );
+    
+  /* Animação mais rápida para os veios, criando um efeito de paralaxe */
+  animation: flowLavaStreaks 8s linear infinite;
+  
+  /* Mistura as camadas de veios com as cores de baixo */
+  mix-blend-mode: overlay;
+}
+.power-bar-overlay {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px; /* Para acompanhar as bordas da barra */
+  
+  /* Começa transparente, o JS vai mudar a cor */
+  background-color: transparent; 
+  
+  /* Transição suave para quando a cor mudar */
+  transition: background-color 0.3s ease-in-out;
+  
+  /* Garante que esta camada fique por cima da lava */
+  z-index: 2;
+}
+/* --- EFEITO DE "PRONTO" PARA OS BOTÕES DE SABOTAGEM --- */
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(74, 114, 255, 0.5), 0 0 10px rgba(74, 114, 255, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(74, 114, 255, 0.8), 0 0 25px rgba(74, 114, 255, 0.7);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(74, 114, 255, 0.5), 0 0 10px rgba(74, 114, 255, 0.4);
+        transform: scale(1);
+    }
+}
+
+/* Classe aplicada aos botões quando a sabotagem está pronta para uso */
+.sabotage-btn.ready {
+    border-color: #4a72ff;
+    animation: pulse-glow 2s infinite; /* A animação de brilho pulsante */
+}
 .settings-btn-pvp:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: rotate(45deg);
@@ -1107,11 +1372,11 @@
     text-align: center;
 }
 #sabotageControls {
-    display: flex;
-    justify-content: flex-end; /* Alinha à direita */
-    gap: 8px;
-    padding: 5px 10px 0 0; /* Espaçamento */
-    height: 40px; /* Altura fixa para evitar que o layout pule */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  justify-content: flex-start; /* <<-- ADICIONE ESTA LINHA */
 }
 
 .sabotage-btn {
@@ -1205,6 +1470,50 @@
 @keyframes countdown-pulse {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+@media (max-width: 600px) {
+  /* Diminui a barra de progresso */
+  .power-bar-bg {
+    width: 150px; /* Reduzimos o tamanho fixo */
+  }
+
+  /* Diminui os botões de sabotagem */
+  .sabotage-btn {
+    padding: 8px; /* Reduz o espaçamento interno */
+    font-size: 18px; /* Reduz o tamanho do ícone (se for fonte) */
+  }
+
+  /* Diminui o espaço entre os elementos */
+  #sabotageControls {
+    gap: 8px;
+  }
+}
+@keyframes pulseBar {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.7);
+  }
+  50% {
+    transform: scale(1.02); /* Aumenta levemente o tamanho */
+    box-shadow: 0 0 20px 5px rgba(255, 140, 0, 0.8); /* Aumenta o brilho */
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.7);
+  }
+}
+
+/* Animação mais sutil para os BOTÕES */
+@keyframes pulseButton {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05); /* Aumenta um pouco mais para chamar a atenção */
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
 </head>
@@ -1302,8 +1611,8 @@
             </div>
             <div style="overflow-x: auto;">
                 <table class="admin-table" id="leaderboardTable">
-                     <thead><tr><th>#</th><th>Nome</th><th>Pontuação</th><th>Comidas</th><th>Dificuldade</th><th>Data</th><th>Ação</th></tr></thead>
-                    <tbody></tbody>
+    <thead><tr><th>#</th><th>Nome</th><th>Pontuação</th><th>Comidas</th><th>Dificuldade</th><th>Data</th><th>Colisões</th><th>Ação</th></tr></thead>
+    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -1405,7 +1714,7 @@
        <div class="opponent-view">
             <div id="opponentScoreDisplay" class="pvp-score-display">Oponente: 0</div>
             <canvas id="opponentCanvas" width="400" height="256"></canvas>
-            <div class="opponent-overlay">
+            <div id="opponent-smoke-overlay"></div> <div class="opponent-overlay">
                 <div id="waitTimeDisplay" class="wait-time-display">
                     Tempo de Espera: --
                 </div>
@@ -1420,15 +1729,14 @@
         </div>
         
         <div class="local-player-view">
-            <canvas id="localPlayerPvPCanvas" width="400" height="256"></canvas>
-            
-            <div id="sabotage-feedback"></div>
-            <div id="smoke-overlay"></div>
-
-            <div id="localScoreDisplay" class="pvp-score-display">Sua Pontuação: 0</div>
-            <div id="sabotageControls">
-                </div>
+    <canvas id="localPlayerPvPCanvas" width="400" height="256"></canvas>
+    
+    <div id="sabotage-feedback"></div>
+    <div id="sabotage-warning-timer"></div> <div id="smoke-overlay"></div>      
+    <div id="localScoreDisplay" class="pvp-score-display">Sua Pontuação: 0</div>
+    <div id="sabotageControls">
         </div>
+</div>
         <div class="modal-overlay" id="pvpResultModal" style="z-index: 2800; display: none;">
     <div class="modal-content" style="max-width: 340px; text-align: center;">
         <h2 id="pvpResultTitle" style="margin-top: 0;"></h2>
@@ -1852,21 +2160,21 @@ const pvpRewards = {
         'no-walls': { name_pt: 'Sem Paredes', name_en: 'No Walls', name_es: 'Sin Paredes', description_pt: 'Atravesse as paredes e reapareça do outro lado!', description_en: 'Pass through walls and reappear on the other side!', description_es: '¡Atraviesa las paredes y reaparece del otro lado!', wrapAround: true }
     };
 const sabotages = {
-        'addObstacles': { 
-            name_pt: 'Obstáculos', 
-            description_pt: 'Cria 8 barreiras no campo inimigo que duram 10 segundos ou até colidir.',
-            icon: '⚠️',
-            duration: 10000 // 1O segundos ou até colidir
-        },
+        'minefield': {
+        name_pt: 'Campo Minado',
+        description_pt: 'Por 10 segundos, 8 minas explosivas aparecem no campo do oponente. Colidir com uma mina remove 2 pontos e treme a tela.',
+        icon: '💣',
+        duration: 10000 
+    },
         'invertControls': {
             name_pt: 'Controles Invertidos',
-            description_pt: 'Inverte os controles do oponente por 4 segundos.',
+            description_pt: 'Inicia um cronômetro de aviso na tela do oponente. Após a contagem, os controles do oponente são invertidos por 3 segundos.',
             icon: '⏪',
             duration: 3000 // 3 segundos
         },
         'smokeScreen': {
             name_pt: 'Cortina de Fumaça',
-            description_pt: 'Cobre parte da tela do oponente com fumaça.',
+            description_pt: 'Cobre parte da tela do oponente com fumaça por 5 segundos.',
             icon: '💨',
             duration: 5000 // 5 segundos
         },
@@ -1882,13 +2190,43 @@ const sabotages = {
             icon: '🚀',
             duration: 3000 // 3 segundos
         },
-        'foodRepellent': {
-            name_pt: 'Repelente de Comida',
-            description_pt: 'As comidas na tela do oponente fogem dele por 5 segundos.',
-            icon: '🧲',
-            duration: 5000 // 5 segundos
-        }
-    };
+        'fugitiveFood': {
+        name_pt: 'Comida Fujitiva',
+        description_pt: 'Por 8 segundos, a comida na tela do oponente muda de lugar para uma nova posição aleatória a cada 2 segundos.',
+        icon: '🏃',
+        duration: 8000
+    },
+        'magneticField': {
+        name_pt: 'Campo Magnético',
+        description_pt: 'Cria um "puxão" magnético em uma direção aleatória por 4 segundos, dificultando o controle.',
+        icon: '🧲',
+        duration: 4000
+    },
+    'slowness': {
+        name_pt: 'Lentidão',
+        description_pt: 'Reduz drasticamente a velocidade da cobra inimiga por 5 segundos.',
+        icon: '늪', // Ícone de pântano
+        duration: 5000
+    },
+    'foodMirage': {
+        name_pt: 'Miragem de Comida',
+        description_pt: 'Cria 3 comidas falsas no campo inimigo por 8 segundos. Ao comer a verdadeira, elas desaparecem.',
+        icon: '✨',
+        duration: 8000
+    },
+    'mandatoryShare': {
+        name_pt: 'Partilha Obrigatória',
+        description_pt: 'A próxima vez que seu oponente coletar uma comida, uma comida bônus aparecerá na sua tela na mesma posição. Dura por 3 comidas ou 10 segundos.',
+        icon: '🤝',
+        duration: 10000 // 10 segundos de duração máxima
+    },
+    'chaoticZoom': {
+        name_pt: 'Zoom Caótico',
+        description_pt: 'A câmera do oponente dá zoom para dentro e para fora rapidamente por 4 segundos.',
+        icon: '🔍',
+        duration: 4000
+    }
+};
     let currentMap = 'normal';
     const gridSize = 16;
     const tileCount = Math.floor(canvas.width / gridSize);
@@ -1898,6 +2236,7 @@ const sabotages = {
     let dy = 0;
     let score = 0;
     let gameRunning = false;
+    let collisionsThisGame = 0;
     let gameStarted = false;
     let gamePaused = false;
     let inputQueue = [];
@@ -2572,8 +2911,8 @@ function drawGame() {
         if (maps[currentMap].wrapAround) {
             if (head.x < 0) head.x = tileCount - 1; else if (head.x >= tileCount) head.x = 0;
             if (head.y < 0) head.y = tileCount - 1; else if (head.y >= tileCount) head.y = 0;
-        } else { if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) { gameOver(); return; } }
-        for (let segment of snake) { if (head.x === segment.x && head.y === segment.y) { gameOver(); return; } }
+        } else { if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) { collisionsThisGame++; gameOver(); return; } }
+        for (let segment of snake) { if (head.x === segment.x && head.y === segment.y) { collisionsThisGame++; gameOver(); return; } }
         snake.unshift(head);
         if (head.x === food.x && head.y === food.y) {
             foodEatenThisGame++;
@@ -2689,7 +3028,7 @@ async function handlePurchase(isPvpMenu = false) {
         if (!user || !currentUsername) return;
         try {
             const name = currentUsername.substring(0, 15).toUpperCase();
-            const newEntry = { userId: user.uid, name, score, difficulty: currentDifficulty, map: currentMap, foodCount: foodEatenThisGame, skin: currentSkin, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+            const newEntry = { userId: user.uid, name, score, difficulty: currentDifficulty, map: currentMap, foodCount: foodEatenThisGame, collisions: collisionsThisGame, skin: currentSkin, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
             await db.collection('scores').add(newEntry);
             await updateLeaderboardDisplay();
         } catch (error) {
@@ -2725,6 +3064,7 @@ async function handlePurchase(isPvpMenu = false) {
     function startGame() {
         enterFullScreen(document.documentElement);
         inputQueue = [];
+        collisionsThisGame = 0;
         snake = [{x: Math.floor(tileCount/2), y: Math.floor(tileCount/2)}]; dx = 0; dy = 0; score = 0; scoreElement.textContent = score;
         coinsEarnedThisGame = 0;
         foodEatenThisGame = 0;
@@ -2809,6 +3149,7 @@ async function handlePurchase(isPvpMenu = false) {
                 map: currentMap,
                 skin: currentSkin,
                 foodCount: foodEatenThisGame,
+                collisions: collisionsThisGame,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
@@ -2844,6 +3185,7 @@ async function handlePurchase(isPvpMenu = false) {
                 map: currentMap,
                 foodCount: foodEatenThisGame,
                 skin: currentSkin,
+                collisions: collisionsThisGame,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
@@ -2919,6 +3261,7 @@ async function handlePurchase(isPvpMenu = false) {
             map: currentMap,
             skin: currentSkin,
             foodCount: foodEatenThisGame,
+            collisions: collisionsThisGame,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
     } catch (error) {
@@ -3937,47 +4280,56 @@ async function loadGameAnalytics() {
 
     // ABA 4: Moderação do Leaderboard
     async function loadFullLeaderboard(map) {
-    const tableBody = document.querySelector('#leaderboardTable tbody');
-    // ATUALIZE O COLSPAN PARA 7 (por causa da nova coluna)
-    tableBody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>'; 
-    const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
-    try {
-        const snapshot = await db.collection('scores').where('map', '==', map).orderBy('score', 'desc').limit(50).get();
-        if (snapshot.empty) {
-            // ATUALIZE O COLSPAN PARA 7
-            tableBody.innerHTML = `<tr><td colspan="7">Nenhuma pontuação para o mapa "${map}".</td></tr>`;
-            return;
-        }
-        tableBody.innerHTML = '';
-        let rank = 1;
-        snapshot.forEach(doc => {
-            const score = doc.data();
-            const date = score.timestamp ? score.timestamp.toDate().toLocaleDateString('pt-BR') : 'N/A';
+        const tableBody = document.querySelector('#leaderboardTable tbody');
+        // O colspan foi atualizado para 8 para incluir a nova coluna "Colisões"
+        tableBody.innerHTML = '<tr><td colspan="8">Carregando...</td></tr>'; 
+        const difficultyEmojis = { easy: '🐌', normal: '🐍', hard: '🚀', insane: '💀' };
+        
+        try {
+            const snapshot = await db.collection('scores').where('map', '==', map).orderBy('score', 'desc').limit(50).get();
             
-            // Pega a contagem de comida. Se o recorde for antigo e não tiver o dado, exibe '?'
-            const foodCount = score.foodCount || '?';
+            if (snapshot.empty) {
+                // Colspan também atualizado aqui
+                tableBody.innerHTML = `<tr><td colspan="8">Nenhuma pontuação para o mapa "${map}".</td></tr>`;
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            let rank = 1;
+            
+            snapshot.forEach(doc => {
+                const score = doc.data();
+                const date = score.timestamp ? score.timestamp.toDate().toLocaleDateString('pt-BR') : 'N/A';
+                
+                // Pega a contagem de comidas (mantido como estava)
+                const foodCount = score.foodCount || '?';
+                
+                // --- NOVA LÓGICA ---
+                // Pega a contagem de colisões. Se o recorde for antigo e não tiver o dado, exibe '?'
+                const collisionCount = score.collisions !== undefined ? score.collisions : '?';
 
-            // ATUALIZE A LINHA DA TABELA PARA INCLUIR A NOVA CÉLULA
-            const row = `
-                <tr>
-                    <td>${rank++}</td>
-                    <td>${score.name}</td>
-                    <td>${score.score}</td>
-                    <td>${foodCount}</td> <td>${difficultyEmojis[score.difficulty] || ''}</td>
-                    <td>${date}</td>
-                    <td>
-                        <button class="btn btn-danger" onclick="deleteScore('${doc.id}', '${map}')">Excluir</button>
-                    </td>
-                </tr>
-            `;
-            tableBody.innerHTML += row;
-        });
-    } catch(error) {
-        console.error("Erro ao carregar leaderboard:", error);
-        // ATUALIZE O COLSPAN PARA 7
-        tableBody.innerHTML = '<tr><td colspan="7">Erro ao carregar pontuações.</td></tr>';
+                // A linha da tabela foi atualizada para incluir a nova célula de colisões
+                const row = `
+                    <tr>
+                        <td>${rank++}</td>
+                        <td>${score.name}</td>
+                        <td>${score.score}</td>
+                        <td>${foodCount}</td>
+                        <td>${difficultyEmojis[score.difficulty] || ''}</td>
+                        <td>${date}</td>
+                        <td>${collisionCount}</td> <td>
+                            <button class="btn btn-danger" onclick="deleteScore('${doc.id}', '${map}')">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch(error) {
+            console.error("Erro ao carregar leaderboard completo:", error);
+            // Colspan atualizado na mensagem de erro
+            tableBody.innerHTML = '<tr><td colspan="8">Erro ao carregar pontuações.</td></tr>';
+        }
     }
-}
 
     async function deleteScore(scoreId, map) {
         if(confirm("Tem certeza que deseja excluir esta pontuação? A ação não pode ser desfeita.")) {
@@ -5057,6 +5409,9 @@ function updateSearchUI(isSearchingUpdate) {
 // ==================================================================
 
 // --- Variáveis de estado do Jogo PvP ---
+let isMagneticFieldActive = false;
+let magneticFieldDirection = null;
+let magneticFieldCounter = 0; // Para controlar a frequência do "puxão"
 let activeRoomListener = null;
 let pvpGameLoopInterval = null;
 let pvpGameTimerInterval = null;
@@ -5066,6 +5421,12 @@ let pvpCountdownInterval = null;
 let opponentPlayerKey = null;
 let activeRoomData = {};
 let isGameEnding = false;
+let isSlowed = false;
+let isMirageActive = false;
+let pvpLocalMirageFoods = []; 
+let isWaitingForMandatoryShare = false;
+let mandatoryShareTimeout = null;
+let mandatoryShareUses = 0;
 
 const pvpLocalCanvas = document.getElementById('localPlayerPvPCanvas');
 const pvpLocalCtx = pvpLocalCanvas.getContext('2d');
@@ -5082,15 +5443,23 @@ let pvpGameRunning = false;
 let pvpLocalSkin = 'default';
 let pvpLocalFood = {};
 let isCountdownActive = false;
-let localPlayerSabotages = [];
 let controlsInverted = false;
 let pvpLocalObstacles = [];
 let isAccelerated = false;
 let pvpLocalPoisonFood = {};
 let isPoisonFoodActive = false;
 let poisonFoodEats = 0;
-let isFoodRepellentActive = false;
+let fugitiveFoodInterval = null;
+let isMandatoryShareActive = false;
+let mandatoryShareFoodCounter = 0;
+let pvpLocalBonusFoods = [];
 let originalPvpSpeed = 0;
+let sabotagePool = [];              // "Baralho" de sabotagens disponíveis na partida
+let currentSabotageChoices = [];    // As duas opções apresentadas ao jogador
+let isChoosingSabotage = false;     // Flag para saber se estamos na tela de escolha          
+let isSabotageOnCooldown = false;       
+let sabotageFoodCounter = 0;            
+const SABOTAGE_FOOD_REQUIREMENT = 4;
 
 // Estado do oponente
 let pvpOpponentSnake = [];
@@ -5100,6 +5469,7 @@ let pvpOpponentFood = {};
 let pvpOpponentDirection = { dx: 0, dy: 0 };
 let isPvpPausedForQuit = false; // Controla se o jogo está pausado para a decisão
 let quitConfirmTimeout = null; // Armazena o ID do timer de 4 segundos
+let opponentObstacles = [];
 
 
 // --- Funções de Matchmaking ---
@@ -5269,12 +5639,11 @@ function matchFound(roomId) {
 
 function enterGameRoom(roomId) {
     const roomRef = db.collection('gameRooms').doc(roomId);
-    if (activeRoomListener) activeRoomListener(); // Limpa qualquer listener antigo
+    if (activeRoomListener) activeRoomListener();
 
     let lastSabotageTimestamp = null;
 
     activeRoomListener = roomRef.onSnapshot(doc => {
-        // Se a sala for deletada, o jogo já acabou. Apenas limpa a UI.
         if (!doc.exists) {
             endPvpGame("A partida foi encerrada.");
             return;
@@ -5288,52 +5657,60 @@ function enterGameRoom(roomId) {
             endPvpGame("Erro de autenticação.");
             return;
         }
-        
+
         const isPlayer1 = user.uid === roomData.player1.id;
         localPlayerKey = isPlayer1 ? 'player1' : 'player2';
         opponentPlayerKey = isPlayer1 ? 'player2' : 'player1';
 
-        // --- NOVO VIGIA PARA O FIM DA PARTIDA ---
-        // Esta é agora a verificação principal para o fim de jogo por tempo.
-        // Ambos os jogadores verão o status 'finished' e reagirão a ele.
         if (roomData.status === 'finished' && roomData.result) {
-            const outcome = {
-                ...roomData.result, // Pega o resultado (winnerId, loserId, etc.) do Firebase
-                localPlayerId: user.uid // Adiciona o ID local para a lógica da UI
-            };
+            const outcome = { ...roomData.result, localPlayerId: user.uid };
             endPvpGame("O tempo acabou!", outcome);
-            return; // Encerra a execução do listener aqui.
+            return;
         }
-        
-        // A lógica abaixo continua a tratar de casos onde o jogo não termina por tempo.
 
-        // Cenário de desistência
         if (roomData.status === 'opponent_left' && roomData.quitterId !== user.uid) {
             const outcome = { winnerId: user.uid, loserId: roomData.quitterId, localPlayerId: user.uid };
             endPvpGame("O oponente saiu da partida.", outcome);
             return;
         }
 
-        // Cenário de desconexão (timeout)
         if (pvpGameRunning && roomData[opponentPlayerKey].lastUpdate) {
             const timeDifference = Date.now() - roomData[opponentPlayerKey].lastUpdate.toMillis();
-            if (timeDifference > 5000) { // 5 segundos
+            if (timeDifference > 5000) {
                 const outcome = { winnerId: user.uid, loserId: roomData[opponentPlayerKey].id, localPlayerId: user.uid };
                 endPvpGame("O adversário perdeu a conexão.", outcome);
                 return;
             }
         }
-        
-        // Recebimento de sabotagens
+
+        // --- LÓGICA DE SABOTAGEM E RECOMPENSA CORRIGIDA ---
         if (roomData.lastSabotage) {
             const sabotageInfo = roomData.lastSabotage;
+
+            // 1. Recebe uma nova sabotagem direcionada a você
             if (sabotageInfo.target === localPlayerKey && sabotageInfo.timestamp?.toMillis() !== lastSabotageTimestamp) {
                 lastSabotageTimestamp = sabotageInfo.timestamp?.toMillis();
-                handleIncomingSabotage(sabotageInfo.type);
+                handleIncomingSabotage(sabotageInfo);
             }
-        }
 
-        // Sincronização do estado do oponente (posições, placar, etc.)
+            // 2. Lógica para o ativador da "Partilha Obrigatória" receber a comida bônus
+if (isWaitingForMandatoryShare && sabotageInfo.type === 'mandatoryShare' && sabotageInfo.payload?.x !== undefined) {
+    // Adiciona a nova comida ao array, em vez de substituir
+    pvpLocalBonusFoods.push({ x: sabotageInfo.payload.x, y: sabotageInfo.payload.y });
+
+    mandatoryShareUses++;
+    if (mandatoryShareUses >= 3) {
+        isWaitingForMandatoryShare = false;
+        if (mandatoryShareTimeout) clearTimeout(mandatoryShareTimeout);
+        // Não limpa as comidas da tela aqui, deixa o jogador coletá-las
+    }
+    
+    // Limpa o payload para não gerar a mesma comida de novo
+    db.collection('gameRooms').doc(roomId).update({ 'lastSabotage.payload': {} });
+}
+        }
+        // --- FIM DA LÓGICA CORRIGIDA ---
+
         pvpOpponentSnake = roomData[opponentPlayerKey].snake || [];
         pvpOpponentScore = roomData[opponentPlayerKey].score || 0;
         pvpOpponentSkin = roomData[opponentPlayerKey].skin;
@@ -5343,7 +5720,6 @@ function enterGameRoom(roomId) {
         document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${roomData[localPlayerKey].score || 0}`;
         document.getElementById('opponentScoreDisplay').textContent = `Oponente: ${roomData[opponentPlayerKey].score || 0}`;
 
-        // Início da contagem regressiva
         if ((roomData.status === 'starting' || roomData.status === 'countdown') && !pvpGameRunning && !isCountdownActive) {
             startCountdown(roomData[localPlayerKey], roomData[opponentPlayerKey]);
             if (localPlayerKey === 'player1') {
@@ -5353,58 +5729,92 @@ function enterGameRoom(roomId) {
     });
 }
 
-function handleIncomingSabotage(sabotageType) {
+function handleIncomingSabotage(sabotageInfo) {
+    const sabotageType = sabotageInfo.type;
     const sabotageData = sabotages[sabotageType];
     if (!sabotageData) return;
 
+    // Mostra o feedback visual (ícone) para o jogador imediatamente
     showSabotageFeedback(sabotageData.icon);
 
     switch (sabotageType) {
         case 'invertControls':
-            controlsInverted = true;
-            setTimeout(() => {
-                controlsInverted = false;
-            }, sabotageData.duration);
-            break;       
-        
-        case 'addObstacles':
-            pvpLocalObstacles = [];
-            for (let i = 0; i < 8; i++) {
-                let obstaclePos;
-                let validPosition = false;                
-                while (!validPosition) {
-                    obstaclePos = {
-                        x: Math.floor(Math.random() * pvpTileCountX),
-                        y: Math.floor(Math.random() * pvpTileCountY)
-                    };
-                    if (!pvpLocalSnake.some(seg => seg.x === obstaclePos.x && seg.y === obstaclePos.y)) {
-                        validPosition = true;
-                    }
-                }
-                pvpLocalObstacles.push(obstaclePos);
-            }
-            
-            // ==================================================================
-            // ======================= ALTERAÇÃO PRINCIPAL AQUI =================
-            // Adiciona o timer para limpar os obstáculos após o tempo definido.
-            setTimeout(() => {
-                pvpLocalObstacles = []; // Esvazia o array de obstáculos
-            }, sabotageData.duration); // Usa a duração de 10000ms que definimos
-            // ==================================================================
-            // ==================================================================
+            const currentPvpDifficulty = activeRoomData ? activeRoomData.difficulty : 'normal';
+            const durations = { easy: 2250, normal: 2250, hard: 2250, insane: 2250 };
+            const dynamicDuration = durations[currentPvpDifficulty] || durations['normal'];
+            const preparationTime = 2250;
+            const warningTimerElement = document.getElementById('sabotage-warning-timer');
 
+            if (warningTimerElement) {
+                let secondsLeft = Math.ceil(preparationTime / 1000);
+                warningTimerElement.textContent = secondsLeft;
+                warningTimerElement.style.display = 'block';
+
+                const warningInterval = setInterval(() => {
+                    secondsLeft--;
+                    if (secondsLeft > 0) {
+                        warningTimerElement.textContent = secondsLeft;
+                    } else {
+                        clearInterval(warningInterval);
+                        warningTimerElement.style.display = 'none';
+                    }
+                }, 1000);
+            }
+
+            setTimeout(() => {
+                controlsInverted = true;
+                setTimeout(() => {
+                    controlsInverted = false;
+                }, dynamicDuration);
+            }, preparationTime);
+            break;
+
+        case 'minefield':
+            pvpLocalObstacles = sabotageInfo.payload && sabotageInfo.payload.positions ? sabotageInfo.payload.positions : [];
+            setTimeout(() => {
+                pvpLocalObstacles = [];
+            }, sabotageData.duration);
             break;
 
         case 'forcedAcceleration':
             if (isAccelerated) return;
-            isAccelerated = true;                    
-            const fasterSpeed = originalPvpSpeed / 1.25;            
-            clearInterval(pvpGameLoopInterval);            
-            pvpGameLoopInterval = setInterval(pvpGameLoop, fasterSpeed);            
-            setTimeout(() => {                
-                clearInterval(pvpGameLoopInterval);                
+            isAccelerated = true;
+            const fasterSpeed = originalPvpSpeed / 1.25;
+            clearInterval(pvpGameLoopInterval);
+            pvpGameLoopInterval = setInterval(pvpGameLoop, fasterSpeed);
+            setTimeout(() => {
+                clearInterval(pvpGameLoopInterval);
                 pvpGameLoopInterval = setInterval(pvpGameLoop, originalPvpSpeed);
                 isAccelerated = false;
+            }, sabotageData.duration);
+            break;
+
+        case 'fugitiveFood':
+            if (fugitiveFoodInterval) clearInterval(fugitiveFoodInterval);
+            generatePvpFood();
+            fugitiveFoodInterval = setInterval(generatePvpFood, 2000);
+            pvpLocalCanvas.classList.add('fugitive-food-effect');
+            setTimeout(() => {
+                if (fugitiveFoodInterval) clearInterval(fugitiveFoodInterval);
+                fugitiveFoodInterval = null;
+                pvpLocalCanvas.classList.remove('fugitive-food-effect');
+            }, sabotageData.duration);
+            break;
+
+        case 'slowness':
+            if (isSlowed) return;
+            isSlowed = true;
+            const slowerSpeed = originalPvpSpeed * 1.6;
+            clearInterval(pvpGameLoopInterval);
+            pvpGameLoopInterval = setInterval(pvpGameLoop, slowerSpeed);
+            pvpLocalCanvas.classList.add('slowness-effect');
+            setTimeout(() => {
+                if (!isAccelerated) {
+                    clearInterval(pvpGameLoopInterval);
+                    pvpGameLoopInterval = setInterval(pvpGameLoop, originalPvpSpeed);
+                }
+                isSlowed = false;
+                pvpLocalCanvas.classList.remove('slowness-effect');
             }, sabotageData.duration);
             break;
 
@@ -5423,11 +5833,60 @@ function handleIncomingSabotage(sabotageType) {
             generateSinglePoisonFood();
             break;
 
-        case 'foodRepellent':
-            isFoodRepellentActive = true;
+        case 'foodMirage':
+            isMirageActive = true;
+            pvpLocalMirageFoods = [];
+            generatePvpFood();
+            const realFoodPos = { ...pvpLocalFood };
+            const newMirages = [];
+            for (let i = 0; i < 3; i++) {
+                let miragePos, validPosition = false;
+                while (!validPosition) {
+                    miragePos = { x: Math.floor(Math.random() * pvpTileCountX), y: Math.floor(Math.random() * pvpTileCountY) };
+                    const isCollidingWithSnake = pvpLocalSnake.some(seg => seg.x === miragePos.x && seg.y === miragePos.y);
+                    const isCollidingWithRealFood = (miragePos.x === realFoodPos.x && miragePos.y === realFoodPos.y);
+                    const isCollidingWithOtherMirages = newMirages.some(m => m.x === miragePos.x && m.y === miragePos.y);
+                    if (!isCollidingWithSnake && !isCollidingWithRealFood && !isCollidingWithOtherMirages) validPosition = true;
+                }
+                newMirages.push(miragePos);
+            }
+            pvpLocalMirageFoods = newMirages;
+            const roomRef = db.collection('gameRooms').doc(activeRoomId);
+            const updatePayload = {};
+            updatePayload[`${localPlayerKey}.mirages`] = newMirages;
+            roomRef.update(updatePayload);
             setTimeout(() => {
-                isFoodRepellentActive = false;
+                if (isMirageActive) {
+                    isMirageActive = false;
+                    pvpLocalMirageFoods = [];
+                    roomRef.update({ [`${localPlayerKey}.mirages`]: firebase.firestore.FieldValue.delete() });
+                    generatePvpFood();
+                }
             }, sabotageData.duration);
+            break;
+
+        case 'chaoticZoom':
+            const localCanvas = document.getElementById('localPlayerPvPCanvas');
+            localCanvas.classList.add('chaotic-zoom');
+            setTimeout(() => {
+                localCanvas.classList.remove('chaotic-zoom');
+            }, sabotageData.duration);
+            break;
+
+        // O case 'mandatoryShare' foi removido pois o alvo não precisa fazer nada.
+        // A lógica agora é tratada pelo ativador.
+
+        case 'magneticField':
+            if (sabotageInfo.payload && sabotageInfo.payload.direction) {
+                isMagneticFieldActive = true;
+                magneticFieldDirection = sabotageInfo.payload.direction;
+                pvpLocalCanvas.classList.add('magnetic-effect');
+                setTimeout(() => {
+                    isMagneticFieldActive = false;
+                    magneticFieldDirection = null;
+                    pvpLocalCanvas.classList.remove('magnetic-effect');
+                }, sabotageData.duration);
+            }
             break;
     }
 }
@@ -5479,11 +5938,18 @@ function startPvpGame(localPlayerData, opponentPlayerData) {
     pvpLocalInputQueue = [];
     pvpLocalScore = 0;
     
-    const allSabotageKeys = Object.keys(sabotages);
-    const shuffledKeys = allSabotageKeys.sort(() => 0.5 - Math.random());
-    localPlayerSabotages = shuffledKeys.slice(0, 3);
-    displaySabotageButtons();
-    
+sabotagePool = Object.keys(sabotages); // Preenche o baralho com todas as sabotagens
+currentSabotageChoices = [];
+sabotageFoodCounter = 0;
+
+isSabotageOnCooldown = false;     // Não começa em cooldown
+isChoosingSabotage = true;      // Começa diretamente no modo de escolha
+
+// Chama a função para pegar as 3 primeiras opções
+presentSabotageChoices(3); 
+
+// Desenha a interface inicial, que agora serão os 3 botões de escolha
+drawSabotageButtons();    
     let gameTime = 90;
     const initialMinutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
     const initialSeconds = (gameTime % 60).toString().padStart(2, '0');
@@ -5524,63 +5990,152 @@ function startPvpGame(localPlayerData, opponentPlayerData) {
     if (pvpGameLoopInterval) clearInterval(pvpGameLoopInterval);
     pvpGameLoopInterval = setInterval(pvpGameLoop, originalPvpSpeed);
 }
-
-function displaySabotageButtons() {
+function drawSabotageButtons() {
     const container = document.getElementById('sabotageControls');
-    container.innerHTML = ''; // Limpa botões anteriores
+    container.innerHTML = ''; // Limpa a interface a cada atualização
 
-    localPlayerSabotages.forEach(sabotageId => {
-        const sabotageData = sabotages[sabotageId];
-        if (!sabotageData) return;
+    // A barra de sabotagem só deve aparecer se ainda houver sabotagens no "baralho"
+    if (sabotagePool.length === 0) {
+        return; // Se acabaram as sabotagens, não desenha mais nada.
+    }
 
-        const button = document.createElement('button');
-        button.className = 'sabotage-btn';
-        button.innerHTML = sabotageData.icon;
-        button.title = sabotageData.name_pt; // Dica ao passar o mouse
-        button.dataset.sabotageId = sabotageId; // Guarda o ID da sabotagem
-        button.onclick = () => activateSabotage(button);
+    // --- LÓGICA DE DESENHO DA BARRA (SEMPRE ACONTECE) ---
 
-        container.appendChild(button);
-    });
+    // 1. Calcula o estado da barra.
+    // Se estivermos escolhendo, a barra deve estar 100% cheia.
+    const isBarFull = isChoosingSabotage;
+    const fillPercentage = isBarFull ? 100 : (sabotageFoodCounter / SABOTAGE_FOOD_REQUIREMENT) * 100;
+    
+    // 2. Calcula a opacidade do degradê vermelho.
+    // Se a barra estiver cheia, a opacidade é máxima.
+    const maxOpacity = 0.7;
+    const overlayOpacity = isBarFull ? maxOpacity : (sabotageFoodCounter / SABOTAGE_FOOD_REQUIREMENT) * maxOpacity;
+    const dynamicRedColor = `rgba(120, 10, 10, ${overlayOpacity})`;
+
+    // 3. Cria o HTML da barra.
+    const barHTML = `
+        <div class="power-bar-container ${isBarFull ? 'bar-is-full' : ''}">
+            <div class="power-bar-bg">
+                <div class="power-bar-fill" style="width: ${fillPercentage}%;"></div>
+                <div class="power-bar-overlay" style="background-color: ${dynamicRedColor};"></div>
+            </div>
+        </div>
+    `;
+
+    // Adiciona a barra ao container principal
+    container.innerHTML += barHTML;
+
+    // --- LÓGICA DE DESENHO DOS BOTÕES (SÓ QUANDO NECESSÁRIO) ---
+    
+    // 4. Se for o momento de escolher, adiciona os botões.
+    if (isChoosingSabotage) {
+        const buttonsWrapper = document.createElement('div');
+        buttonsWrapper.className = 'sabotage-buttons-wrapper';
+
+        currentSabotageChoices.forEach(sabotageId => {
+            const sabotageData = sabotages[sabotageId];
+            const button = document.createElement('button');
+            button.className = 'sabotage-btn ready';
+            button.innerHTML = sabotageData.icon;
+            button.title = sabotageData.name_pt;
+            button.onclick = () => handleSabotageChoice(sabotageId);
+            buttonsWrapper.appendChild(button);
+        });
+
+        container.appendChild(buttonsWrapper);
+    }
 }
+function activateSabotage(sabotageId) {
+    if (isSabotageOnCooldown) return;
 
-function activateSabotage(buttonElement) {
-    const sabotageId = buttonElement.dataset.sabotageId;
-    if (!sabotageId || !activeRoomId || !localPlayerKey) return;
+    let sabotagePayload = {};
 
-    // Desabilita o botão para uso único
-    buttonElement.disabled = true;
+    if (sabotageId === 'minefield') {
+        const newObstacles = [];
+        for (let i = 0; i < 8; i++) {
+            let obstaclePos, validPosition = false;
+            while (!validPosition) {
+                obstaclePos = { x: Math.floor(Math.random() * pvpTileCountX), y: Math.floor(Math.random() * pvpTileCountY) };
+                if (!pvpOpponentSnake.some(seg => seg.x === obstaclePos.x && seg.y === obstaclePos.y)) validPosition = true;
+            }
+            newObstacles.push(obstaclePos);
+        }
+        opponentObstacles = newObstacles;
+        setTimeout(() => { opponentObstacles = []; }, sabotages.minefield.duration);
+        sabotagePayload = { positions: newObstacles };
+    }
 
-    // Determina quem é o alvo (sempre o outro jogador)
+    if (sabotageId === 'smokeScreen') {
+        const opponentSmokeOverlay = document.getElementById('opponent-smoke-overlay');
+        if (opponentSmokeOverlay) {
+            opponentSmokeOverlay.style.opacity = '1';
+            setTimeout(() => {
+                opponentSmokeOverlay.style.opacity = '0';
+            }, sabotages.smokeScreen.duration);
+        }
+    }
+
+    if (sabotageId === 'magneticField') {
+        const directions = ['up', 'down', 'left', 'right'];
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        sabotagePayload = { direction: randomDirection };
+    }
+    
+    // --- LÓGICA CORRIGIDA PARA MANDATORY SHARE ---
+    if (sabotageId === 'mandatoryShare') {
+        isWaitingForMandatoryShare = true;
+        mandatoryShareUses = 0; // Reseta o contador de usos
+        if (mandatoryShareTimeout) clearTimeout(mandatoryShareTimeout); // Limpa timer antigo
+        // Define um timer de 10 segundos para cancelar o efeito
+        mandatoryShareTimeout = setTimeout(() => {
+            isWaitingForMandatoryShare = false;
+        }, 10000);
+    }
+     
     const opponentPlayerKey = localPlayerKey === 'player1' ? 'player2' : 'player1';
-
-    // Envia a informação para o Firebase
     const roomRef = db.collection('gameRooms').doc(activeRoomId);
     roomRef.update({
         lastSabotage: {
-            target: opponentPlayerKey, // O alvo
-            type: sabotageId,          // O tipo de sabotagem
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() // Para evitar repetições
+            target: opponentPlayerKey,
+            type: sabotageId,
+            payload: sabotagePayload,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }
     }).catch(err => console.error("Erro ao ativar sabotagem:", err));
-}
 
-function pvpGameLoop() {
-    if (!pvpGameRunning) return;
-    
-    // Lógica para o efeito "Repelente de Comida" (🧲)
-    if (isFoodRepellentActive && pvpLocalSnake.length > 0) {
-        const head = pvpLocalSnake[0];
-        // Calcula a distância entre a cabeça da cobra e a comida
-        const distance = Math.hypot(head.x - pvpLocalFood.x, head.y - pvpLocalFood.y);
-        
-        // Se a cobra chegar perto (a menos de 4 quadrados de distância),
-        // a comida "foge" para uma nova posição aleatória.
-        if (distance < 4) {
-            generatePvpFood(); 
-        }
+    drawSabotageButtons();
+}
+function handleSabotageChoice(chosenSabotageId) {
+    // 1. Ativa a sabotagem escolhida
+    activateSabotage(chosenSabotageId);
+
+    // 2. Remove a sabotagem escolhida do "baralho" para não aparecer mais
+    sabotagePool = sabotagePool.filter(id => id !== chosenSabotageId);
+
+    // 3. Reseta o estado para o próximo ciclo de "ganho"
+    isChoosingSabotage = false;
+    isSabotageOnCooldown = true; // Volta para o modo de cooldown
+    currentSabotageChoices = [];
+
+    // 4. Atualiza a UI para mostrar a barra de progresso novamente
+    drawSabotageButtons();
+}
+function presentSabotageChoices(count = 2) { // Adicionamos o parâmetro "count" com valor padrão 2
+    // Embaralha o baralho de sabotagens restantes
+    const shuffledPool = sabotagePool.sort(() => 0.5 - Math.random());
+
+    // Usa o parâmetro "count" para decidir quantas opções pegar
+    currentSabotageChoices = shuffledPool.slice(0, count);
+
+    // Se o baralho acabar, o ciclo de sabotagens termina.
+    if (currentSabotageChoices.length === 0) {
+        isChoosingSabotage = false;
+        isSabotageOnCooldown = true; // Deixa em cooldown permanente
     }
-    
+}
+function pvpGameLoop() {
+    if (!pvpGameRunning) return;    
+           
     // Se o jogo NÃO estiver pausado para o jogador decidir se quer sair, executa a lógica de movimento.
     if (!isPvpPausedForQuit) {
         processPvpInput();
@@ -5593,103 +6148,180 @@ function pvpGameLoop() {
 }
 
 function updatePvpGame() {
-    // Se a cobra está parada, não faz nada.
     if (pvpLocalDirection.dx === 0 && pvpLocalDirection.dy === 0) return;
+    if (pvpLocalSnake.length === 0) return;
 
-    // A lógica de aceleração já está inclusa aqui.
-    const moves = 1;
-    for (let i = 0; i < moves; i++) {
+    const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
+    const mapConfig = maps[pvpMap] || maps['normal'];
 
-        if (pvpLocalSnake.length === 0) return;
+    if (isMagneticFieldActive) {
+        magneticFieldCounter++;
+        if (magneticFieldCounter % 4 === 0) {
+            switch (magneticFieldDirection) {
+                case 'up': head.y--; break;
+                case 'down': head.y++; break;
+                case 'left': head.x--; break;
+                case 'right': head.x++; break;
+            }
+        }
+    }
 
-        const head = { x: pvpLocalSnake[0].x + pvpLocalDirection.dx, y: pvpLocalSnake[0].y + pvpLocalDirection.dy };
-        const mapConfig = maps[pvpMap] || maps['normal'];
+    if (!mapConfig.wrapAround && (head.x < 0 || head.x >= pvpTileCountX || head.y < 0 || head.y >= pvpTileCountY)) {
+        pvpLocalScore = Math.max(0, pvpLocalScore - 1);
+        pvpLocalDirection = { dx: 0, dy: 0 };
+        if (pvpLocalSnake.length > 3) { pvpLocalSnake.pop(); pvpLocalSnake.pop(); }
+        return;
+    } else if (mapConfig.wrapAround) {
+        if (head.x < 0) head.x = pvpTileCountX - 1; else if (head.x >= pvpTileCountX) head.x = 0;
+        if (head.y < 0) head.y = pvpTileCountY - 1; else if (head.y >= pvpTileCountY) head.y = 0;
+    }
 
-        // 1. LÓGICA DE COLISÕES (PAREDES, OBSTÁCULOS, AUTOCOLISÃO)
-        if (!mapConfig.wrapAround && (head.x < 0 || head.x >= pvpTileCountX || head.y < 0 || head.y >= pvpTileCountY)) {
-            pvpLocalScore = Math.max(0, pvpLocalScore - 1);
-            document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
+    for (let j = 0; j < pvpLocalObstacles.length; j++) {
+        if (head.x === pvpLocalObstacles[j].x && head.y === pvpLocalObstacles[j].y) {
+            pvpLocalScore = Math.max(0, pvpLocalScore - 2);
+            pvpLocalCanvas.classList.add('screen-shake');
+            setTimeout(() => { pvpLocalCanvas.classList.remove('screen-shake'); }, 400);
+            pvpLocalObstacles.splice(j, 1);
+            pvpLocalDirection = { dx: 0, dy: 0 };
+            return;
+        }
+    }
+
+    for (let j = 1; j < pvpLocalSnake.length; j++) {
+        if (head.x === pvpLocalSnake[j].x && head.y === pvpLocalSnake[j].y) {
+            pvpLocalScore = Math.max(0, pvpLocalScore - 2);
             pvpLocalDirection = { dx: 0, dy: 0 };
             if (pvpLocalSnake.length > 3) { pvpLocalSnake.pop(); pvpLocalSnake.pop(); }
             return;
-        } else if (mapConfig.wrapAround) {
-            if (head.x < 0) head.x = pvpTileCountX - 1; else if (head.x >= pvpTileCountX) head.x = 0;
-            if (head.y < 0) head.y = pvpTileCountY - 1; else if (head.y >= pvpTileCountY) head.y = 0;
         }
+    }
 
-        for (let j = 0; j < pvpLocalObstacles.length; j++) {
-            if (head.x === pvpLocalObstacles[j].x && head.y === pvpLocalObstacles[j].y) {
-                pvpLocalScore = Math.max(0, pvpLocalScore - 1);
-                document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
-                pvpLocalObstacles.splice(j, 1);
-                pvpLocalDirection = { dx: 0, dy: 0 };
-                if (pvpLocalSnake.length > 3) { pvpLocalSnake.pop(); pvpLocalSnake.pop(); }
-                return;
-            }
-        }
-        for (let j = 1; j < pvpLocalSnake.length; j++) {
-            if (head.x === pvpLocalSnake[j].x && head.y === pvpLocalSnake[j].y) {
-                pvpLocalScore = Math.max(0, pvpLocalScore - 2);
-                document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
-                pvpLocalDirection = { dx: 0, dy: 0 };
-                if (pvpLocalSnake.length > 3) { pvpLocalSnake.pop(); pvpLocalSnake.pop(); }
-                return;
-            }
-        }
-
-        // --- INÍCIO DA LÓGICA DA SABOTAGEM "COMIDA ENVENENADA" ---
-        let tailShouldBePopped = true; // Por padrão, a cobra se move (não cresce)
-
-        if (isPoisonFoodActive) {
-            // Se comeu a COMIDA ORIGINAL durante a sabotagem
-            if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
-                pvpLocalScore += 2; // Ponto dobrado!
-                poisonFoodEats++;
-                tailShouldBePopped = false; // Cobra cresce
-
-                if (poisonFoodEats >= 3) { // Se foi a 3ª comida, termina a sabotagem
-                    isPoisonFoodActive = false;
-                    pvpLocalPoisonFood = {}; // Remove a comida falsa
-                    generatePvpFood(); // Gera uma comida normal final
-                } else {
-                    generatePvpFood(); // Gera a próxima dupla
-                    generateSinglePoisonFood();
-                }
-            }
-            // Se comeu a COMIDA FALSA durante a sabotagem
-            else if (pvpLocalPoisonFood.x !== undefined && head.x === pvpLocalPoisonFood.x && head.y === pvpLocalPoisonFood.y) {
-                pvpLocalScore = Math.max(0, pvpLocalScore - 2); // Perde 2 pontos
-                poisonFoodEats++;
-                // tailShouldBePopped continua true, então a cobra não cresce
-
-                if (poisonFoodEats >= 3) { // Se foi a 3ª comida, termina a sabotagem
-                    isPoisonFoodActive = false;
-                    pvpLocalPoisonFood = {}; // Remove a comida falsa
-                    generatePvpFood(); // Gera uma comida normal final
-                } else {
-                    generatePvpFood(); // Gera a próxima dupla
-                    generateSinglePoisonFood();
-                }
-            }
-        } else {
-            // Comportamento NORMAL do jogo (quando a sabotagem não está ativa)
-            if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
-                pvpLocalScore++;
-                generatePvpFood();
-                tailShouldBePopped = false;
-            }
-        }
-
-        document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
-        
-        pvpLocalSnake.unshift(head);
-        if (tailShouldBePopped) {
-            pvpLocalSnake.pop();
-        }
-        // --- FIM DA LÓGICA DE COMIDA ---
+    let tailShouldBePopped = true;
+    let foodEatenThisUpdate = false;
+    
+for (let i = pvpLocalBonusFoods.length - 1; i >= 0; i--) {
+    const bonusFood = pvpLocalBonusFoods[i];
+    if (head.x === bonusFood.x && head.y === bonusFood.y) {
+        pvpLocalScore++; // Ganha ponto
+        tailShouldBePopped = false; // Cobra cresce
+        pvpLocalBonusFoods.splice(i, 1); // Remove APENAS a comida que foi coletada do array
+        foodEatenThisUpdate = true;
+        break; // Sai do loop para não comer várias comidas no mesmo frame
     }
 }
 
+    if (isMirageActive) {
+        let collidedWithMirage = false;
+        for (let j = 0; j < pvpLocalMirageFoods.length; j++) {
+            if (head.x === pvpLocalMirageFoods[j].x && head.y === pvpLocalMirageFoods[j].y) {
+                pvpLocalScore = Math.max(0, pvpLocalScore - 1);
+                pvpLocalMirageFoods.splice(j, 1);
+                collidedWithMirage = true;
+                break;
+            }
+        }
+        if (collidedWithMirage) {
+            pvpLocalSnake.unshift(head);
+            if (tailShouldBePopped) pvpLocalSnake.pop();
+            return;
+        }
+    }
+
+    if (isPoisonFoodActive) {
+        if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
+            pvpLocalScore += 2;
+            poisonFoodEats++;
+            tailShouldBePopped = false;
+            foodEatenThisUpdate = true;
+            if (poisonFoodEats >= 3) { isPoisonFoodActive = false; pvpLocalPoisonFood = {}; generatePvpFood(); }
+            else { generatePvpFood(); generateSinglePoisonFood(); }
+        } else if (pvpLocalPoisonFood.x !== undefined && head.x === pvpLocalPoisonFood.x && head.y === pvpLocalPoisonFood.y) {
+            pvpLocalScore = Math.max(0, pvpLocalScore - 2);
+            poisonFoodEats++;
+            if (poisonFoodEats >= 3) { isPoisonFoodActive = false; pvpLocalPoisonFood = {}; generatePvpFood(); }
+            else { generatePvpFood(); generateSinglePoisonFood(); }
+        }
+    } else {
+        if (head.x === pvpLocalFood.x && head.y === pvpLocalFood.y) {
+            pvpLocalScore++;
+            tailShouldBePopped = false;
+            foodEatenThisUpdate = true;
+
+            if (isMirageActive) {
+                isMirageActive = false;
+                pvpLocalMirageFoods = [];
+                db.collection('gameRooms').doc(activeRoomId).update({ [`${localPlayerKey}.mirages`]: firebase.firestore.FieldValue.delete() });
+            }
+            
+            // --- ENVIO DAS COORDENADAS (JOGADOR ALVO) ---
+            const opponentSabotage = activeRoomData?.lastSabotage;
+            if (opponentSabotage && opponentSabotage.type === 'mandatoryShare' && opponentSabotage.target === localPlayerKey) {
+                const roomRef = db.collection('gameRooms').doc(activeRoomId);
+                roomRef.update({ 'lastSabotage.payload': { x: pvpLocalFood.x, y: pvpLocalFood.y } });
+            }
+            // --- FIM DO ENVIO ---
+            
+            generatePvpFood();
+        }
+    }
+
+    document.getElementById('localScoreDisplay').textContent = `Sua Pontuação: ${pvpLocalScore}`;
+
+    pvpLocalSnake.unshift(head);
+    if (tailShouldBePopped) {
+        pvpLocalSnake.pop();
+    }
+
+    if (foodEatenThisUpdate && isSabotageOnCooldown) {
+        sabotageFoodCounter++;
+        if (sabotageFoodCounter >= SABOTAGE_FOOD_REQUIREMENT) {
+        isSabotageOnCooldown = false; // Desativa o cooldown
+        isChoosingSabotage = true;  // Ativa o modo de escolha
+        sabotageFoodCounter = 0;      // Reseta o contador
+        presentSabotageChoices();     // Sorteia as próximas 2 opções
+        }
+        drawSabotageButtons(); // Atualiza a UI para mostrar as escolhas
+    }
+}
+function updateSabotageUI() {
+    const container = document.getElementById('sabotageControls');
+    container.innerHTML = ''; // Limpa a interface anterior
+
+    // Se a fila de sabotagens acabou, não mostra nada
+    if (localPlayerSabotageQueue.length === 0) {
+        return;
+    }
+
+    // Pega a próxima sabotagem da fila (sem remover ainda)
+    const nextSabotageId = localPlayerSabotageQueue[0];
+    const sabotageData = sabotages[nextSabotageId];
+
+    if (currentSabotageReady) {
+        // --- MOSTRA O BOTÃO ATIVO ---
+        const button = document.createElement('button');
+        button.className = 'sabotage-btn';
+        button.innerHTML = sabotageData.icon;
+        button.title = sabotageData.name_pt;
+        button.onclick = () => activateSabotage(button, nextSabotageId);
+        container.appendChild(button);
+
+    } else {
+        // --- MOSTRA O BOTÃO DESATIVADO E O PROGRESSO ---
+        const button = document.createElement('button');
+        button.className = 'sabotage-btn';
+        button.innerHTML = sabotageData.icon;
+        button.title = `Próxima: ${sabotageData.name_pt}`;
+        button.disabled = true; // Desativa o botão
+        container.appendChild(button);
+
+        const progressText = document.createElement('p');
+        progressText.style.color = 'white';
+        progressText.style.fontSize = '12px';
+        progressText.style.margin = '0 5px';
+        progressText.textContent = `${sabotageFoodCounter}/${SABOTAGE_FOOD_REQUIREMENT} 🍎`;
+        container.appendChild(progressText);
+    }
+}
 function generatePvpFood() {
     let newFoodPosition;
     let validPosition = false;
@@ -6351,17 +6983,54 @@ function drawPvpBoards() {
     pvpLocalCtx.fillRect(0, 0, pvpLocalCanvas.width, pvpLocalCanvas.height);
     
     drawSnakeOnCanvas(pvpLocalCtx, pvpLocalSnake, pvpLocalSkin, pvpLocalDirection);
-    drawPvpFood(pvpLocalCtx, pvpLocalFood);
-    pvpLocalCtx.fillStyle = '#8395a7';
-    pvpLocalObstacles.forEach(obstacle => {
-        pvpLocalCtx.fillRect(obstacle.x * gridSize, obstacle.y * gridSize, gridSize, gridSize);
+    
+    // Desenha as minas na SUA tela (se você foi sabotado)
+    pvpLocalObstacles.forEach(mine => {
+        const mineX = mine.x * gridSize + gridSize / 2;
+        const mineY = mine.y * gridSize + gridSize / 2;
+        pvpLocalCtx.fillStyle = '#4a4a4a';
+        pvpLocalCtx.beginPath();
+        pvpLocalCtx.arc(mineX, mineY, gridSize / 2.2, 0, 2 * Math.PI);
+        pvpLocalCtx.fill();
+        const pulse = Math.sin(Date.now() / 150) * 1.5 + 2.5;
+        pvpLocalCtx.fillStyle = '#d63031';
+        pvpLocalCtx.beginPath();
+        pvpLocalCtx.arc(mineX, mineY, pulse, 0, 2 * Math.PI);
+        pvpLocalCtx.fill();
+        pvpLocalCtx.fillStyle = 'rgba(255, 71, 71, 0.4)';
+        pvpLocalCtx.beginPath();
+        pvpLocalCtx.arc(mineX, mineY, pulse + 3, 0, 2 * Math.PI);
+        pvpLocalCtx.fill();
     });
-
-    // Lógica para a TELA LOCAL: Se VOCÊ está sabotado, vê as duas comidas com a MESMA COR.
-    if (isPoisonFoodActive && pvpLocalPoisonFood.x !== undefined) {
-        pvpLocalCtx.fillStyle = '#fd79a8'; // Cor normal da comida
-        pvpLocalCtx.fillRect(pvpLocalPoisonFood.x * gridSize, pvpLocalPoisonFood.y * gridSize, gridSize - 2, gridSize - 2);
+    
+    // --- LÓGICA DE DESENHO DE COMIDA CORRIGIDA PARA O JOGADOR LOCAL ---
+    if (isPoisonFoodActive) {
+        // Se EU estou envenenado, desenha AMBAS as comidas com a cor normal para me confundir.
+        drawPvpFood(pvpLocalCtx, pvpLocalFood); // Comida boa (vermelha)
+        if (pvpLocalPoisonFood.x !== undefined) {
+             // A função drawPvpFood usa a cor vermelha padrão.
+            drawPvpFood(pvpLocalCtx, pvpLocalPoisonFood); // Comida falsa (também vermelha)
+        }
+    } else {
+        // Se não estou envenenado, apenas desenha minha comida normal.
+        drawPvpFood(pvpLocalCtx, pvpLocalFood);
     }
+    
+    // Se a miragem está ativa para você, desenha as comidas falsas
+    if (activeRoomData[localPlayerKey]?.mirages) { 
+        activeRoomData[localPlayerKey].mirages.forEach(mirage => {
+            drawPvpFood(pvpLocalCtx, mirage); // Usa a mesma função para desenhar em vermelho
+        });
+    }
+    // --- FIM DA LÓGICA CORRIGIDA ---
+    
+    // Desenha as comidas bônus acumuladas da Partilha Obrigatória
+pvpLocalBonusFoods.forEach(bonusFood => {
+    pvpLocalCtx.fillStyle = '#FFD700'; // Dourado
+    pvpLocalCtx.fillRect(bonusFood.x * gridSize, bonusFood.y * gridSize, gridSize, gridSize);
+    pvpLocalCtx.fillStyle = '#FFFACD'; // Dourado claro
+    pvpLocalCtx.fillRect(bonusFood.x * gridSize + 2, bonusFood.y * gridSize + 2, gridSize - 4, gridSize - 4);
+});
 
     // --- 2. DESENHA O TABULEIRO DO OPONENTE ---
     pvpOpponentCtx.fillStyle = '#11131e';
@@ -6369,26 +7038,36 @@ function drawPvpBoards() {
     
     drawSnakeOnCanvas(pvpOpponentCtx, pvpOpponentSnake, pvpOpponentSkin, pvpOpponentDirection);
 
-    // Lógica para a TELA DO OPONENTE: Verifica se ELE está sabotado.
-    const opponentIsSabotaged = pvpOpponentPoisonFood && pvpOpponentPoisonFood.x !== undefined;
+    // Desenha as minas que VOCÊ enviou para o oponente
+    opponentObstacles.forEach(mine => {
+        const mineX = mine.x * gridSize + gridSize / 2;
+        const mineY = mine.y * gridSize + gridSize / 2;
+        pvpOpponentCtx.fillStyle = '#4a4a4a';
+        pvpOpponentCtx.beginPath();
+        pvpOpponentCtx.arc(mineX, mineY, gridSize / 2.2, 0, 2 * Math.PI);
+        pvpOpponentCtx.fill();
+        const pulse = Math.sin(Date.now() / 150) * 1.5 + 2.5;
+        pvpOpponentCtx.fillStyle = '#d63031';
+        pvpOpponentCtx.beginPath();
+        pvpOpponentCtx.arc(mineX, mineY, pulse, 0, 2 * Math.PI);
+        pvpOpponentCtx.fill();
+    });
 
-    if (opponentIsSabotaged) {
-        // Se o oponente está sabotado, VOCÊ vê as comidas dele com cores diferentes.
-        
-        // A comida VERDADEIRA dele é desenhada com a cor normal.
-        pvpOpponentCtx.fillStyle = '#fd79a8'; // Cor normal
-        if (pvpOpponentFood.x !== undefined) {
-            pvpOpponentCtx.fillRect(pvpOpponentFood.x * gridSize, pvpOpponentFood.y * gridSize, gridSize - 2, gridSize - 2);
-        }
-        
-        // A comida FALSA dele é desenhada na cor VERDE.
-        pvpOpponentCtx.fillStyle = '#2ecc71'; // Verde
-        if (pvpOpponentPoisonFood.x !== undefined) {
-            pvpOpponentCtx.fillRect(pvpOpponentPoisonFood.x * gridSize, pvpOpponentPoisonFood.y * gridSize, gridSize - 2, gridSize - 2);
-        }
-    } else {
-        // Se o oponente não está sabotado, apenas desenha a comida normal dele.
-        drawPvpFood(pvpOpponentCtx, pvpOpponentFood);
+    // Lógica para desenhar a comida do oponente (com miragem e veneno)
+    drawPvpFood(pvpOpponentCtx, pvpOpponentFood); // Sempre desenha a comida real do oponente em vermelho.
+    
+    if (activeRoomData[opponentPlayerKey]?.mirages) {
+        activeRoomData[opponentPlayerKey].mirages.forEach(mirage => {
+            drawPvpFood(pvpOpponentCtx, mirage);
+        });
+    }
+
+    // A lógica para desenhar o veneno na tela do oponente continua a mesma.
+    // O sabotador DEVE ver qual é a comida envenenada.
+    const opponentIsPoisoned = activeRoomData[opponentPlayerKey]?.poisonFood;
+    if (opponentIsPoisoned && opponentIsPoisoned.x !== undefined) {
+         pvpOpponentCtx.fillStyle = '#2ecc71'; // Cor de veneno (verde)
+         pvpOpponentCtx.fillRect(opponentIsPoisoned.x * gridSize, opponentIsPoisoned.y * gridSize, gridSize - 2, gridSize - 2);
     }
 }
 
@@ -6571,17 +7250,29 @@ function resetPvpPanel() {
     pvpOpponentScore = 0;
     pvpLocalDirection = { dx: 0, dy: 0 };
     pvpLocalInputQueue = [];
-    isSearching = false;
-
-    // Limpa qualquer estado de sabotagem ativo
+    isSearching = false;     
+    isPvpPausedForQuit = false;    
     controlsInverted = false;
     isAccelerated = false;
     pvpLocalObstacles = [];
+    opponentObstacles = [];
     localPlayerSabotages = [];
+    pvpLocalBonusFoods = [];
     document.getElementById('sabotageControls').innerHTML = '';
+    isPoisonFoodActive = false;
+    poisonFoodEats = 0;
+    pvpLocalPoisonFood = {};
 
-    // ATUALIZAÇÃO: "DESTRAVA" O CADEADO NO FINAL DO PROCESSO DE RESET
+    if (fugitiveFoodInterval) {
+        clearInterval(fugitiveFoodInterval);
+    }
+    fugitiveFoodInterval = null;
+    pvpLocalCanvas.classList.remove('fugitive-food-effect'); // Garante a remoção do efeito visual
+
     isGameEnding = false; 
+}
+function cancelQuitPvp() {
+    resumePvpGame();
 }
 function showCustomAlert(title, message) {
     document.getElementById('customAlertTitle').textContent = title;
@@ -6620,6 +7311,19 @@ function processPvpInput() {
     // Se o movimento for válido, atualiza a direção da cobra.
     pvpLocalDirection = { dx: nextMove.dx, dy: nextMove.dy };
 }
+function handleVisibilityChange() {
+    // Verifica se a página ficou oculta, se uma partida PvP está em andamento e se o jogo já não está terminando
+    if (document.visibilityState === 'hidden' && pvpGameRunning && !isGameEnding) {
+        console.log("Jogo minimizado durante a partida PvP. Registrando derrota.");
+        
+        // Aciona a função que confirma a desistência da partida
+        confirmQuitPvp(); 
+    }
+}
+
+// Adiciona o "ouvinte" de eventos ao documento para detectar a mudança de visibilidade
+document.addEventListener('visibilitychange', handleVisibilityChange);
+
 </script> 
 </body>
 </html>
